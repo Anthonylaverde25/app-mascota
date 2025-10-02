@@ -82,7 +82,7 @@ export function ReproductiveCalendar({ events, species }: CalendarProps) {
   ];
 
   return (
-    <div className="flex flex-col items-center w-full">
+    <div className="w-full">
       <style>{`
         :root {
           --color-celo: hsl(340 84% 60% / 0.3);
@@ -107,13 +107,13 @@ export function ReproductiveCalendar({ events, species }: CalendarProps) {
         modifiers={modifiers}
         modifierStyles={modifierStyles}
       />
-      <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 text-sm w-full max-w-md">
+      <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 text-sm w-full">
         {legendItems.map((item) => (
           <div key={item.label} className="flex items-center gap-x-2">
             {item.color ? (
               <div className={cn('w-3 h-3 rounded-full', item.color)} />
             ) : (
-              <span className="w-3 h-3 text-center">{item.icon}</span>
+              <span className="w-3 h-3 text-center flex items-center justify-center text-xs">{item.icon}</span>
             )}
             <span>{item.label}</span>
           </div>
@@ -122,5 +122,3 @@ export function ReproductiveCalendar({ events, species }: CalendarProps) {
     </div>
   );
 }
-
-    
