@@ -65,7 +65,6 @@ export default {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
-        'collapsible-content': 'hsl(var(--collapsible-content-background))',
       },
       borderRadius: {
         lg: 'var(--radius)',

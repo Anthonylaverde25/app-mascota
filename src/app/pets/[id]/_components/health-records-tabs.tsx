@@ -180,7 +180,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
                               </div>
                             </CollapsibleTrigger>
                             <CollapsibleContent>
-                              <div className="p-4 border-t space-y-4 bg-[hsl(var(--collapsible-content-background))]">
+                              <div className="p-4 border-t space-y-4">
                                 <h4 className="font-semibold">Historial de Dosis</h4>
                                 {doses.map((dose) => (
                                   <div key={dose.id} className="p-3 bg-background rounded-md border">
