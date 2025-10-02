@@ -1,7 +1,8 @@
+import * as React from 'react';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { differenceInYears, differenceInMonths, format } from 'date-fns';
-import { Cake, Palette, PawPrint, VenetianMask, Cat, Dog } from 'lucide-react';
+import { Cake, Palette, VenetianMask, Cat, Dog } from 'lucide-react';
 
 import { getPetById } from '@/lib/data';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
