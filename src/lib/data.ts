@@ -1,4 +1,5 @@
 import { PlaceHolderImages, type ImagePlaceholder } from './placeholder-images';
+import { add, sub } from 'date-fns';
 
 // Types
 export interface Vaccine {
@@ -128,7 +129,8 @@ const MOCK_PETS: Pet[] = [
     ],
     tratamientos: [],
     eventosReproductivos: [
-        { id: 'er1', tipoEvento: 'Celo', fecha: new Date('2023-09-05'), observaciones: 'Primer celo' }
+        { id: 'er1', tipoEvento: 'Celo', fecha: new Date('2023-09-05'), observaciones: 'Primer celo' },
+        { id: 'er2', tipoEvento: 'Celo', fecha: new Date('2024-03-20'), observaciones: 'Celo de primavera' }
     ],
     pesos: [
       { id: 'w6', fecha: new Date('2022-04-01'), peso: 3 },
@@ -201,17 +203,6 @@ export function getCalendarEvents(): CalendarEvent[] {
                     date: d.fechaProximaDosis,
                     type: 'Desparasitación',
                     description: `Próxima desparasitación ${d.tipo}`
-                });
-            }
-        });
-        pet.eventosReproductivos.forEach(er => {
-            if (er.fecha > new Date()) {
-                events.push({
-                    petName: pet.nombre,
-                    petId: pet.id,
-                    date: er.fecha,
-                    type: 'Evento Reproductivo',
-                    description: `Evento: ${er.tipoEvento}`
                 });
             }
         });
