@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { HeartPulse, Pill, Syringe, Bug } from 'lucide-react';
-import type { Pet, Vaccine, Deworming, Treatment, ReproductiveEvent } from '@/lib/data';
+import { HeartPulse, Pill, Syringe, Bug, Scale } from 'lucide-react';
+import type { Pet, Vaccine, Deworming, Treatment, ReproductiveEvent, Weight } from '@/lib/data';
 import { formatDate } from '@/lib/utils';
 import {
   Table,
@@ -20,19 +20,20 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 
 import { VaccinationForm } from './vaccination-form';
 import { DewormingForm } from './deworming-form';
 import { TreatmentForm } from './treatment-form';
 import { ReproductiveEventForm } from './reproductive-event-form';
+import { WeightForm } from './weight-form';
+import { WeightChart } from './weight-chart';
 
 type HealthRecordsTabsProps = {
   pet: Pet;
 };
 
-type DialogState = 'vaccine' | 'deworming' | 'treatment' | 'reproductive' | null;
+type DialogState = 'vaccine' | 'deworming' | 'treatment' | 'reproductive' | 'weight' | null;
 
 export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
   const [openDialog, setOpenDialog] = useState<DialogState>(null);
@@ -49,11 +50,12 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
   return (
     <Dialog open={!!openDialog} onOpenChange={(isOpen) => !isOpen && setOpenDialog(null)}>
       <Tabs defaultValue="vaccinations">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto">
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 h-auto">
           <TabsTrigger value="vaccinations"><Syringe className="w-4 h-4 mr-2"/>Vaccinations</TabsTrigger>
           <TabsTrigger value="deworming"><Bug className="w-4 h-4 mr-2"/>Deworming</TabsTrigger>
           <TabsTrigger value="treatments"><Pill className="w-4 h-4 mr-2"/>Treatments</TabsTrigger>
           <TabsTrigger value="reproductive"><HeartPulse className="w-4 h-4 mr-2"/>Reproductive</TabsTrigger>
+          <TabsTrigger value="weight"><Scale className="w-4 h-4 mr-2"/>Weight</TabsTrigger>
         </TabsList>
         
         {/* Vaccinations Tab */}
@@ -189,6 +191,40 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
             </CardContent>
           </Card>
         </TabsContent>
+
+         {/* Weight Tab */}
+        <TabsContent value="weight">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="font-headline">Weight History</CardTitle>
+              <Button onClick={() => setOpenDialog('weight')}>Add Weight Record</Button>
+            </CardHeader>
+            <CardContent>
+              {pet.pesos.length > 0 ? (
+                <>
+                  <WeightChart data={pet.pesos} />
+                  <Table className="mt-4">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Weight (kg)</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {pet.pesos.sort((a, b) => b.fecha.getTime() - a.fecha.getTime()).map((w: Weight) => (
+                        <TableRow key={w.id}>
+                          <TableCell>{formatDate(w.fecha)}</TableCell>
+                          <TableCell>{w.peso} kg</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </>
+              ) : renderEmptyState('No weight records found.', 'weight')}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
       </Tabs>
       
       <DialogContent>
@@ -198,12 +234,14 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
             {openDialog === 'deworming' && 'Add New Deworming Record'}
             {openDialog === 'treatment' && 'Add New Treatment'}
             {openDialog === 'reproductive' && 'Add New Reproductive Event'}
+            {openDialog === 'weight' && 'Add New Weight Record'}
           </DialogTitle>
         </DialogHeader>
         {openDialog === 'vaccine' && <VaccinationForm closeDialog={() => setOpenDialog(null)} />}
         {openDialog === 'deworming' && <DewormingForm closeDialog={() => setOpenDialog(null)} />}
         {openDialog === 'treatment' && <TreatmentForm closeDialog={() => setOpenDialog(null)} />}
         {openDialog === 'reproductive' && <ReproductiveEventForm closeDialog={() => setOpenDialog(null)} />}
+        {openDialog === 'weight' && <WeightForm closeDialog={() => setOpenDialog(null)} />}
       </DialogContent>
     </Dialog>
   );

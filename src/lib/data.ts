@@ -34,6 +34,12 @@ export interface ReproductiveEvent {
   observaciones?: string;
 }
 
+export interface Weight {
+  id: string;
+  fecha: Date;
+  peso: number;
+}
+
 export interface Pet {
   id: string;
   nombre: string;
@@ -47,6 +53,7 @@ export interface Pet {
   desparasitaciones: Deworming[];
   tratamientos: Treatment[];
   eventosReproductivos: ReproductiveEvent[];
+  pesos: Weight[];
 }
 
 export interface CalendarEvent {
@@ -79,6 +86,13 @@ const MOCK_PETS: Pet[] = [
        { id: 't1', nombreMedicamento: 'Apoquel', dosificacion: '16mg once a day', duracion: '30 days', fechaInicio: new Date('2023-08-01') },
     ],
     eventosReproductivos: [],
+    pesos: [
+      { id: 'w1', fecha: new Date('2022-01-01'), peso: 30 },
+      { id: 'w2', fecha: new Date('2022-07-01'), peso: 32 },
+      { id: 'w3', fecha: new Date('2023-01-01'), peso: 33 },
+      { id: 'w4', fecha: new Date('2023-07-01'), peso: 32.5 },
+      { id: 'w5', fecha: new Date('2024-01-01'), peso: 34 },
+    ],
   },
   {
     id: '2',
@@ -99,6 +113,11 @@ const MOCK_PETS: Pet[] = [
     eventosReproductivos: [
         { id: 'er1', tipoEvento: 'Celo', fecha: new Date('2023-09-05'), observaciones: 'Primer celo' }
     ],
+    pesos: [
+      { id: 'w6', fecha: new Date('2022-04-01'), peso: 3 },
+      { id: 'w7', fecha: new Date('2023-04-01'), peso: 4 },
+      { id: 'w8', fecha: new Date('2024-04-01'), peso: 4.5 },
+    ],
   },
   {
     id: '3',
@@ -115,6 +134,7 @@ const MOCK_PETS: Pet[] = [
     desparasitaciones: [],
     tratamientos: [],
     eventosReproductivos: [],
+    pesos: [],
   },
   {
     id: '4',
@@ -129,6 +149,7 @@ const MOCK_PETS: Pet[] = [
     desparasitaciones: [],
     tratamientos: [],
     eventosReproductivos: [],
+    pesos: [],
   },
 ];
 
