@@ -46,12 +46,12 @@ const getVaccineStatus = (nextDoseDate: Date): { text: string, className: string
     const warningDate = add(today, { days: 30 });
   
     if (isBefore(new Date(nextDoseDate), today)) {
-      return { text: 'Vencida', className: 'text-destructive' };
+      return { text: 'Vencida', className: 'bg-destructive text-destructive-foreground' };
     }
     if (isBefore(new Date(nextDoseDate), warningDate)) {
-      return { text: 'Próxima a Vencer', className: 'text-yellow-500' };
+      return { text: 'Próxima a Vencer', className: 'bg-yellow-500 text-yellow-900' };
     }
-    return { text: 'Vigente', className: 'text-green-500' };
+    return { text: 'Vigente', className: 'bg-green-500 text-green-900' };
 };
   
 
@@ -88,85 +88,58 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
             </CardHeader>
             <CardContent>
               {pet.vacunas.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Vacuna</TableHead>
-                      <TableHead>Estado</TableHead>
-                      <TableHead>Próxima Dosis</TableHead>
-                      <TableHead className="text-center">Etiqueta</TableHead>
-                      <TableHead className="w-[50px]"></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {pet.vacunas.map((v: Vaccine) => {
-                       const status = getVaccineStatus(v.fechaProximaDosis);
-                      return (
-                      <Collapsible key={v.id} asChild>
-                        <>
-                          <TableRow>
-                            <TableCell className="font-medium">{v.tipoVacuna}</TableCell>
-                            <TableCell>
-                              <div className="flex items-center">
-                                <span className={cn('w-2 h-2 rounded-full mr-2', 
-                                    status.className === 'text-destructive' ? 'bg-destructive' : 
-                                    status.className === 'text-yellow-500' ? 'bg-yellow-500' : 'bg-green-500'
-                                )}></span>
-                                <span className={status.className}>{status.text}</span>
-                              </div>
-                            </TableCell>
-                            <TableCell>{formatDate(v.fechaProximaDosis)}</TableCell>
-                            <TableCell className="text-center">
-                              {v.etiquetaUrl ? (
-                                <Link href={v.etiquetaUrl} target="_blank" rel="noopener noreferrer">
-                                  <Button variant="outline" size="icon">
-                                    <ImageIcon className="h-4 w-4" />
-                                  </Button>
-                                </Link>
-                              ) : <span className="text-xs text-muted-foreground">N/A</span>}
-                            </TableCell>
-                            <TableCell>
-                              <CollapsibleTrigger asChild>
-                                <Button variant="ghost" size="sm">
-                                  <ChevronDown className="h-4 w-4" />
-                                  <span className="sr-only">Toggle details</span>
+                <div className="space-y-4">
+                  {pet.vacunas.map((vaccine: Vaccine) => {
+                    const status = getVaccineStatus(vaccine.fechaProximaDosis);
+                    return (
+                      <div key={vaccine.id} className="border rounded-lg p-4 transition-all hover:shadow-md">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <h3 className="font-bold text-lg">{vaccine.tipoVacuna}</h3>
+                                <Badge variant="secondary" className={cn("mt-1 font-semibold", status.className)}>
+                                  {status.text}
+                                </Badge>
+                            </div>
+                           {vaccine.etiquetaUrl ? (
+                              <Link href={vaccine.etiquetaUrl} target="_blank" rel="noopener noreferrer">
+                                <Button variant="outline" size="sm">
+                                  <ImageIcon className="mr-2 h-4 w-4" /> Ver Etiqueta
                                 </Button>
-                              </CollapsibleTrigger>
-                            </TableCell>
-                          </TableRow>
-                          <CollapsibleContent asChild>
-                            <tr className="bg-muted/50">
-                                <td colSpan={5} className="p-0">
-                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2 p-4 text-sm">
-                                        <div>
-                                            <p className="font-semibold">Dosis</p>
-                                            <p className="text-muted-foreground">{v.dosisAplicadas && v.dosisTotales ? `${v.dosisAplicadas} de ${v.dosisTotales}` : 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <p className="font-semibold">Fecha Aplicación</p>
-                                            <p className="text-muted-foreground">{formatDate(v.fechaAplicacion)}</p>
-                                        </div>
-                                        <div>
-                                            <p className="font-semibold">Lote</p>
-                                            <p className="text-muted-foreground">{v.lote || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <p className="font-semibold">Veterinario</p>
-                                            <p className="text-muted-foreground">{v.veterinario}</p>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                          </CollapsibleContent>
-                        </>
-                      </Collapsible>
-                    )})}
-                  </TableBody>
-                </Table>
+                              </Link>
+                            ) : <div className='w-[124px]'></div>}
+                        </div>
+                        <Separator className="my-3" />
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-3 text-sm">
+                            <div>
+                                <p className="font-semibold text-muted-foreground">Próxima Dosis</p>
+                                <p>{formatDate(vaccine.fechaProximaDosis)}</p>
+                            </div>
+                            <div>
+                                <p className="font-semibold text-muted-foreground">Última Aplicación</p>
+                                <p>{formatDate(vaccine.fechaAplicacion)}</p>
+                            </div>
+                            <div>
+                                <p className="font-semibold text-muted-foreground">Dosis</p>
+                                <p>{vaccine.dosisAplicadas && vaccine.dosisTotales ? `${vaccine.dosisAplicadas} de ${vaccine.dosisTotales}` : 'N/A'}</p>
+                            </div>
+                            <div>
+                                <p className="font-semibold text-muted-foreground">Veterinario</p>
+                                <p>{vaccine.veterinario}</p>
+                            </div>
+                            <div>
+                                <p className="font-semibold text-muted-foreground">Lote</p>
+                                <p>{vaccine.lote || 'N/A'}</p>
+                            </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
               ) : renderEmptyState('No se encontraron registros de vacunación.', 'vaccine')}
             </CardContent>
           </Card>
         </TabsContent>
+
 
         {/* Deworming Tab */}
         <TabsContent value="deworming">
