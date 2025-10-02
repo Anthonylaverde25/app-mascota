@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { HeartPulse, Pill, Syringe, Bug, Scale, Image as ImageIcon, CalendarDays } from 'lucide-react';
+import { HeartPulse, Pill, Syringe, Bug, Scale, Image as ImageIcon, CalendarDays, ChevronDown } from 'lucide-react';
 import type { Pet, Vaccine, Deworming, Treatment, ReproductiveEvent, Weight } from '@/lib/data';
 import { formatDate, cn } from '@/lib/utils';
 import {
@@ -24,6 +24,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { add, isBefore } from 'date-fns';
 import Link from 'next/link';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+
 
 import { VaccinationForm } from './vaccination-form';
 import { DewormingForm } from './deworming-form';
@@ -39,18 +41,19 @@ type HealthRecordsTabsProps = {
 
 type DialogState = 'vaccine' | 'deworming' | 'treatment' | 'reproductive' | 'weight' | null;
 
-const getVaccineStatus = (nextDoseDate: Date): { text: string, variant: "default" | "secondary" | "destructive" } => {
-  const today = new Date();
-  const warningDate = add(today, { days: 30 }); // 30-day warning period
-
-  if (isBefore(new Date(nextDoseDate), today)) {
-    return { text: 'Vencida', variant: 'destructive' };
-  }
-  if (isBefore(new Date(nextDoseDate), warningDate)) {
-    return { text: 'Próxima a Vencer', variant: 'secondary' };
-  }
-  return { text: 'Vigente', variant: 'default' };
+const getVaccineStatus = (nextDoseDate: Date): { text: string, className: string } => {
+    const today = new Date();
+    const warningDate = add(today, { days: 30 });
+  
+    if (isBefore(new Date(nextDoseDate), today)) {
+      return { text: 'Vencida', className: 'text-destructive' };
+    }
+    if (isBefore(new Date(nextDoseDate), warningDate)) {
+      return { text: 'Próxima a Vencer', className: 'text-yellow-500' };
+    }
+    return { text: 'Vigente', className: 'text-green-500' };
 };
+  
 
 export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
   const [openDialog, setOpenDialog] = useState<DialogState>(null);
@@ -89,43 +92,74 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Vacuna</TableHead>
-                      <TableHead>Dosis</TableHead>
-                      <TableHead>Fecha</TableHead>
-                      <TableHead>Próxima Dosis</TableHead>
                       <TableHead>Estado</TableHead>
-                      <TableHead>Lote</TableHead>
-                      <TableHead>Etiqueta</TableHead>
-                      <TableHead className="text-right">Veterinario</TableHead>
+                      <TableHead>Próxima Dosis</TableHead>
+                      <TableHead className="text-center">Etiqueta</TableHead>
+                      <TableHead className="w-[50px]"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {pet.vacunas.map((v: Vaccine) => {
                        const status = getVaccineStatus(v.fechaProximaDosis);
                       return (
-                      <TableRow key={v.id}>
-                        <TableCell>{v.tipoVacuna}</TableCell>
-                        <TableCell>
-                          {v.dosisAplicadas && v.dosisTotales 
-                            ? `${v.dosisAplicadas} de ${v.dosisTotales}`
-                            : 'N/A'}
-                        </TableCell>
-                        <TableCell>{formatDate(v.fechaAplicacion)}</TableCell>
-                        <TableCell>{formatDate(v.fechaProximaDosis)}</TableCell>
-                        <TableCell>
-                           <Badge variant={status.variant} className={cn(status.variant === 'secondary' && 'bg-yellow-500 text-black')}>{status.text}</Badge>
-                        </TableCell>
-                        <TableCell>{v.lote || 'N/A'}</TableCell>
-                        <TableCell>
-                          {v.etiquetaUrl ? (
-                            <Link href={v.etiquetaUrl} target="_blank" rel="noopener noreferrer">
-                              <Button variant="outline" size="icon">
-                                <ImageIcon className="h-4 w-4" />
-                              </Button>
-                            </Link>
-                          ) : 'N/A'}
-                        </TableCell>
-                        <TableCell className="text-right">{v.veterinario}</TableCell>
-                      </TableRow>
+                      <Collapsible key={v.id} asChild>
+                        <>
+                          <TableRow>
+                            <TableCell className="font-medium">{v.tipoVacuna}</TableCell>
+                            <TableCell>
+                              <div className="flex items-center">
+                                <span className={cn('w-2 h-2 rounded-full mr-2', 
+                                    status.className === 'text-destructive' ? 'bg-destructive' : 
+                                    status.className === 'text-yellow-500' ? 'bg-yellow-500' : 'bg-green-500'
+                                )}></span>
+                                <span className={status.className}>{status.text}</span>
+                              </div>
+                            </TableCell>
+                            <TableCell>{formatDate(v.fechaProximaDosis)}</TableCell>
+                            <TableCell className="text-center">
+                              {v.etiquetaUrl ? (
+                                <Link href={v.etiquetaUrl} target="_blank" rel="noopener noreferrer">
+                                  <Button variant="outline" size="icon">
+                                    <ImageIcon className="h-4 w-4" />
+                                  </Button>
+                                </Link>
+                              ) : <span className="text-xs text-muted-foreground">N/A</span>}
+                            </TableCell>
+                            <TableCell>
+                              <CollapsibleTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                  <ChevronDown className="h-4 w-4" />
+                                  <span className="sr-only">Toggle details</span>
+                                </Button>
+                              </CollapsibleTrigger>
+                            </TableCell>
+                          </TableRow>
+                          <CollapsibleContent asChild>
+                            <tr className="bg-muted/50">
+                                <td colSpan={5} className="p-0">
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2 p-4 text-sm">
+                                        <div>
+                                            <p className="font-semibold">Dosis</p>
+                                            <p className="text-muted-foreground">{v.dosisAplicadas && v.dosisTotales ? `${v.dosisAplicadas} de ${v.dosisTotales}` : 'N/A'}</p>
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold">Fecha Aplicación</p>
+                                            <p className="text-muted-foreground">{formatDate(v.fechaAplicacion)}</p>
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold">Lote</p>
+                                            <p className="text-muted-foreground">{v.lote || 'N/A'}</p>
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold">Veterinario</p>
+                                            <p className="text-muted-foreground">{v.veterinario}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                          </CollapsibleContent>
+                        </>
+                      </Collapsible>
                     )})}
                   </TableBody>
                 </Table>
@@ -303,3 +337,5 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
     </Dialog>
   );
 }
+
+    
