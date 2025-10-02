@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { Bell, Bug, HeartPulse, Pill, Syringe } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
