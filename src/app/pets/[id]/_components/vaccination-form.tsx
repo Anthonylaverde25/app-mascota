@@ -11,6 +11,8 @@ import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { useToast } from '@/hooks/use-toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { VACCINE_TYPES, type Pet } from '@/lib/data';
 
 const formSchema = z.object({
   tipoVacuna: z.string().min(2, 'Vaccine type is required.'),
@@ -21,10 +23,11 @@ const formSchema = z.object({
 });
 
 type VaccinationFormProps = {
+  petSpecies: Pet['especie'];
   closeDialog: () => void;
 };
 
-export function VaccinationForm({ closeDialog }: VaccinationFormProps) {
+export function VaccinationForm({ petSpecies, closeDialog }: VaccinationFormProps) {
   const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -40,6 +43,8 @@ export function VaccinationForm({ closeDialog }: VaccinationFormProps) {
     closeDialog();
   }
 
+  const availableVaccines = VACCINE_TYPES[petSpecies as keyof typeof VACCINE_TYPES] || [];
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -49,9 +54,21 @@ export function VaccinationForm({ closeDialog }: VaccinationFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Vaccine Type</FormLabel>
-              <FormControl>
-                <Input placeholder="e.g., Rabies" {...field} />
-              </FormControl>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a vaccine" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {availableVaccines.map((vaccine) => (
+                    <SelectItem key={vaccine.name} value={vaccine.name}>
+                      {vaccine.name} {vaccine.mandatory && '(Obligatoria)'}
+                    </SelectItem>
+                  ))}
+                   <SelectItem value="Otra">Otra</SelectItem>
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

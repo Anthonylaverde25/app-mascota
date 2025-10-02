@@ -43,7 +43,7 @@ export interface Weight {
 export interface Pet {
   id: string;
   nombre: string;
-  especie: string;
+  especie: 'Perro' | 'Gato' | 'Ave' | string;
   raza: string;
   fechaNacimiento: Date;
   sexo: 'Macho' | 'Hembra';
@@ -64,6 +64,22 @@ export interface CalendarEvent {
   description: string;
 }
 
+export const VACCINE_TYPES = {
+  Perro: [
+    { name: 'Rabia', mandatory: true },
+    { name: 'Moquillo/Distemper', mandatory: true },
+    { name: 'Parvovirus', mandatory: true },
+    { name: 'Hepatitis Infecciosa', mandatory: true },
+    { name: 'Leptospirosis', mandatory: true },
+    { name: 'Tos de las perreras', mandatory: false },
+  ],
+  Gato: [
+    { name: 'Rabia', mandatory: true },
+    { name: 'Triple Felina (Panleucopenia, Rinotraqueitis, Calicivirus)', mandatory: true },
+    { name: 'Leucemia Felina', mandatory: false },
+  ]
+};
+
 // Mock Data
 const MOCK_PETS: Pet[] = [
   {
@@ -76,8 +92,8 @@ const MOCK_PETS: Pet[] = [
     color: 'Dorado',
     fotoPerfil: PlaceHolderImages.find(img => img.id === 'pet-1')!,
     vacunas: [
-      { id: 'v1', tipoVacuna: 'Rabia', fechaAplicacion: new Date('2021-06-01'), fechaProximaDosis: new Date('2024-06-01'), veterinario: 'Dr. Smith' },
-      { id: 'v2', tipoVacuna: 'Moquillo', fechaAplicacion: new Date('2021-06-01'), fechaProximaDosis: new Date('2024-06-01'), veterinario: 'Dr. Smith' },
+      { id: 'v1', tipoVacuna: 'Rabia', fechaAplicacion: new Date('2023-06-01'), fechaProximaDosis: new Date('2024-06-01'), veterinario: 'Dr. Smith' },
+      { id: 'v2', tipoVacuna: 'Moquillo/Distemper', fechaAplicacion: new Date('2023-06-01'), fechaProximaDosis: new Date('2024-06-01'), veterinario: 'Dr. Smith' },
     ],
     desparasitaciones: [
       { id: 'd1', tipo: 'interna', fechaAplicacion: new Date('2023-03-10'), fechaProximaDosis: new Date('2024-06-10') },
@@ -104,7 +120,7 @@ const MOCK_PETS: Pet[] = [
     color: 'Gris',
     fotoPerfil: PlaceHolderImages.find(img => img.id === 'pet-2')!,
     vacunas: [
-      { id: 'v3', tipoVacuna: 'Triple Felina', fechaAplicacion: new Date('2022-03-15'), fechaProximaDosis: new Date('2025-03-15'), veterinario: 'Dr. Smith' },
+      { id: 'v3', tipoVacuna: 'Triple Felina (Panleucopenia, Rinotraqueitis, Calicivirus)', fechaAplicacion: new Date('2024-03-15'), fechaProximaDosis: new Date('2025-03-15'), veterinario: 'Dr. Smith' },
     ],
     desparasitaciones: [
         { id: 'd2', tipo: 'externa', fechaAplicacion: new Date('2024-05-01'), fechaProximaDosis: new Date('2024-08-01') },

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { HeartPulse, Pill, Syringe, Bug, Scale } from 'lucide-react';
 import type { Pet, Vaccine, Deworming, Treatment, ReproductiveEvent, Weight } from '@/lib/data';
-import { formatDate } from '@/lib/utils';
+import { formatDate, cn } from '@/lib/utils';
 import {
   Table,
   TableBody,
@@ -21,6 +21,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
+import { add, isBefore, isAfter, differenceInDays } from 'date-fns';
 
 import { VaccinationForm } from './vaccination-form';
 import { DewormingForm } from './deworming-form';
@@ -34,6 +36,19 @@ type HealthRecordsTabsProps = {
 };
 
 type DialogState = 'vaccine' | 'deworming' | 'treatment' | 'reproductive' | 'weight' | null;
+
+const getVaccineStatus = (nextDoseDate: Date): { text: string, variant: "default" | "secondary" | "destructive" } => {
+  const today = new Date();
+  const warningDate = add(today, { days: 30 }); // 30-day warning period
+
+  if (isBefore(nextDoseDate, today)) {
+    return { text: 'Vencida', variant: 'destructive' };
+  }
+  if (isBefore(nextDoseDate, warningDate)) {
+    return { text: 'Próxima a Vencer', variant: 'secondary' };
+  }
+  return { text: 'Vigente', variant: 'default' };
+};
 
 export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
   const [openDialog, setOpenDialog] = useState<DialogState>(null);
@@ -73,18 +88,24 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
                       <TableHead>Vaccine</TableHead>
                       <TableHead>Date</TableHead>
                       <TableHead>Next Dose</TableHead>
-                      <TableHead>Veterinarian</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Veterinarian</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {pet.vacunas.map((v: Vaccine) => (
+                    {pet.vacunas.map((v: Vaccine) => {
+                       const status = getVaccineStatus(v.fechaProximaDosis);
+                      return (
                       <TableRow key={v.id}>
                         <TableCell>{v.tipoVacuna}</TableCell>
                         <TableCell>{formatDate(v.fechaAplicacion)}</TableCell>
                         <TableCell>{formatDate(v.fechaProximaDosis)}</TableCell>
-                        <TableCell>{v.veterinario}</TableCell>
+                        <TableCell>
+                           <Badge variant={status.variant} className={cn(status.variant === 'secondary' && 'bg-yellow-500 text-black')}>{status.text}</Badge>
+                        </TableCell>
+                        <TableCell className="text-right">{v.veterinario}</TableCell>
                       </TableRow>
-                    ))}
+                    )})}
                   </TableBody>
                 </Table>
               ) : renderEmptyState('No vaccination records found.', 'vaccine')}
@@ -237,7 +258,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
             {openDialog === 'weight' && 'Add New Weight Record'}
           </DialogTitle>
         </DialogHeader>
-        {openDialog === 'vaccine' && <VaccinationForm closeDialog={() => setOpenDialog(null)} />}
+        {openDialog === 'vaccine' && <VaccinationForm petSpecies={pet.especie} closeDialog={() => setOpenDialog(null)} />}
         {openDialog === 'deworming' && <DewormingForm closeDialog={() => setOpenDialog(null)} />}
         {openDialog === 'treatment' && <TreatmentForm closeDialog={() => setOpenDialog(null)} />}
         {openDialog === 'reproductive' && <ReproductiveEventForm closeDialog={() => setOpenDialog(null)} />}
