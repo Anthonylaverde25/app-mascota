@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { HeartPulse, Pill, Syringe, Bug, Scale, Image as ImageIcon, CalendarDays, ChevronDown, MoreHorizontal, Eye, Pencil, Trash2 } from 'lucide-react';
+import { HeartPulse, Pill, Syringe, Bug, Scale, Image as ImageIcon, CalendarDays, MoreHorizontal, Eye, Pencil, Trash2 } from 'lucide-react';
 import type { Pet, Vaccine, Deworming, Treatment, ReproductiveEvent, Weight } from '@/lib/data';
 import { formatDate, cn } from '@/lib/utils';
 import {
@@ -153,7 +153,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
                             </div>
                             <div>
                                 <p className="font-semibold text-muted-foreground">Lote</p>
-                                <p>{vaccine.lote || 'N/A'}</p>
+                                {vaccine.lote ? <Badge variant="secondary">{vaccine.lote}</Badge> : <p>N/A</p>}
                             </div>
                         </div>
                       </div>
