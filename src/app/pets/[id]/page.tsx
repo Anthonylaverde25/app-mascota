@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { differenceInYears, differenceInMonths, format } from 'date-fns';
-import { Cake, Palette, PawPrint, VenetianMask } from 'lucide-react';
+import { Cake, Palette, PawPrint, VenetianMask, Cat, Dog } from 'lucide-react';
 
 import { getPetById } from '@/lib/data';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,7 +28,7 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
   }
 
   const petDetails = [
-    { icon: PawPrint, label: 'Species', value: pet.especie },
+    { icon: pet.especie === 'Perro' ? Dog : Cat, label: 'Species', value: pet.especie },
     { icon: VenetianMask, label: 'Breed', value: pet.raza },
     { icon: Cake, label: 'Age', value: getAge(pet.fechaNacimiento) },
     { icon: Palette, label: 'Color', value: pet.color },
@@ -38,7 +38,7 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1">
-          <Card className="sticky top-20">
+          <Card className="sticky top-20 shadow-lg">
             <CardHeader className="relative h-64 w-full p-0">
               <Image
                 src={pet.fotoPerfil.imageUrl}
@@ -54,7 +54,7 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
                   <CardTitle className="text-3xl font-headline mb-1">{pet.nombre}</CardTitle>
                   <p className="text-sm text-muted-foreground">Born on {format(pet.fechaNacimiento, "MMMM d, yyyy")}</p>
                 </div>
-                <Badge variant={pet.sexo === 'Macho' ? 'default' : 'destructive'} className='capitalize bg-accent text-accent-foreground'>{pet.sexo}</Badge>
+                <Badge variant={pet.sexo === 'Macho' ? 'default' : 'secondary'} className='capitalize'>{pet.sexo}</Badge>
               </div>
               <Separator className="my-4" />
               <div className="space-y-3">

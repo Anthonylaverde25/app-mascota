@@ -35,7 +35,7 @@ export default function CalendarPage() {
                     onSelect={setSelectedDate}
                     modifiers={{ event: eventDays }}
                     modifiersClassNames={{
-                        event: 'bg-accent/30 text-accent-foreground rounded-full',
+                        event: 'bg-primary/20 text-primary-foreground rounded-full',
                     }}
                     className="p-0"
                 />

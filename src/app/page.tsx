@@ -29,7 +29,7 @@ export default function Home() {
       {pets.length === 0 ? (
         <div className="text-center py-20 border-2 border-dashed rounded-lg">
           <p className="text-muted-foreground">You haven't added any pets yet.</p>
-          <Button variant="link" className="text-accent-foreground">Add your first pet</Button>
+          <Button variant="link" className="text-primary">Add your first pet</Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
