@@ -1,13 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { getPets } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -34,27 +27,24 @@ export default function Home() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {pets.map((pet) => (
-            <Link key={pet.id} href={`/pets/${pet.id}`} className="group">
-              <Card className="overflow-hidden h-full flex flex-col transition-all duration-300 ease-in-out group-hover:shadow-xl group-hover:-translate-y-1">
-                <CardHeader className="p-0">
-                  <div className="relative aspect-square w-full">
-                    <Image
-                      src={pet.fotoPerfil.imageUrl}
-                      alt={pet.fotoPerfil.description}
-                      data-ai-hint={pet.fotoPerfil.imageHint}
-                      fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
+            <Link key={pet.id} href={`/pets/${pet.id}`} className="group relative block">
+              <div className="relative aspect-square w-full overflow-hidden rounded-lg">
+                <Image
+                  src={pet.fotoPerfil.imageUrl}
+                  alt={pet.fotoPerfil.description}
+                  data-ai-hint={pet.fotoPerfil.imageHint}
+                  fill
+                  className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                  <h3 className="text-xl font-headline font-bold">{pet.nombre}</h3>
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out mt-1">
+                      <p className="text-sm text-gray-200">{pet.raza}</p>
+                      <Badge variant="secondary" className="mt-2 text-xs">{pet.especie}</Badge>
                   </div>
-                </CardHeader>
-                <CardContent className="p-4 flex-grow">
-                  <CardTitle className="text-xl font-headline mb-2">{pet.nombre}</CardTitle>
-                  <p className="text-muted-foreground">{pet.raza}</p>
-                </CardContent>
-                <CardFooter className="p-4 pt-0">
-                  <Badge variant="secondary">{pet.especie}</Badge>
-                </CardFooter>
-              </Card>
+                </div>
+              </div>
             </Link>
           ))}
         </div>
