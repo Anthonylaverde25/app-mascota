@@ -20,6 +20,7 @@ const formSchema = z.object({
   fechaProximaDosis: z.date({ required_error: 'La fecha de la próxima dosis es requerida.' }),
   veterinario: z.string().min(2, 'El nombre del veterinario es requerido.'),
   lote: z.string().optional(),
+  etiquetaUrl: z.string().url('Debe ser una URL válida.').optional().or(z.literal('')),
 });
 
 type VaccinationFormProps = {
@@ -31,7 +32,7 @@ export function VaccinationForm({ petSpecies, closeDialog }: VaccinationFormProp
   const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { tipoVacuna: '', veterinario: '' },
+    defaultValues: { tipoVacuna: '', veterinario: '', lote: '', etiquetaUrl: '' },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -148,6 +149,19 @@ export function VaccinationForm({ petSpecies, closeDialog }: VaccinationFormProp
               <FormLabel>Número de Lote (Opcional)</FormLabel>
               <FormControl>
                 <Input placeholder="ABC12345" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="etiquetaUrl"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>URL de la Etiqueta (Opcional)</FormLabel>
+              <FormControl>
+                <Input placeholder="https://ejemplo.com/imagen.png" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -8,6 +8,7 @@ export interface Vaccine {
   fechaProximaDosis: Date;
   veterinario: string;
   lote?: string;
+  etiquetaUrl?: string;
 }
 
 export interface Deworming {
@@ -92,8 +93,8 @@ const MOCK_PETS: Pet[] = [
     color: 'Dorado',
     fotoPerfil: PlaceHolderImages.find(img => img.id === 'pet-1')!,
     vacunas: [
-      { id: 'v1', tipoVacuna: 'Rabia', fechaAplicacion: new Date('2023-06-01'), fechaProximaDosis: new Date('2024-06-01'), veterinario: 'Dr. Smith' },
-      { id: 'v2', tipoVacuna: 'Moquillo/Distemper', fechaAplicacion: new Date('2023-06-01'), fechaProximaDosis: new Date('2024-06-01'), veterinario: 'Dr. Smith' },
+      { id: 'v1', tipoVacuna: 'Rabia', fechaAplicacion: new Date('2023-06-01'), fechaProximaDosis: new Date('2024-06-01'), veterinario: 'Dr. Smith', lote: 'RAB-123' },
+      { id: 'v2', tipoVacuna: 'Moquillo/Distemper', fechaAplicacion: new Date('2023-06-01'), fechaProximaDosis: new Date('2024-06-01'), veterinario: 'Dr. Smith', lote: 'DIS-456' },
     ],
     desparasitaciones: [
       { id: 'd1', tipo: 'interna', fechaAplicacion: new Date('2023-03-10'), fechaProximaDosis: new Date('2024-06-10') },
@@ -120,7 +121,7 @@ const MOCK_PETS: Pet[] = [
     color: 'Gris',
     fotoPerfil: PlaceHolderImages.find(img => img.id === 'pet-2')!,
     vacunas: [
-      { id: 'v3', tipoVacuna: 'Triple Felina (Panleucopenia, Rinotraqueitis, Calicivirus)', fechaAplicacion: new Date('2024-03-15'), fechaProximaDosis: new Date('2025-03-15'), veterinario: 'Dr. Smith' },
+      { id: 'v3', tipoVacuna: 'Triple Felina (Panleucopenia, Rinotraqueitis, Calicivirus)', fechaAplicacion: new Date('2024-03-15'), fechaProximaDosis: new Date('2025-03-15'), veterinario: 'Dr. Smith', lote: 'FEL-789' },
     ],
     desparasitaciones: [
         { id: 'd2', tipo: 'externa', fechaAplicacion: new Date('2024-05-01'), fechaProximaDosis: new Date('2024-08-01') },
@@ -145,7 +146,7 @@ const MOCK_PETS: Pet[] = [
     color: 'Negro',
     fotoPerfil: PlaceHolderImages.find(img => img.id === 'pet-3')!,
     vacunas: [
-      { id: 'v4', tipoVacuna: 'Parvovirus', fechaAplicacion: new Date('2023-09-15'), fechaProximaDosis: new Date('2024-09-15'), veterinario: 'Dr. Jones' },
+      { id: 'v4', tipoVacuna: 'Parvovirus', fechaAplicacion: new Date('2023-09-15'), fechaProximaDosis: new Date('2024-09-15'), veterinario: 'Dr. Jones', lote: 'PAR-101' },
     ],
     desparasitaciones: [],
     tratamientos: [],

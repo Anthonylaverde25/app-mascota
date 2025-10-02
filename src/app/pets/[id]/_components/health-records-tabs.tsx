@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { HeartPulse, Pill, Syringe, Bug, Scale } from 'lucide-react';
+import { HeartPulse, Pill, Syringe, Bug, Scale, Image as ImageIcon } from 'lucide-react';
 import type { Pet, Vaccine, Deworming, Treatment, ReproductiveEvent, Weight } from '@/lib/data';
 import { formatDate, cn } from '@/lib/utils';
 import {
@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { add, isBefore, isAfter, differenceInDays } from 'date-fns';
+import Link from 'next/link';
 
 import { VaccinationForm } from './vaccination-form';
 import { DewormingForm } from './deworming-form';
@@ -89,6 +90,8 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
                       <TableHead>Fecha</TableHead>
                       <TableHead>Próxima Dosis</TableHead>
                       <TableHead>Estado</TableHead>
+                      <TableHead>Lote</TableHead>
+                      <TableHead>Etiqueta</TableHead>
                       <TableHead className="text-right">Veterinario</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -102,6 +105,16 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
                         <TableCell>{formatDate(v.fechaProximaDosis)}</TableCell>
                         <TableCell>
                            <Badge variant={status.variant} className={cn(status.variant === 'secondary' && 'bg-yellow-500 text-black')}>{status.text}</Badge>
+                        </TableCell>
+                        <TableCell>{v.lote || 'N/A'}</TableCell>
+                        <TableCell>
+                          {v.etiquetaUrl ? (
+                            <Link href={v.etiquetaUrl} target="_blank" rel="noopener noreferrer">
+                              <Button variant="outline" size="icon">
+                                <ImageIcon className="h-4 w-4" />
+                              </Button>
+                            </Link>
+                          ) : 'N/A'}
                         </TableCell>
                         <TableCell className="text-right">{v.veterinario}</TableCell>
                       </TableRow>
