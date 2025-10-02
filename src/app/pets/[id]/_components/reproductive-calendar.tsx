@@ -4,12 +4,7 @@ import * as React from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import type { ReproductiveEvent } from '@/lib/data';
 import { es } from 'date-fns/locale';
-import { DayPicker, DayProps } from 'react-day-picker';
 import { cn } from '@/lib/utils';
-
-type ReproductiveCalendarProps = {
-  events: ReproductiveEvent[];
-};
 
 const eventColors: Record<ReproductiveEvent['tipoEvento'], string> = {
   Celo: 'bg-pink-500',
@@ -23,38 +18,8 @@ const eventLabels: Record<ReproductiveEvent['tipoEvento'], string> = {
     Monta: 'Monta',
 };
 
-export function ReproductiveCalendar({ events }: ReproductiveCalendarProps) {
+export function ReproductiveCalendar() {
   const [currentMonth, setCurrentMonth] = React.useState<Date>(new Date());
-
-  const eventsByDate = React.useMemo(() => {
-    const map = new Map<string, ReproductiveEvent[]>();
-    events.forEach((event) => {
-      const dateKey = event.fecha.toISOString().split('T')[0];
-      if (!map.has(dateKey)) {
-        map.set(dateKey, []);
-      }
-      map.get(dateKey)?.push(event);
-    });
-    return map;
-  }, [events]);
-  
-  const DayWithEvents = (props: DayProps) => {
-    const dateKey = props.date.toISOString().split('T')[0];
-    const dayEvents = eventsByDate.get(dateKey);
-
-    return (
-        <div className="relative">
-          <DayPicker.Day {...props} />
-          {dayEvents && (
-            <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex space-x-0.5">
-                {dayEvents.slice(0, 3).map((event) => (
-                <div key={event.id} className={cn('h-1.5 w-1.5 rounded-full', eventColors[event.tipoEvento])} />
-                ))}
-            </div>
-          )}
-        </div>
-      );
-  }
   
   return (
     <div className="flex flex-col items-center">
@@ -63,8 +28,7 @@ export function ReproductiveCalendar({ events }: ReproductiveCalendarProps) {
         month={currentMonth}
         onMonthChange={setCurrentMonth}
         locale={es}
-        className="p-0"
-        components={{ Day: DayWithEvents }}
+        className="p-0 rounded-md border"
       />
       <div className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm">
         {Object.entries(eventLabels).map(([type, label]) => (

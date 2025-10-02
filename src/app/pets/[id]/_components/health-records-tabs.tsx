@@ -255,7 +255,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
                           <TableCell>{w.peso} kg</TableCell>
                         </TableRow>
                       ))}
-                    </TableBody>
+                    </Body>
                   </Table>
                 </>
               ) : renderEmptyState('No se encontraron registros de peso.', 'weight')}
@@ -271,7 +271,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
               <CardTitle className="font-headline">Calendario Reproductivo</CardTitle>
             </CardHeader>
             <CardContent className="flex justify-center">
-              <ReproductiveCalendar events={pet.eventosReproductivos} />
+              <ReproductiveCalendar />
             </CardContent>
           </Card>
         </TabsContent>
