@@ -90,7 +90,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
                   {pet.vacunas.map((vaccine: Vaccine) => {
                     const status = getVaccineStatus(vaccine.fechaProximaDosis);
                     return (
-                      <div key={vaccine.id} className="border rounded-lg p-4 transition-all hover:shadow-md">
+                      <div key={vaccine.id} className="border rounded-lg p-4 transition-all">
                         <div className="flex justify-between items-start">
                             <div>
                                 <h3 className="font-bold text-lg">{vaccine.tipoVacuna}</h3>
@@ -308,5 +308,3 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
     </Dialog>
   );
 }
-
-    
