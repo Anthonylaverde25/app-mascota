@@ -270,7 +270,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
             <CardHeader>
               <CardTitle className="font-headline">Calendario Reproductivo</CardTitle>
             </CardHeader>
-            <CardContent className="flex justify-center">
+            <CardContent>
               <ReproductiveCalendar />
             </CardContent>
           </Card>
