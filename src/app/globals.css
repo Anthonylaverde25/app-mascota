@@ -31,19 +31,19 @@
     --radius: 0.5rem;
   }
   .dark {
-    --background: 24 10% 10%;
+    --background: 24 10% 4%;
     --foreground: 0 0% 98%;
     --card: 24 10% 10%;
     --card-foreground: 0 0% 98%;
-    --popover: 24 10% 10%;
+    --popover: 24 10% 4%;
     --popover-foreground: 0 0% 98%;
     --primary: 6 78% 57%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 24 10% 20%;
+    --secondary: 24 10% 15%;
     --secondary-foreground: 0 0% 98%;
     --muted: 24 10% 20%;
     --muted-foreground: 24 5% 63%;
-    --accent: 24 10% 20%;
+    --accent: 24 10% 15%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
