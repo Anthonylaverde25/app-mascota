@@ -129,7 +129,7 @@ export default function NotificationsPage() {
                 <CardTitle className="font-headline">Ajustes de Notificaciones</CardTitle>
                 <CardDescription>
                     Gestiona qué recordatorios recibes.
-                </Description>
+                </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                 {reminderSettings.map((setting, index) => (
