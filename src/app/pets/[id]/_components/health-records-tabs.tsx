@@ -271,7 +271,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
               <CardTitle className="font-headline">Calendario Reproductivo</CardTitle>
             </CardHeader>
             <CardContent>
-              <ReproductiveCalendar />
+              <ReproductiveCalendar events={pet.eventosReproductivos} species={pet.especie} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -297,3 +297,5 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
     </Dialog>
   );
 }
+
+    

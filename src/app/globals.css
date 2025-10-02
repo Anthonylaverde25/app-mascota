@@ -66,3 +66,17 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+    .bg-event-heat {
+        background-color: hsl(340 84% 60% / 0.8);
+    }
+    .bg-event-fertility {
+        background-color: hsl(340 84% 60% / 0.3);
+    }
+    .bg-event-mating {
+        background-color: hsl(142 76% 36% / 0.8);
+    }
+}
+
+    

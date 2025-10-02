@@ -90,7 +90,7 @@ const MOCK_PETS: Pet[] = [
       { id: 'v2', tipoVacuna: 'Moquillo/Distemper', fechaAplicacion: new Date('2023-06-01T00:00:00Z'), fechaProximaDosis: new Date('2024-06-01T00:00:00Z'), veterinario: 'Dr. Smith', lote: 'DIS-456' },
     ],
     desparasitaciones: [
-      { id: 'd1', tipo: 'interna', fechaAplicacion: new Date('2023-03-10T00:00:00Z'), fechaProximaDosis: new Date('2024-06-10T00:00:00Z') },
+      { id: 'd1', tipo: 'interna', fechaAplicacion: new Date('2024-03-10T00:00:00Z'), fechaProximaDosis: new Date('2024-06-10T00:00:00Z') },
     ],
     tratamientos: [
        { id: 't1', nombreMedicamento: 'Apoquel', dosificacion: '16mg una vez al día', duracion: '30 días', fechaInicio: new Date('2023-08-01T00:00:00Z') },
@@ -122,7 +122,8 @@ const MOCK_PETS: Pet[] = [
     tratamientos: [],
     eventosReproductivos: [
         { id: 'er1', tipoEvento: 'Celo', fecha: new Date('2023-09-05T00:00:00Z'), observaciones: 'Primer celo' },
-        { id: 'er2', tipoEvento: 'Celo', fecha: new Date('2024-03-20T00:00:00Z'), observaciones: 'Celo de primavera' }
+        { id: 'er2', tipoEvento: 'Celo', fecha: new Date('2024-03-20T00:00:00Z'), observaciones: 'Celo de primavera' },
+        { id: 'er3', tipoEvento: 'Monta', fecha: new Date('2024-04-01T00:00:00Z'), observaciones: 'Monta exitosa' }
     ],
     pesos: [
       { id: 'w6', fecha: new Date('2022-04-01T00:00:00Z'), peso: 3 },
@@ -187,3 +188,5 @@ export function getPets(): Pet[] {
 export function getPetById(id: string): Pet | undefined {
   return MOCK_PETS.find(pet => pet.id === id);
 }
+
+    
