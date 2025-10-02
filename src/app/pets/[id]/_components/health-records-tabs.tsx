@@ -24,9 +24,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { add, isBefore } from 'date-fns';
 import Link from 'next/link';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-
-
+import { Separator } from '@/components/ui/separator';
 import { VaccinationForm } from './vaccination-form';
 import { DewormingForm } from './deworming-form';
 import { TreatmentForm } from './treatment-form';
