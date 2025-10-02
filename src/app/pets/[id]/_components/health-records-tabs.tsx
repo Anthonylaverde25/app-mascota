@@ -43,10 +43,10 @@ const getVaccineStatus = (nextDoseDate: Date): { text: string, variant: "default
   const today = new Date();
   const warningDate = add(today, { days: 30 }); // 30-day warning period
 
-  if (isBefore(nextDoseDate, today)) {
+  if (isBefore(new Date(nextDoseDate), today)) {
     return { text: 'Vencida', variant: 'destructive' };
   }
-  if (isBefore(nextDoseDate, warningDate)) {
+  if (isBefore(new Date(nextDoseDate), warningDate)) {
     return { text: 'Próxima a Vencer', variant: 'secondary' };
   }
   return { text: 'Vigente', variant: 'default' };
@@ -249,13 +249,13 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {pet.pesos.sort((a, b) => b.fecha.getTime() - a.fecha.getTime()).map((w: Weight) => (
+                      {pet.pesos.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()).map((w: Weight) => (
                         <TableRow key={w.id}>
                           <TableCell>{formatDate(w.fecha)}</TableCell>
                           <TableCell>{w.peso} kg</TableCell>
                         </TableRow>
                       ))}
-                    </Body>
+                    </TableBody>
                   </Table>
                 </>
               ) : renderEmptyState('No se encontraron registros de peso.', 'weight')}
