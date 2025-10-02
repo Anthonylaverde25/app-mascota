@@ -1,8 +1,14 @@
+'use client';
+
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useUser } from '@/firebase';
 import { Bell, Bug, HeartPulse, Pill, Syringe } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const mockNotifications = [
   {
@@ -36,6 +42,56 @@ const reminderSettings = [
 ]
 
 export default function NotificationsPage() {
+  const { user, isUserLoading } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, isUserLoading, router]);
+
+  if (isUserLoading || !user) {
+    return (
+        <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <Skeleton className="h-10 w-3/4 mb-8" />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                <Card className="lg:col-span-2">
+                    <CardHeader>
+                        <Skeleton className="h-8 w-1/2" />
+                        <Skeleton className="h-4 w-3/4" />
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {[...Array(3)].map((_, i) => (
+                            <div key={i} className="flex items-start space-x-4 p-4 rounded-lg border">
+                                <Skeleton className="h-10 w-10 rounded-full" />
+                                <div className="flex-1 space-y-2">
+                                    <Skeleton className="h-4 w-full" />
+                                    <Skeleton className="h-4 w-1/4" />
+                                </div>
+                            </div>
+                        ))}
+                    </CardContent>
+                </Card>
+                <Card className="lg:col-span-1 sticky top-20">
+                    <CardHeader>
+                        <Skeleton className="h-8 w-1/2" />
+                        <Skeleton className="h-4 w-3/4" />
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {[...Array(4)].map((_, i) => (
+                            <div key={i} className="flex items-center justify-between">
+                                <Skeleton className="h-6 w-3/4" />
+                                <Skeleton className="h-6 w-12" />
+                            </div>
+                        ))}
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
+  }
+
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <h1 className="text-3xl font-headline font-bold mb-8">Recordatorios y Notificaciones</h1>
@@ -73,7 +129,7 @@ export default function NotificationsPage() {
                 <CardTitle className="font-headline">Ajustes de Notificaciones</CardTitle>
                 <CardDescription>
                     Gestiona qué recordatorios recibes.
-                </CardDescription>
+                </Description>
             </CardHeader>
             <CardContent className="space-y-4">
                 {reminderSettings.map((setting, index) => (

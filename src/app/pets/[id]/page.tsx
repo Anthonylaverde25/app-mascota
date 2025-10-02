@@ -1,7 +1,10 @@
+'use client';
 
 import * as React from 'react';
 import Image from 'next/image';
-import { notFound } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useUser } from '@/firebase';
 import { differenceInYears, differenceInMonths, format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Cake, Palette, VenetianMask, Cat, Dog } from 'lucide-react';
@@ -11,6 +14,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import HealthRecordsTabs from './_components/health-records-tabs';
 import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 
 function getAge(birthDate: Date) {
   const today = new Date();
@@ -24,10 +28,46 @@ function getAge(birthDate: Date) {
 }
 
 export default function PetDetailPage({ params }: { params: { id: string } }) {
+  const { user, isUserLoading } = useUser();
+  const router = useRouter();
   const pet = getPetById(params.id);
+
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, isUserLoading, router]);
 
   if (!pet) {
     notFound();
+  }
+
+  if (isUserLoading || !user) {
+    return (
+        <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-1">
+                    <Card className="sticky top-20">
+                        <Skeleton className="h-64 w-full rounded-t-lg" />
+                        <CardContent className="p-6 space-y-4">
+                            <Skeleton className="h-6 w-3/4" />
+                            <Skeleton className="h-4 w-1/2" />
+                            <Separator />
+                            <Skeleton className="h-6 w-1/3" />
+                            <div className="space-y-3">
+                                <Skeleton className="h-5 w-full" />
+                                <Skeleton className="h-5 w-full" />
+                                <Skeleton className="h-5 w-full" />
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+                <div className="lg:col-span-2">
+                    <Skeleton className="h-[500px] w-full" />
+                </div>
+            </div>
+        </div>
+    )
   }
 
   const petDetails = [
