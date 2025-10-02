@@ -205,14 +205,16 @@ export function getCalendarEvents(): CalendarEvent[] {
             }
         });
         pet.eventosReproductivos.forEach(er => {
-             events.push({
-                petName: pet.nombre,
-                petId: pet.id,
-                date: er.fecha,
-                type: 'Evento Reproductivo',
-                description: `Evento: ${er.tipoEvento}`
-            });
-        })
+            if (er.fecha > new Date()) {
+                events.push({
+                    petName: pet.nombre,
+                    petId: pet.id,
+                    date: er.fecha,
+                    type: 'Evento Reproductivo',
+                    description: `Evento: ${er.tipoEvento}`
+                });
+            }
+        });
     });
     return events;
 }

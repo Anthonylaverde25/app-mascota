@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getCalendarEvents, type CalendarEvent } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
+import { es } from 'date-fns/locale';
 
 export default function CalendarPage() {
   const allEvents = React.useMemo(() => getCalendarEvents(), []);
@@ -38,6 +39,7 @@ export default function CalendarPage() {
                         event: 'bg-primary/20 text-primary-foreground rounded-full',
                     }}
                     className="p-0"
+                    locale={es}
                 />
             </CardContent>
         </Card>
