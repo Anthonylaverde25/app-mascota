@@ -153,7 +153,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
                             </div>
                             <div>
                                 <p className="font-semibold text-muted-foreground">Lote</p>
-                                {vaccine.lote ? <Badge variant="secondary">{vaccine.lote}</Badge> : <p>N/A</p>}
+                                {vaccine.lote ? <p className="font-semibold">{vaccine.lote}</p> : <p>N/A</p>}
                             </div>
                         </div>
                       </div>
