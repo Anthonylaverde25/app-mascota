@@ -89,6 +89,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Vacuna</TableHead>
+                      <TableHead>Dosis</TableHead>
                       <TableHead>Fecha</TableHead>
                       <TableHead>Próxima Dosis</TableHead>
                       <TableHead>Estado</TableHead>
@@ -103,6 +104,11 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
                       return (
                       <TableRow key={v.id}>
                         <TableCell>{v.tipoVacuna}</TableCell>
+                        <TableCell>
+                          {v.dosisAplicadas && v.dosisTotales 
+                            ? `${v.dosisAplicadas} de ${v.dosisTotales}`
+                            : 'N/A'}
+                        </TableCell>
                         <TableCell>{formatDate(v.fechaAplicacion)}</TableCell>
                         <TableCell>{formatDate(v.fechaProximaDosis)}</TableCell>
                         <TableCell>
@@ -271,7 +277,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
               <CardTitle className="font-headline">Calendario Reproductivo</CardTitle>
             </CardHeader>
             <CardContent className="p-0 sm:p-2 md:p-6 max-w-none">
-              <ReproductiveCalendar events={pet.eventosReproductivos} species={pet.especie} />
+                <ReproductiveCalendar events={pet.eventosReproductivos} species={pet.especie} />
             </CardContent>
           </Card>
         </TabsContent>

@@ -19,6 +19,8 @@ const formSchema = z.object({
   fechaAplicacion: z.date({ required_error: 'La fecha de aplicación es requerida.' }),
   fechaProximaDosis: z.date({ required_error: 'La fecha de la próxima dosis es requerida.' }),
   veterinario: z.string().min(2, 'El nombre del veterinario es requerido.'),
+  dosisAplicadas: z.coerce.number().positive('Debe ser un número positivo.').optional(),
+  dosisTotales: z.coerce.number().positive('Debe ser un número positivo.').optional(),
   lote: z.string().optional(),
   etiquetaUrl: z.string().url('Debe ser una URL válida.').optional().or(z.literal('')),
 });
@@ -74,6 +76,34 @@ export function VaccinationForm({ petSpecies, closeDialog }: VaccinationFormProp
             </FormItem>
           )}
         />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="dosisAplicadas"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Dosis Aplicada</FormLabel>
+                <FormControl>
+                  <Input type="number" placeholder="ej., 1" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="dosisTotales"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Dosis Totales</FormLabel>
+                <FormControl>
+                  <Input type="number" placeholder="ej., 3" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}

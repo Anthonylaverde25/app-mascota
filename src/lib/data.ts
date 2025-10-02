@@ -10,6 +10,8 @@ export interface Vaccine {
   veterinario: string;
   lote?: string;
   etiquetaUrl?: string;
+  dosisAplicadas?: number;
+  dosisTotales?: number;
 }
 
 export interface Deworming {
@@ -86,8 +88,8 @@ const MOCK_PETS: Pet[] = [
     color: 'Dorado',
     fotoPerfil: PlaceHolderImages.find(img => img.id === 'pet-1')!,
     vacunas: [
-      { id: 'v1', tipoVacuna: 'Rabia', fechaAplicacion: new Date('2023-06-01T00:00:00Z'), fechaProximaDosis: new Date('2024-06-01T00:00:00Z'), veterinario: 'Dr. Smith', lote: 'RAB-123' },
-      { id: 'v2', tipoVacuna: 'Moquillo/Distemper', fechaAplicacion: new Date('2023-06-01T00:00:00Z'), fechaProximaDosis: new Date('2024-06-01T00:00:00Z'), veterinario: 'Dr. Smith', lote: 'DIS-456' },
+      { id: 'v1', tipoVacuna: 'Rabia', fechaAplicacion: new Date('2023-06-01T00:00:00Z'), fechaProximaDosis: new Date('2024-06-01T00:00:00Z'), veterinario: 'Dr. Smith', lote: 'RAB-123', dosisAplicadas: 1, dosisTotales: 1 },
+      { id: 'v2', tipoVacuna: 'Moquillo/Distemper', fechaAplicacion: new Date('2023-06-01T00:00:00Z'), fechaProximaDosis: new Date('2024-06-01T00:00:00Z'), veterinario: 'Dr. Smith', lote: 'DIS-456', dosisAplicadas: 2, dosisTotales: 3 },
     ],
     desparasitaciones: [
       { id: 'd1', tipo: 'interna', fechaAplicacion: new Date('2024-03-10T00:00:00Z'), fechaProximaDosis: new Date('2024-06-10T00:00:00Z') },
@@ -188,5 +190,3 @@ export function getPets(): Pet[] {
 export function getPetById(id: string): Pet | undefined {
   return MOCK_PETS.find(pet => pet.id === id);
 }
-
-    
