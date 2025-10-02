@@ -88,7 +88,7 @@ const MOCK_PETS: Pet[] = [
     color: 'Dorado',
     fotoPerfil: PlaceHolderImages.find(img => img.id === 'pet-1')!,
     vacunas: [
-      { id: 'v1', tipoVacuna: 'Rabia', fechaAplicacion: new Date('2023-06-01T00:00:00Z'), fechaProximaDosis: new Date('2024-06-01T00:00:00Z'), veterinario: 'Dr. Smith', lote: 'RAB-123', dosisAplicadas: 1, dosisTotales: 1 },
+      { id: 'v1', tipoVacuna: 'Rabia', fechaAplicacion: new Date('2023-06-01T00:00:00Z'), fechaProximaDosis: new Date('2024-06-01T00:00:00Z'), veterinario: 'Dr. Smith', lote: 'RAB-123', etiquetaUrl: 'https://placehold.co/300x100/e74c3c/white?text=Etiqueta+Lote', dosisAplicadas: 1, dosisTotales: 1 },
       { id: 'v2', tipoVacuna: 'Moquillo/Distemper', fechaAplicacion: new Date('2023-06-01T00:00:00Z'), fechaProximaDosis: new Date('2024-06-01T00:00:00Z'), veterinario: 'Dr. Smith', lote: 'DIS-456', dosisAplicadas: 2, dosisTotales: 3 },
     ],
     desparasitaciones: [
