@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { HeartPulse, Pill, Syringe, Bug, Scale, Image as ImageIcon, CalendarDays, ChevronDown } from 'lucide-react';
+import { HeartPulse, Pill, Syringe, Bug, Scale, Image as ImageIcon, CalendarDays, ChevronDown, MoreHorizontal, Eye, Pencil, Trash2 } from 'lucide-react';
 import type { Pet, Vaccine, Deworming, Treatment, ReproductiveEvent, Weight } from '@/lib/data';
 import { formatDate, cn } from '@/lib/utils';
 import {
@@ -21,6 +21,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { add, isBefore } from 'date-fns';
 import Link from 'next/link';
@@ -98,13 +104,34 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
                                   {status.text}
                                 </Badge>
                             </div>
-                           {vaccine.etiquetaUrl ? (
-                              <Link href={vaccine.etiquetaUrl} target="_blank" rel="noopener noreferrer">
-                                <Button variant="outline" size="sm">
-                                  <ImageIcon className="mr-2 h-4 w-4" /> Ver Etiqueta
-                                </Button>
-                              </Link>
-                            ) : <div className='w-[124px]'></div>}
+                            <div className="flex items-center gap-1">
+                                {vaccine.etiquetaUrl && (
+                                    <Link href={vaccine.etiquetaUrl} target="_blank" rel="noopener noreferrer">
+                                        <Button variant="ghost" size="icon">
+                                            <Eye className="h-5 w-5" />
+                                            <span className="sr-only">Ver Etiqueta</span>
+                                        </Button>
+                                    </Link>
+                                )}
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="ghost" size="icon">
+                                            <MoreHorizontal className="h-5 w-5" />
+                                            <span className="sr-only">Más opciones</span>
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuItem>
+                                            <Pencil className="mr-2 h-4 w-4" />
+                                            Editar
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem className="text-destructive focus:text-destructive">
+                                            <Trash2 className="mr-2 h-4 w-4" />
+                                            Eliminar
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                           </div>
                         </div>
                         <Separator className="my-3" />
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-3 text-sm">
@@ -281,7 +308,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
             <CardHeader>
               <CardTitle className="font-headline">Calendario Reproductivo</CardTitle>
             </CardHeader>
-            <CardContent className="p-0 sm:p-2 md:p-6 max-w-none">
+            <CardContent className="max-w-none">
                 <ReproductiveCalendar events={pet.eventosReproductivos} species={pet.especie} />
             </CardContent>
           </Card>
