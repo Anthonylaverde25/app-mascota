@@ -170,6 +170,21 @@ const MOCK_PETS: Pet[] = [
     eventosReproductivos: [],
     pesos: [],
   },
+  {
+    id: '5',
+    nombre: 'Lola',
+    especie: 'Perro',
+    raza: 'Beagle',
+    fechaNacimiento: new Date('2021-09-01'),
+    sexo: 'Hembra',
+    color: 'Tricolor',
+    fotoPerfil: PlaceHolderImages.find(img => img.id === 'pet-5')!,
+    vacunas: [],
+    desparasitaciones: [],
+    tratamientos: [],
+    eventosReproductivos: [],
+    pesos: [],
+  },
 ];
 
 // Data Access Functions
