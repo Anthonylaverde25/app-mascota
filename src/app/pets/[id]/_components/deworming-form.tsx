@@ -14,9 +14,9 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 
 const formSchema = z.object({
-  tipo: z.enum(['interna', 'externa'], { required_error: 'You need to select a deworming type.' }),
-  fechaAplicacion: z.date({ required_error: 'Application date is required.' }),
-  fechaProximaDosis: z.date({ required_error: 'Next dose date is required.' }),
+  tipo: z.enum(['interna', 'externa'], { required_error: 'Debes seleccionar un tipo de desparasitación.' }),
+  fechaAplicacion: z.date({ required_error: 'La fecha de aplicación es requerida.' }),
+  fechaProximaDosis: z.date({ required_error: 'La fecha de la próxima dosis es requerida.' }),
   observaciones: z.string().optional(),
 });
 
@@ -33,8 +33,8 @@ export function DewormingForm({ closeDialog }: DewormingFormProps) {
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     toast({
-      title: 'Success!',
-      description: 'Deworming record has been added.',
+      title: '¡Éxito!',
+      description: 'El registro de desparasitación ha sido añadido.',
     });
     closeDialog();
   }
@@ -47,7 +47,7 @@ export function DewormingForm({ closeDialog }: DewormingFormProps) {
           name="tipo"
           render={({ field }) => (
             <FormItem className="space-y-3">
-              <FormLabel>Deworming Type</FormLabel>
+              <FormLabel>Tipo de Desparasitación</FormLabel>
               <FormControl>
                 <RadioGroup
                   onValueChange={field.onChange}
@@ -58,13 +58,13 @@ export function DewormingForm({ closeDialog }: DewormingFormProps) {
                     <FormControl>
                       <RadioGroupItem value="interna" />
                     </FormControl>
-                    <FormLabel className="font-normal">Internal</FormLabel>
+                    <FormLabel className="font-normal">Interna</FormLabel>
                   </FormItem>
                   <FormItem className="flex items-center space-x-3 space-y-0">
                     <FormControl>
                       <RadioGroupItem value="externa" />
                     </FormControl>
-                    <FormLabel className="font-normal">External</FormLabel>
+                    <FormLabel className="font-normal">Externa</FormLabel>
                   </FormItem>
                 </RadioGroup>
               </FormControl>
@@ -78,7 +78,7 @@ export function DewormingForm({ closeDialog }: DewormingFormProps) {
             name="fechaAplicacion"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Application Date</FormLabel>
+                <FormLabel>Fecha de Aplicación</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -86,7 +86,7 @@ export function DewormingForm({ closeDialog }: DewormingFormProps) {
                         variant={'outline'}
                         className={cn('pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}
                       >
-                        {field.value ? formatDate(field.value) : <span>Pick a date</span>}
+                        {field.value ? formatDate(field.value) : <span>Elige una fecha</span>}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
                     </FormControl>
@@ -104,7 +104,7 @@ export function DewormingForm({ closeDialog }: DewormingFormProps) {
             name="fechaProximaDosis"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Next Dose Date</FormLabel>
+                <FormLabel>Fecha Próxima Dosis</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -112,7 +112,7 @@ export function DewormingForm({ closeDialog }: DewormingFormProps) {
                         variant={'outline'}
                         className={cn('pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}
                       >
-                        {field.value ? formatDate(field.value) : <span>Pick a date</span>}
+                        {field.value ? formatDate(field.value) : <span>Elige una fecha</span>}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
                     </FormControl>
@@ -131,16 +131,16 @@ export function DewormingForm({ closeDialog }: DewormingFormProps) {
           name="observaciones"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Observations (Optional)</FormLabel>
+              <FormLabel>Observaciones (Opcional)</FormLabel>
               <FormControl>
-                <Textarea placeholder="Any notes or comments..." className="resize-none" {...field} />
+                <Textarea placeholder="Notas o comentarios..." className="resize-none" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
         <div className="flex justify-end pt-4">
-          <Button type="submit">Save Record</Button>
+          <Button type="submit">Guardar Registro</Button>
         </div>
       </form>
     </Form>

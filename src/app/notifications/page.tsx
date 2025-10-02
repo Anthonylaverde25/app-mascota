@@ -7,44 +7,44 @@ import { Separator } from '@/components/ui/separator';
 const mockNotifications = [
   {
     pet: 'Buddy',
-    event: 'Next Rabies vaccine',
-    dueDate: 'in 3 days',
+    event: 'Próxima vacuna de Rabia',
+    dueDate: 'en 3 días',
     icon: Syringe,
     color: 'text-blue-500',
   },
   {
     pet: 'Lucy',
-    event: 'Next deworming (external)',
-    dueDate: 'in 1 week',
+    event: 'Próxima desparasitación (externa)',
+    dueDate: 'en 1 semana',
     icon: Bug,
     color: 'text-green-500',
   },
   {
     pet: 'Buddy',
-    event: 'Apoquel treatment ending',
-    dueDate: 'in 10 days',
+    event: 'Fin de tratamiento con Apoquel',
+    dueDate: 'en 10 días',
     icon: Pill,
     color: 'text-yellow-500',
   },
 ];
 
 const reminderSettings = [
-    { id: 'vaccine', label: 'Vaccination Reminders', icon: Syringe },
-    { id: 'deworming', label: 'Deworming Reminders', icon: Bug },
-    { id: 'treatment', label: 'Treatment Reminders', icon: Pill },
-    { id: 'reproductive', label: 'Reproductive Event Logs', icon: HeartPulse },
+    { id: 'vaccine', label: 'Recordatorios de Vacunación', icon: Syringe },
+    { id: 'deworming', label: 'Recordatorios de Desparasitación', icon: Bug },
+    { id: 'treatment', label: 'Recordatorios de Tratamientos', icon: Pill },
+    { id: 'reproductive', label: 'Registros de Eventos Reproductivos', icon: HeartPulse },
 ]
 
 export default function NotificationsPage() {
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-headline font-bold mb-8">Reminders & Notifications</h1>
+      <h1 className="text-3xl font-headline font-bold mb-8">Recordatorios y Notificaciones</h1>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle className="font-headline">Upcoming Reminders</CardTitle>
+            <CardTitle className="font-headline">Próximos Recordatorios</CardTitle>
             <CardDescription>
-                These are mock notifications for demonstration purposes.
+                Estas son notificaciones de ejemplo para demostración.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -62,7 +62,7 @@ export default function NotificationsPage() {
              {mockNotifications.length === 0 && (
                 <div className="text-center py-10 border-2 border-dashed rounded-lg">
                     <Bell className="mx-auto h-12 w-12 text-muted-foreground" />
-                    <p className="mt-4 text-muted-foreground">No upcoming reminders.</p>
+                    <p className="mt-4 text-muted-foreground">No hay próximos recordatorios.</p>
                 </div>
              )}
           </CardContent>
@@ -70,9 +70,9 @@ export default function NotificationsPage() {
         
         <Card className="lg:col-span-1 sticky top-20">
             <CardHeader>
-                <CardTitle className="font-headline">Notification Settings</CardTitle>
+                <CardTitle className="font-headline">Ajustes de Notificaciones</CardTitle>
                 <CardDescription>
-                    Manage what you get reminders for.
+                    Gestiona qué recordatorios recibes.
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">

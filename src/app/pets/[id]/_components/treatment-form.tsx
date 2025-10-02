@@ -17,10 +17,10 @@ import { identifyMedicationSideEffects } from '@/ai/flows/medication-side-effect
 import { Textarea } from '@/components/ui/textarea';
 
 const formSchema = z.object({
-  nombreMedicamento: z.string().min(2, 'Medication name is required.'),
-  dosificacion: z.string().min(2, 'Dosage is required.'),
-  duracion: z.string().min(2, 'Duration is required.'),
-  fechaInicio: z.date({ required_error: 'Start date is required.' }),
+  nombreMedicamento: z.string().min(2, 'El nombre del medicamento es requerido.'),
+  dosificacion: z.string().min(2, 'La dosificación es requerida.'),
+  duracion: z.string().min(2, 'La duración es requerida.'),
+  fechaInicio: z.date({ required_error: 'La fecha de inicio es requerida.' }),
 });
 
 type TreatmentFormProps = {
@@ -46,8 +46,8 @@ export function TreatmentForm({ closeDialog }: TreatmentFormProps) {
     if (!nombreMedicamento || !dosificacion || !duracion) {
       toast({
         variant: 'destructive',
-        title: 'Missing Information',
-        description: 'Please fill in Medication, Dosage, and Duration to identify side effects.',
+        title: 'Información Faltante',
+        description: 'Por favor, completa Medicamento, Dosis y Duración para identificar efectos secundarios.',
       });
       return;
     }
@@ -64,8 +64,8 @@ export function TreatmentForm({ closeDialog }: TreatmentFormProps) {
       console.error(error);
       toast({
         variant: 'destructive',
-        title: 'AI Error',
-        description: 'Could not identify side effects at this time.',
+        title: 'Error de IA',
+        description: 'No se pudieron identificar los efectos secundarios en este momento.',
       });
     } finally {
       setIsIdentifying(false);
@@ -75,8 +75,8 @@ export function TreatmentForm({ closeDialog }: TreatmentFormProps) {
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     toast({
-      title: 'Success!',
-      description: 'Treatment record has been added.',
+      title: '¡Éxito!',
+      description: 'El registro del tratamiento ha sido añadido.',
     });
     closeDialog();
   }
@@ -89,9 +89,9 @@ export function TreatmentForm({ closeDialog }: TreatmentFormProps) {
           name="nombreMedicamento"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Medication Name</FormLabel>
+              <FormLabel>Nombre del Medicamento</FormLabel>
               <FormControl>
-                <Input placeholder="e.g., Apoquel" {...field} />
+                <Input placeholder="ej., Apoquel" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -103,9 +103,9 @@ export function TreatmentForm({ closeDialog }: TreatmentFormProps) {
             name="dosificacion"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Dosage</FormLabel>
+                <FormLabel>Dosis</FormLabel>
                 <FormControl>
-                  <Input placeholder="1 pill / 12 hours" {...field} />
+                  <Input placeholder="1 pastilla / 12 horas" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -116,9 +116,9 @@ export function TreatmentForm({ closeDialog }: TreatmentFormProps) {
             name="duracion"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Duration</FormLabel>
+                <FormLabel>Duración</FormLabel>
                 <FormControl>
-                  <Input placeholder="14 days" {...field} />
+                  <Input placeholder="14 días" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -130,7 +130,7 @@ export function TreatmentForm({ closeDialog }: TreatmentFormProps) {
             name="fechaInicio"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Start Date</FormLabel>
+                <FormLabel>Fecha de Inicio</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -138,7 +138,7 @@ export function TreatmentForm({ closeDialog }: TreatmentFormProps) {
                         variant={'outline'}
                         className={cn('pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}
                       >
-                        {field.value ? formatDate(field.value) : <span>Pick a date</span>}
+                        {field.value ? formatDate(field.value) : <span>Elige una fecha</span>}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
                     </FormControl>
@@ -155,22 +155,22 @@ export function TreatmentForm({ closeDialog }: TreatmentFormProps) {
         <div className="space-y-2 pt-2">
           <Button type="button" variant="outline" onClick={handleIdentifySideEffects} disabled={isIdentifying} className="w-full">
             <Sparkles className="mr-2 h-4 w-4" />
-            {isIdentifying ? 'Identifying...' : 'Identify Potential Side Effects (AI)'}
+            {isIdentifying ? 'Identificando...' : 'Identificar Efectos Secundarios (IA)'}
           </Button>
           {isIdentifying && (
-            <div className="text-sm text-muted-foreground text-center animate-pulse">AI is analyzing...</div>
+            <div className="text-sm text-muted-foreground text-center animate-pulse">La IA está analizando...</div>
           )}
           {sideEffects && (
             <Alert>
               <AlertCircle className="h-4 w-4" />
-              <AlertTitle className="font-headline">Potential Side Effects</AlertTitle>
+              <AlertTitle className="font-headline">Posibles Efectos Secundarios</AlertTitle>
               <AlertDescription className="whitespace-pre-wrap text-xs">{sideEffects}</AlertDescription>
             </Alert>
           )}
         </div>
         
         <div className="flex justify-end pt-4">
-          <Button type="submit">Save Record</Button>
+          <Button type="submit">Guardar Registro</Button>
         </div>
       </form>
     </Form>

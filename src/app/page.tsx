@@ -19,17 +19,17 @@ export default function Home() {
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-headline font-bold">Your Pets</h1>
+        <h1 className="text-3xl font-headline font-bold">Tus Mascotas</h1>
         <Button>
           <PlusCircle className="mr-2 h-4 w-4" />
-          Add Pet
+          Añadir Mascota
         </Button>
       </div>
       
       {pets.length === 0 ? (
         <div className="text-center py-20 border-2 border-dashed rounded-lg">
-          <p className="text-muted-foreground">You haven't added any pets yet.</p>
-          <Button variant="link" className="text-primary">Add your first pet</Button>
+          <p className="text-muted-foreground">Aún no has añadido ninguna mascota.</p>
+          <Button variant="link" className="text-primary">Añade tu primera mascota</Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

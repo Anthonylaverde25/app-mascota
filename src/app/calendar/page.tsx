@@ -25,7 +25,7 @@ export default function CalendarPage() {
 
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-headline font-bold mb-8">Health Calendar</h1>
+      <h1 className="text-3xl font-headline font-bold mb-8">Calendario de Salud</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <Card className="md:col-span-2">
             <CardContent className="p-2 sm:p-4 flex justify-center">
@@ -45,7 +45,7 @@ export default function CalendarPage() {
           <Card>
             <CardHeader>
               <CardTitle className="font-headline">
-                Events for {selectedDate ? selectedDate.toLocaleDateString() : '...'}
+                Eventos para {selectedDate ? selectedDate.toLocaleDateString('es-ES') : '...'}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -62,7 +62,7 @@ export default function CalendarPage() {
                   </Link>
                 ))
               ) : (
-                <p className="text-sm text-muted-foreground text-center py-8">No events for this day.</p>
+                <p className="text-sm text-muted-foreground text-center py-8">No hay eventos para este día.</p>
               )}
             </CardContent>
           </Card>

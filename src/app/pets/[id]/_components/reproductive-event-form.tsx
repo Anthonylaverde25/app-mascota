@@ -14,8 +14,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const formSchema = z.object({
-  tipoEvento: z.enum(['Celo', 'Parto', 'Monta'], { required_error: 'You need to select an event type.' }),
-  fecha: z.date({ required_error: 'Event date is required.' }),
+  tipoEvento: z.enum(['Celo', 'Parto', 'Monta'], { required_error: 'Debes seleccionar un tipo de evento.' }),
+  fecha: z.date({ required_error: 'La fecha del evento es requerida.' }),
   observaciones: z.string().optional(),
 });
 
@@ -32,8 +32,8 @@ export function ReproductiveEventForm({ closeDialog }: ReproductiveEventFormProp
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     toast({
-      title: 'Success!',
-      description: 'Reproductive event has been added.',
+      title: '¡Éxito!',
+      description: 'El evento reproductivo ha sido añadido.',
     });
     closeDialog();
   }
@@ -46,17 +46,17 @@ export function ReproductiveEventForm({ closeDialog }: ReproductiveEventFormProp
           name="tipoEvento"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Event Type</FormLabel>
+              <FormLabel>Tipo de Evento</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select an event type" />
+                    <SelectValue placeholder="Selecciona un tipo de evento" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="Celo">Celo (Heat)</SelectItem>
-                  <SelectItem value="Parto">Parto (Birth)</SelectItem>
-                  <SelectItem value="Monta">Monta (Mating)</SelectItem>
+                  <SelectItem value="Celo">Celo</SelectItem>
+                  <SelectItem value="Parto">Parto</SelectItem>
+                  <SelectItem value="Monta">Monta</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -68,7 +68,7 @@ export function ReproductiveEventForm({ closeDialog }: ReproductiveEventFormProp
           name="fecha"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Event Date</FormLabel>
+              <FormLabel>Fecha del Evento</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -76,7 +76,7 @@ export function ReproductiveEventForm({ closeDialog }: ReproductiveEventFormProp
                       variant={'outline'}
                       className={cn('pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}
                     >
-                      {field.value ? formatDate(field.value) : <span>Pick a date</span>}
+                      {field.value ? formatDate(field.value) : <span>Elige una fecha</span>}
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
                   </FormControl>
@@ -94,16 +94,16 @@ export function ReproductiveEventForm({ closeDialog }: ReproductiveEventFormProp
           name="observaciones"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Observations (Optional)</FormLabel>
+              <FormLabel>Observaciones (Opcional)</FormLabel>
               <FormControl>
-                <Textarea placeholder="Any notes or comments..." className="resize-none" {...field} />
+                <Textarea placeholder="Notas o comentarios..." className="resize-none" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
         <div className="flex justify-end pt-4">
-          <Button type="submit">Save Record</Button>
+          <Button type="submit">Guardar Registro</Button>
         </div>
       </form>
     </Form>

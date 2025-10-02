@@ -57,7 +57,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
     <div className="text-center py-10 border-2 border-dashed rounded-lg">
       <p className="text-muted-foreground mb-2">{text}</p>
       <Button variant="link" onClick={() => setOpenDialog(dialog)}>
-        Add the first record
+        Añadir el primer registro
       </Button>
     </div>
   );
@@ -66,30 +66,30 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
     <Dialog open={!!openDialog} onOpenChange={(isOpen) => !isOpen && setOpenDialog(null)}>
       <Tabs defaultValue="vaccinations">
         <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 h-auto">
-          <TabsTrigger value="vaccinations"><Syringe className="w-4 h-4 mr-2"/>Vaccinations</TabsTrigger>
-          <TabsTrigger value="deworming"><Bug className="w-4 h-4 mr-2"/>Deworming</TabsTrigger>
-          <TabsTrigger value="treatments"><Pill className="w-4 h-4 mr-2"/>Treatments</TabsTrigger>
-          <TabsTrigger value="reproductive"><HeartPulse className="w-4 h-4 mr-2"/>Reproductive</TabsTrigger>
-          <TabsTrigger value="weight"><Scale className="w-4 h-4 mr-2"/>Weight</TabsTrigger>
+          <TabsTrigger value="vaccinations"><Syringe className="w-4 h-4 mr-2"/>Vacunas</TabsTrigger>
+          <TabsTrigger value="deworming"><Bug className="w-4 h-4 mr-2"/>Desparasitación</TabsTrigger>
+          <TabsTrigger value="treatments"><Pill className="w-4 h-4 mr-2"/>Tratamientos</TabsTrigger>
+          <TabsTrigger value="reproductive"><HeartPulse className="w-4 h-4 mr-2"/>Reproductivo</TabsTrigger>
+          <TabsTrigger value="weight"><Scale className="w-4 h-4 mr-2"/>Peso</TabsTrigger>
         </TabsList>
         
         {/* Vaccinations Tab */}
         <TabsContent value="vaccinations">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="font-headline">Vaccination History</CardTitle>
-              <Button onClick={() => setOpenDialog('vaccine')}>Add Vaccine</Button>
+              <CardTitle className="font-headline">Historial de Vacunación</CardTitle>
+              <Button onClick={() => setOpenDialog('vaccine')}>Añadir Vacuna</Button>
             </CardHeader>
             <CardContent>
               {pet.vacunas.length > 0 ? (
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Vaccine</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Next Dose</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Veterinarian</TableHead>
+                      <TableHead>Vacuna</TableHead>
+                      <TableHead>Fecha</TableHead>
+                      <TableHead>Próxima Dosis</TableHead>
+                      <TableHead>Estado</TableHead>
+                      <TableHead className="text-right">Veterinario</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -108,7 +108,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
                     )})}
                   </TableBody>
                 </Table>
-              ) : renderEmptyState('No vaccination records found.', 'vaccine')}
+              ) : renderEmptyState('No se encontraron registros de vacunación.', 'vaccine')}
             </CardContent>
           </Card>
         </TabsContent>
@@ -117,18 +117,18 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
         <TabsContent value="deworming">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="font-headline">Deworming History</CardTitle>
-              <Button onClick={() => setOpenDialog('deworming')}>Add Record</Button>
+              <CardTitle className="font-headline">Historial de Desparasitación</CardTitle>
+              <Button onClick={() => setOpenDialog('deworming')}>Añadir Registro</Button>
             </CardHeader>
             <CardContent>
               {pet.desparasitaciones.length > 0 ? (
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Next Dose</TableHead>
-                      <TableHead>Observations</TableHead>
+                      <TableHead>Tipo</TableHead>
+                      <TableHead>Fecha</TableHead>
+                      <TableHead>Próxima Dosis</TableHead>
+                      <TableHead>Observaciones</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -142,7 +142,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
                     ))}
                   </TableBody>
                 </Table>
-              ) : renderEmptyState('No deworming records found.', 'deworming')}
+              ) : renderEmptyState('No se encontraron registros de desparasitación.', 'deworming')}
             </CardContent>
           </Card>
         </TabsContent>
@@ -151,18 +151,18 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
         <TabsContent value="treatments">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="font-headline">Treatment History</CardTitle>
-              <Button onClick={() => setOpenDialog('treatment')}>Add Treatment</Button>
+              <CardTitle className="font-headline">Historial de Tratamientos</CardTitle>
+              <Button onClick={() => setOpenDialog('treatment')}>Añadir Tratamiento</Button>
             </CardHeader>
             <CardContent>
               {pet.tratamientos.length > 0 ? (
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Medication</TableHead>
-                      <TableHead>Dosage</TableHead>
-                      <TableHead>Start Date</TableHead>
-                      <TableHead>Duration</TableHead>
+                      <TableHead>Medicamento</TableHead>
+                      <TableHead>Dosis</TableHead>
+                      <TableHead>Fecha de Inicio</TableHead>
+                      <TableHead>Duración</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -176,7 +176,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
                     ))}
                   </TableBody>
                 </Table>
-              ) : renderEmptyState('No treatment records found.', 'treatment')}
+              ) : renderEmptyState('No se encontraron registros de tratamientos.', 'treatment')}
             </CardContent>
           </Card>
         </TabsContent>
@@ -185,17 +185,17 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
         <TabsContent value="reproductive">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="font-headline">Reproductive History</CardTitle>
-              <Button onClick={() => setOpenDialog('reproductive')}>Add Event</Button>
+              <CardTitle className="font-headline">Historial Reproductivo</CardTitle>
+              <Button onClick={() => setOpenDialog('reproductive')}>Añadir Evento</Button>
             </CardHeader>
             <CardContent>
               {pet.eventosReproductivos.length > 0 ? (
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Event</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Observations</TableHead>
+                      <TableHead>Evento</TableHead>
+                      <TableHead>Fecha</TableHead>
+                      <TableHead>Observaciones</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -208,7 +208,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
                     ))}
                   </TableBody>
                 </Table>
-              ) : renderEmptyState('No reproductive events found.', 'reproductive')}
+              ) : renderEmptyState('No se encontraron eventos reproductivos.', 'reproductive')}
             </CardContent>
           </Card>
         </TabsContent>
@@ -217,8 +217,8 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
         <TabsContent value="weight">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="font-headline">Weight History</CardTitle>
-              <Button onClick={() => setOpenDialog('weight')}>Add Weight Record</Button>
+              <CardTitle className="font-headline">Historial de Peso</CardTitle>
+              <Button onClick={() => setOpenDialog('weight')}>Añadir Registro de Peso</Button>
             </CardHeader>
             <CardContent>
               {pet.pesos.length > 0 ? (
@@ -227,8 +227,8 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
                   <Table className="mt-4">
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Weight (kg)</TableHead>
+                        <TableHead>Fecha</TableHead>
+                        <TableHead>Peso (kg)</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -241,7 +241,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
                     </TableBody>
                   </Table>
                 </>
-              ) : renderEmptyState('No weight records found.', 'weight')}
+              ) : renderEmptyState('No se encontraron registros de peso.', 'weight')}
             </CardContent>
           </Card>
         </TabsContent>
@@ -251,11 +251,11 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="font-headline">
-            {openDialog === 'vaccine' && 'Add New Vaccine'}
-            {openDialog === 'deworming' && 'Add New Deworming Record'}
-            {openDialog === 'treatment' && 'Add New Treatment'}
-            {openDialog === 'reproductive' && 'Add New Reproductive Event'}
-            {openDialog === 'weight' && 'Add New Weight Record'}
+            {openDialog === 'vaccine' && 'Añadir Nueva Vacuna'}
+            {openDialog === 'deworming' && 'Añadir Nuevo Registro de Desparasitación'}
+            {openDialog === 'treatment' && 'Añadir Nuevo Tratamiento'}
+            {openDialog === 'reproductive' && 'Añadir Nuevo Evento Reproductivo'}
+            {openDialog === 'weight' && 'Añadir Nuevo Registro de Peso'}
           </DialogTitle>
         </DialogHeader>
         {openDialog === 'vaccine' && <VaccinationForm petSpecies={pet.especie} closeDialog={() => setOpenDialog(null)} />}

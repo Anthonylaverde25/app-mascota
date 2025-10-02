@@ -11,20 +11,20 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const MedicationDetailsInputSchema = z.object({
-  medicationName: z.string().describe('The name of the medication.'),
-  dosificacion: z.string().describe('The dosage of the medication.'),
-  duracion: z.string().describe('The duration of the medication.'),
+  medicationName: z.string().describe('El nombre del medicamento.'),
+  dosificacion: z.string().describe('La dosis del medicamento.'),
+  duracion: z.string().describe('La duración del medicamento.'),
   additionalDetails: z
     .string()
     .optional()
-    .describe('Any additional details about the treatment.'),
+    .describe('Cualquier detalle adicional sobre el tratamiento.'),
 });
 export type MedicationDetailsInput = z.infer<typeof MedicationDetailsInputSchema>;
 
 const MedicationSideEffectsOutputSchema = z.object({
   potentialSideEffects: z
     .string()
-    .describe('A list of potential side effects associated with the medication or treatment.'),
+    .describe('Una lista de posibles efectos secundarios asociados con el medicamento o tratamiento.'),
 });
 export type MedicationSideEffectsOutput = z.infer<typeof MedicationSideEffectsOutputSchema>;
 
@@ -38,14 +38,14 @@ const prompt = ai.definePrompt({
   name: 'medicationSideEffectsPrompt',
   input: {schema: MedicationDetailsInputSchema},
   output: {schema: MedicationSideEffectsOutputSchema},
-  prompt: `You are a veterinary expert. Your task is to identify potential side effects of a given medication or treatment for a pet.
+  prompt: `Eres un experto veterinario. Tu tarea es identificar los posibles efectos secundarios de un medicamento o tratamiento para una mascota.
 
-  Medication Name: {{{medicationName}}}
-  Dosage: {{{dosificacion}}}
-  Duration: {{{duracion}}}
-  Additional Details: {{{additionalDetails}}}
+  Nombre del Medicamento: {{{medicationName}}}
+  Dosis: {{{dosificacion}}}
+  Duración: {{{duracion}}}
+  Detalles Adicionales: {{{additionalDetails}}}
 
-  Based on the information above, provide a detailed list of potential side effects the pet might experience. Be specific and provide as much information as possible.`,
+  Basado en la información anterior, proporciona una lista detallada de los posibles efectos secundarios que la mascota podría experimentar. Sé específico y proporciona la mayor cantidad de información posible.`,
 });
 
 const medicationSideEffectsFlow = ai.defineFlow(

@@ -2,6 +2,7 @@ import * as React from 'react';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { differenceInYears, differenceInMonths, format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { Cake, Palette, VenetianMask, Cat, Dog } from 'lucide-react';
 
 import { getPetById } from '@/lib/data';
@@ -16,9 +17,9 @@ function getAge(birthDate: Date) {
   const months = differenceInMonths(today, birthDate) % 12;
   
   if (years > 0) {
-    return `${years} year${years > 1 ? 's' : ''}${months > 0 ? `, ${months} month${months > 1 ? 's' : ''}` : ''}`;
+    return `${years} año${years > 1 ? 's' : ''}${months > 0 ? `, ${months} mes${months > 1 ? 'es' : ''}` : ''}`;
   }
-  return `${months} month${months > 1 ? 's' : ''}`;
+  return `${months} mes${months > 1 ? 'es' : ''}`;
 }
 
 export default function PetDetailPage({ params }: { params: { id: string } }) {
@@ -29,9 +30,9 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
   }
 
   const petDetails = [
-    { icon: pet.especie === 'Perro' ? Dog : Cat, label: 'Species', value: pet.especie },
-    { icon: VenetianMask, label: 'Breed', value: pet.raza },
-    { icon: Cake, label: 'Age', value: getAge(pet.fechaNacimiento) },
+    { icon: pet.especie === 'Perro' ? Dog : Cat, label: 'Especie', value: pet.especie },
+    { icon: VenetianMask, label: 'Raza', value: pet.raza },
+    { icon: Cake, label: 'Edad', value: getAge(pet.fechaNacimiento) },
     { icon: Palette, label: 'Color', value: pet.color },
   ];
 
@@ -53,7 +54,7 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
               <div className="flex justify-between items-start">
                 <div>
                   <CardTitle className="text-3xl font-headline mb-1">{pet.nombre}</CardTitle>
-                  <p className="text-sm text-muted-foreground">Born on {format(pet.fechaNacimiento, "MMMM d, yyyy")}</p>
+                  <p className="text-sm text-muted-foreground">Nacido el {format(pet.fechaNacimiento, "d 'de' MMMM 'de' yyyy", { locale: es })}</p>
                 </div>
                 <Badge variant={pet.sexo === 'Macho' ? 'default' : 'secondary'} className='capitalize'>{pet.sexo}</Badge>
               </div>

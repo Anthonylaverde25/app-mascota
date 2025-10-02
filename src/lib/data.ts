@@ -99,7 +99,7 @@ const MOCK_PETS: Pet[] = [
       { id: 'd1', tipo: 'interna', fechaAplicacion: new Date('2023-03-10'), fechaProximaDosis: new Date('2024-06-10') },
     ],
     tratamientos: [
-       { id: 't1', nombreMedicamento: 'Apoquel', dosificacion: '16mg once a day', duracion: '30 days', fechaInicio: new Date('2023-08-01') },
+       { id: 't1', nombreMedicamento: 'Apoquel', dosificacion: '16mg una vez al día', duracion: '30 días', fechaInicio: new Date('2023-08-01') },
     ],
     eventosReproductivos: [],
     pesos: [

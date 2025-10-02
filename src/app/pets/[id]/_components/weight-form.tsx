@@ -13,8 +13,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 
 const formSchema = z.object({
-  fecha: z.date({ required_error: 'Date is required.' }),
-  peso: z.coerce.number().positive('Weight must be a positive number.'),
+  fecha: z.date({ required_error: 'La fecha es requerida.' }),
+  peso: z.coerce.number().positive('El peso debe ser un número positivo.'),
 });
 
 type WeightFormProps = {
@@ -30,8 +30,8 @@ export function WeightForm({ closeDialog }: WeightFormProps) {
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     toast({
-      title: 'Success!',
-      description: 'Weight record has been added.',
+      title: '¡Éxito!',
+      description: 'El registro de peso ha sido añadido.',
     });
     closeDialog();
   }
@@ -45,7 +45,7 @@ export function WeightForm({ closeDialog }: WeightFormProps) {
             name="fecha"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Date</FormLabel>
+                <FormLabel>Fecha</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -53,7 +53,7 @@ export function WeightForm({ closeDialog }: WeightFormProps) {
                         variant={'outline'}
                         className={cn('pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}
                       >
-                        {field.value ? formatDate(field.value) : <span>Pick a date</span>}
+                        {field.value ? formatDate(field.value) : <span>Elige una fecha</span>}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
                     </FormControl>
@@ -71,9 +71,9 @@ export function WeightForm({ closeDialog }: WeightFormProps) {
             name="peso"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Weight (kg)</FormLabel>
+                <FormLabel>Peso (kg)</FormLabel>
                 <FormControl>
-                  <Input type="number" placeholder="e.g., 32.5" {...field} />
+                  <Input type="number" placeholder="ej., 32.5" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -81,7 +81,7 @@ export function WeightForm({ closeDialog }: WeightFormProps) {
           />
         </div>
         <div className="flex justify-end pt-4">
-          <Button type="submit">Save Record</Button>
+          <Button type="submit">Guardar Registro</Button>
         </div>
       </form>
     </Form>

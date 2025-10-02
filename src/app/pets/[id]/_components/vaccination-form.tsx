@@ -15,10 +15,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { VACCINE_TYPES, type Pet } from '@/lib/data';
 
 const formSchema = z.object({
-  tipoVacuna: z.string().min(2, 'Vaccine type is required.'),
-  fechaAplicacion: z.date({ required_error: 'Application date is required.' }),
-  fechaProximaDosis: z.date({ required_error: 'Next dose date is required.' }),
-  veterinario: z.string().min(2, 'Veterinarian name is required.'),
+  tipoVacuna: z.string().min(2, 'El tipo de vacuna es requerido.'),
+  fechaAplicacion: z.date({ required_error: 'La fecha de aplicación es requerida.' }),
+  fechaProximaDosis: z.date({ required_error: 'La fecha de la próxima dosis es requerida.' }),
+  veterinario: z.string().min(2, 'El nombre del veterinario es requerido.'),
   lote: z.string().optional(),
 });
 
@@ -37,8 +37,8 @@ export function VaccinationForm({ petSpecies, closeDialog }: VaccinationFormProp
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     toast({
-      title: 'Success!',
-      description: 'Vaccination record has been added.',
+      title: '¡Éxito!',
+      description: 'El registro de vacunación ha sido añadido.',
     });
     closeDialog();
   }
@@ -53,11 +53,11 @@ export function VaccinationForm({ petSpecies, closeDialog }: VaccinationFormProp
           name="tipoVacuna"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Vaccine Type</FormLabel>
+              <FormLabel>Tipo de Vacuna</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a vaccine" />
+                    <SelectValue placeholder="Selecciona una vacuna" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -79,7 +79,7 @@ export function VaccinationForm({ petSpecies, closeDialog }: VaccinationFormProp
             name="fechaAplicacion"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Application Date</FormLabel>
+                <FormLabel>Fecha de Aplicación</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -87,7 +87,7 @@ export function VaccinationForm({ petSpecies, closeDialog }: VaccinationFormProp
                         variant={'outline'}
                         className={cn('pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}
                       >
-                        {field.value ? formatDate(field.value) : <span>Pick a date</span>}
+                        {field.value ? formatDate(field.value) : <span>Elige una fecha</span>}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
                     </FormControl>
@@ -105,7 +105,7 @@ export function VaccinationForm({ petSpecies, closeDialog }: VaccinationFormProp
             name="fechaProximaDosis"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Next Dose Date</FormLabel>
+                <FormLabel>Fecha Próxima Dosis</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -113,7 +113,7 @@ export function VaccinationForm({ petSpecies, closeDialog }: VaccinationFormProp
                         variant={'outline'}
                         className={cn('pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}
                       >
-                        {field.value ? formatDate(field.value) : <span>Pick a date</span>}
+                        {field.value ? formatDate(field.value) : <span>Elige una fecha</span>}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
                     </FormControl>
@@ -132,9 +132,9 @@ export function VaccinationForm({ petSpecies, closeDialog }: VaccinationFormProp
           name="veterinario"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Veterinarian</FormLabel>
+              <FormLabel>Veterinario</FormLabel>
               <FormControl>
-                <Input placeholder="Dr. Smith" {...field} />
+                <Input placeholder="Dr. Pérez" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -145,7 +145,7 @@ export function VaccinationForm({ petSpecies, closeDialog }: VaccinationFormProp
           name="lote"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Batch Number (Optional)</FormLabel>
+              <FormLabel>Número de Lote (Opcional)</FormLabel>
               <FormControl>
                 <Input placeholder="ABC12345" {...field} />
               </FormControl>
@@ -154,7 +154,7 @@ export function VaccinationForm({ petSpecies, closeDialog }: VaccinationFormProp
           )}
         />
         <div className="flex justify-end pt-4">
-          <Button type="submit">Save Record</Button>
+          <Button type="submit">Guardar Registro</Button>
         </div>
       </form>
     </Form>

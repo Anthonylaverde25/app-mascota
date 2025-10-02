@@ -11,9 +11,9 @@ import { cn } from '@/lib/utils';
 import { ThemeToggle } from './theme-toggle';
 
 const navLinks = [
-  { href: '/', label: 'My Pets' },
-  { href: '/calendar', label: 'Calendar' },
-  { href: '/notifications', label: 'Reminders' },
+  { href: '/', label: 'Mis Mascotas' },
+  { href: '/calendar', label: 'Calendario' },
+  { href: '/notifications', label: 'Recordatorios' },
 ];
 
 export function Header() {
