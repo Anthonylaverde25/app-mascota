@@ -145,7 +145,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
                  <>
                     <div className="grid grid-cols-3 gap-4 mb-6">
                         {summaryItems.map((item) => (
-                        <div key={item.label} className="p-3 bg-muted/50 rounded-lg flex items-center border">
+                        <div key={item.label} className="p-3 bg-muted rounded-lg flex items-center border">
                             <item.icon className={cn("h-6 w-6 mr-3", item.color)} />
                             <div>
                                 <p className="text-2xl font-bold">{item.count}</p>
@@ -183,7 +183,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
                               <div className="p-4 border-t space-y-4">
                                 <h4 className="font-semibold">Historial de Dosis</h4>
                                 {doses.map((dose) => (
-                                  <div key={dose.id} className="p-3 bg-background rounded-md border">
+                                  <div key={dose.id} className="p-3 bg-muted/30 rounded-md border">
                                      <div className="flex justify-between items-start">
                                         <div>
                                           <p className="font-semibold">Dosis {doses.length - doses.indexOf(dose)}</p>
