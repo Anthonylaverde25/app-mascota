@@ -89,7 +89,8 @@ const MOCK_PETS: Pet[] = [
     fotoPerfil: PlaceHolderImages.find(img => img.id === 'pet-1')!,
     vacunas: [
       { id: 'v1', tipoVacuna: 'Rabia', fechaAplicacion: new Date('2023-06-01T00:00:00Z'), fechaProximaDosis: new Date('2024-06-01T00:00:00Z'), veterinario: 'Dr. Smith', lote: 'RAB-123', etiquetaUrl: 'https://placehold.co/300x100/e74c3c/white?text=Etiqueta+Lote', dosisAplicadas: 1, dosisTotales: 1 },
-      { id: 'v2', tipoVacuna: 'Moquillo/Distemper', fechaAplicacion: new Date('2023-06-01T00:00:00Z'), fechaProximaDosis: new Date('2024-06-01T00:00:00Z'), veterinario: 'Dr. Smith', lote: 'DIS-456', dosisAplicadas: 2, dosisTotales: 3 },
+      { id: 'v2', tipoVacuna: 'Moquillo/Distemper', fechaAplicacion: new Date('2023-06-01T00:00:00Z'), fechaProximaDosis: add(new Date('2023-06-01T00:00:00Z'), {days: 21}), veterinario: 'Dr. Smith', lote: 'DIS-456', dosisAplicadas: 1, dosisTotales: 3 },
+      { id: 'v2b', tipoVacuna: 'Moquillo/Distemper', fechaAplicacion: add(new Date('2023-06-01T00:00:00Z'), {days: 21}), fechaProximaDosis: add(new Date('2023-06-01T00:00:00Z'), {days: 42}), veterinario: 'Dr. Smith', lote: 'DIS-457', dosisAplicadas: 2, dosisTotales: 3 },
     ],
     desparasitaciones: [
       { id: 'd1', tipo: 'interna', fechaAplicacion: new Date('2024-03-10T00:00:00Z'), fechaProximaDosis: new Date('2024-06-10T00:00:00Z') },
@@ -116,7 +117,7 @@ const MOCK_PETS: Pet[] = [
     color: 'Gris',
     fotoPerfil: PlaceHolderImages.find(img => img.id === 'pet-2')!,
     vacunas: [
-      { id: 'v3', tipoVacuna: 'Triple Felina (Panleucopenia, Rinotraqueitis, Calicivirus)', fechaAplicacion: new Date('2024-03-15T00:00:00Z'), fechaProximaDosis: new Date('2025-03-15T00:00:00Z'), veterinario: 'Dr. Smith', lote: 'FEL-789' },
+      { id: 'v3', tipoVacuna: 'Triple Felina (Panleucopenia, Rinotraqueitis, Calicivirus)', fechaAplicacion: new Date('2024-03-15T00:00:00Z'), fechaProximaDosis: new Date('2025-03-15T00:00:00Z'), veterinario: 'Dr. Smith', lote: 'FEL-789', dosisAplicadas: 1, dosisTotales: 1 },
     ],
     desparasitaciones: [
         { id: 'd2', tipo: 'externa', fechaAplicacion: new Date('2024-05-01T00:00:00Z'), fechaProximaDosis: new Date('2024-08-01T00:00:00Z') },
@@ -190,3 +191,5 @@ export function getPets(): Pet[] {
 export function getPetById(id: string): Pet | undefined {
   return MOCK_PETS.find(pet => pet.id === id);
 }
+
+    

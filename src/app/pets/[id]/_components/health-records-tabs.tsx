@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { HeartPulse, Pill, Syringe, Bug, Scale, Image as ImageIcon, CalendarDays, MoreHorizontal, Eye, Pencil, Trash2 } from 'lucide-react';
+import { HeartPulse, Pill, Syringe, Bug, Scale, Image as ImageIcon, CalendarDays, MoreHorizontal, Eye, Pencil, Trash2, ChevronDown } from 'lucide-react';
 import type { Pet, Vaccine, Deworming, Treatment, ReproductiveEvent, Weight } from '@/lib/data';
 import { formatDate, cn } from '@/lib/utils';
 import {
@@ -27,6 +27,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 import { Badge } from '@/components/ui/badge';
 import { add, isBefore } from 'date-fns';
 import Link from 'next/link';
@@ -57,10 +62,21 @@ const getVaccineStatus = (nextDoseDate: Date): { text: string, className: string
     }
     return { text: 'Vigente', className: 'bg-green-500 text-green-900' };
 };
+
+// Helper to group vaccines by type
+const groupVaccines = (vaccines: Vaccine[]) => {
+  return vaccines.reduce((acc, vaccine) => {
+    (acc[vaccine.tipoVacuna] = acc[vaccine.tipoVacuna] || []).push(vaccine);
+    // Sort by most recent application first
+    acc[vaccine.tipoVacuna].sort((a, b) => new Date(b.fechaAplicacion).getTime() - new Date(a.fechaAplicacion).getTime());
+    return acc;
+  }, {} as Record<string, Vaccine[]>);
+};
   
 
 export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
   const [openDialog, setOpenDialog] = useState<DialogState>(null);
+  const groupedVaccines = groupVaccines(pet.vacunas);
 
   const renderEmptyState = (text: string, dialog: DialogState) => (
     <div className="text-center py-10 border-2 border-dashed rounded-lg">
@@ -88,75 +104,84 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="font-headline">Historial de Vacunación</CardTitle>
-              <Button onClick={() => setOpenDialog('vaccine')}>Añadir Vacuna</Button>
+              <Button onClick={() => setOpenDialog('vaccine')}>Añadir Dosis</Button>
             </CardHeader>
             <CardContent>
-              {pet.vacunas.length > 0 ? (
+              {Object.keys(groupedVaccines).length > 0 ? (
                 <div className="space-y-4">
-                  {pet.vacunas.map((vaccine: Vaccine) => {
-                    const status = getVaccineStatus(vaccine.fechaProximaDosis);
+                  {Object.entries(groupedVaccines).map(([vaccineType, doses]) => {
+                    const latestDose = doses[0];
+                    const status = getVaccineStatus(latestDose.fechaProximaDosis);
+                    const totalApplied = doses.filter(d => d.dosisAplicadas).length;
+                    const totalDoses = latestDose.dosisTotales || 1;
                     return (
-                      <div key={vaccine.id} className="border rounded-lg p-4 transition-all">
-                        <div className="flex justify-between items-start">
-                            <div>
-                                <h3 className="font-bold text-lg">{vaccine.tipoVacuna}</h3>
-                                <Badge variant="secondary" className={cn("mt-1 font-semibold", status.className)}>
-                                  {status.text}
-                                </Badge>
+                      <Collapsible key={vaccineType} className="border rounded-lg">
+                        <CollapsibleTrigger className="w-full p-4 hover:bg-muted/50 transition-colors rounded-t-lg">
+                          <div className="flex justify-between items-center w-full">
+                            <div className="text-left">
+                              <h3 className="font-bold text-lg">{vaccineType}</h3>
+                              <Badge variant="secondary" className={cn("mt-1 font-semibold", status.className)}>
+                                {status.text}
+                              </Badge>
                             </div>
-                            <div className="flex items-center gap-1">
-                                {vaccine.etiquetaUrl && (
-                                    <Link href={vaccine.etiquetaUrl} target="_blank" rel="noopener noreferrer">
-                                        <Button variant="ghost" size="icon">
-                                            <Eye className="h-5 w-5" />
-                                            <span className="sr-only">Ver Etiqueta</span>
-                                        </Button>
-                                    </Link>
-                                )}
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" size="icon">
-                                            <MoreHorizontal className="h-5 w-5" />
-                                            <span className="sr-only">Más opciones</span>
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                        <DropdownMenuItem>
-                                            <Pencil className="mr-2 h-4 w-4" />
-                                            Editar
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem className="text-destructive focus:text-destructive">
-                                            <Trash2 className="mr-2 h-4 w-4" />
-                                            Eliminar
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                           </div>
-                        </div>
-                        <Separator className="my-3" />
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-3 text-sm">
-                            <div>
-                                <p className="font-semibold text-muted-foreground">Próxima Dosis</p>
-                                <p>{formatDate(vaccine.fechaProximaDosis)}</p>
+                            <div className="flex items-center gap-4">
+                               <div className="text-right">
+                                <p className="text-sm font-semibold">{totalApplied} de {totalDoses} dosis</p>
+                                <p className="text-xs text-muted-foreground">Próx: {formatDate(latestDose.fechaProximaDosis)}</p>
+                               </div>
+                               <ChevronDown className="h-5 w-5 transition-transform duration-300 [&[data-state=open]]:rotate-180" />
                             </div>
-                            <div>
-                                <p className="font-semibold text-muted-foreground">Última Aplicación</p>
-                                <p>{formatDate(vaccine.fechaAplicacion)}</p>
-                            </div>
-                            <div>
-                                <p className="font-semibold text-muted-foreground">Dosis</p>
-                                <p>{vaccine.dosisAplicadas && vaccine.dosisTotales ? `${vaccine.dosisAplicadas} de ${vaccine.dosisTotales}` : 'N/A'}</p>
-                            </div>
-                            <div>
-                                <p className="font-semibold text-muted-foreground">Veterinario</p>
-                                <p>{vaccine.veterinario}</p>
-                            </div>
-                            <div>
-                                <p className="font-semibold text-muted-foreground">Lote</p>
-                                {vaccine.lote ? <p>{vaccine.lote}</p> : <p>N/A</p>}
-                            </div>
-                        </div>
-                      </div>
+                          </div>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <div className="p-4 border-t space-y-4">
+                            <h4 className="font-semibold">Historial de Dosis</h4>
+                            {doses.map((dose) => (
+                              <div key={dose.id} className="p-3 bg-muted/50 rounded-md">
+                                 <div className="flex justify-between items-start">
+                                    <div>
+                                      <p className="font-semibold">Dosis {dose.dosisAplicadas || 1}</p>
+                                      <p className="text-sm text-muted-foreground">Aplicada: {formatDate(dose.fechaAplicacion)}</p>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                      {dose.etiquetaUrl && (
+                                          <Link href={dose.etiquetaUrl} target="_blank" rel="noopener noreferrer">
+                                              <Button variant="ghost" size="icon">
+                                                  <Eye className="h-5 w-5" />
+                                                  <span className="sr-only">Ver Etiqueta</span>
+                                              </Button>
+                                          </Link>
+                                      )}
+                                      <DropdownMenu>
+                                          <DropdownMenuTrigger asChild>
+                                              <Button variant="ghost" size="icon">
+                                                  <MoreHorizontal className="h-5 w-5" />
+                                                  <span className="sr-only">Más opciones</span>
+                                              </Button>
+                                          </DropdownMenuTrigger>
+                                          <DropdownMenuContent align="end">
+                                              <DropdownMenuItem>
+                                                  <Pencil className="mr-2 h-4 w-4" />
+                                                  Editar
+                                              </DropdownMenuItem>
+                                              <DropdownMenuItem className="text-destructive focus:text-destructive">
+                                                  <Trash2 className="mr-2 h-4 w-4" />
+                                                  Eliminar
+                                              </DropdownMenuItem>
+                                          </DropdownMenuContent>
+                                      </DropdownMenu>
+                                  </div>
+                                </div>
+                                <Separator className="my-2" />
+                                <div className="text-xs space-y-1">
+                                    <p><span className="font-medium text-muted-foreground">Veterinario:</span> {dose.veterinario}</p>
+                                    {dose.lote && <p><span className="font-medium text-muted-foreground">Lote:</span> <span className="font-bold">{dose.lote}</span></p>}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
                     )
                   })}
                 </div>
@@ -319,7 +344,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="font-headline">
-            {openDialog === 'vaccine' && 'Añadir Nueva Vacuna'}
+            {openDialog === 'vaccine' && 'Añadir Nueva Dosis de Vacuna'}
             {openDialog === 'deworming' && 'Añadir Nuevo Registro de Desparasitación'}
             {openDialog === 'treatment' && 'Añadir Nuevo Tratamiento'}
             {openDialog === 'reproductive' && 'Añadir Nuevo Evento Reproductivo'}
@@ -335,3 +360,5 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
     </Dialog>
   );
 }
+
+    
