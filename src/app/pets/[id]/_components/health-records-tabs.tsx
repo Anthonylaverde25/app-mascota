@@ -70,7 +70,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
           <TabsTrigger value="vaccinations"><Syringe className="w-4 h-4 mr-2"/>Vacunas</TabsTrigger>
           <TabsTrigger value="deworming"><Bug className="w-4 h-4 mr-2"/>Desparasitación</TabsTrigger>
           <TabsTrigger value="treatments"><Pill className="w-4 h-4 mr-2"/>Tratamientos</TabsTrigger>
-          <TabsTrigger value="reproductive"><HeartPulse className="w-4 h-4 mr-2"/>Reproductivo</TabsTrigger>
+          {pet.sexo === 'Hembra' && <TabsTrigger value="reproductive"><HeartPulse className="w-4 h-4 mr-2"/>Reproductivo</TabsTrigger>}
           <TabsTrigger value="weight"><Scale className="w-4 h-4 mr-2"/>Peso</TabsTrigger>
         </TabsList>
         
@@ -195,6 +195,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
         </TabsContent>
 
         {/* Reproductive Events Tab */}
+        {pet.sexo === 'Hembra' && (
         <TabsContent value="reproductive">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -225,6 +226,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
             </CardContent>
           </Card>
         </TabsContent>
+        )}
 
          {/* Weight Tab */}
         <TabsContent value="weight">
