@@ -1,0 +1,190 @@
+/**
+ * @fileoverview Firestore Security Rules for PawsHealth Digital application.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model. Users can only create, read, update, and delete data associated with their own user ID and pets.
+ *
+ * Data Structure:
+ * Data is organized hierarchically under /users/{userId}, with subcollections for pets, vaccinations, dewormings, treatments, reproductiveEvents, and calendarEvents.
+ *
+ * Key Security Decisions:
+ * - Users can only manage their own data. No cross-user access is permitted.
+ * - Listing of user documents is disallowed to prevent information disclosure.
+ * - All writes are validated against the authenticated user's ID to prevent unauthorized data modification.
+ * - Data consistency is enforced by validating internal IDs against the path parameters.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Secure user profiles. Only the authenticated user can read or write their own profile. Listing all users is disallowed.
+     * @path /users/{userId}
+     * @allow (create) - User with UID 'user_abc' can create their own profile if request.auth.uid == 'user_abc'.
+     * @allow (get) - User with UID 'user_abc' can read their own profile if request.auth.uid == 'user_abc'.
+     * @allow (update) - User with UID 'user_abc' can update their own profile if request.auth.uid == 'user_abc'.
+     * @allow (delete) - User with UID 'user_abc' can delete their own profile if request.auth.uid == 'user_abc'.
+     * @deny (create) - User with UID 'user_xyz' cannot create a profile for 'user_abc' because request.auth.uid != 'user_abc'.
+     * @deny (get) - User with UID 'user_xyz' cannot read the profile of 'user_abc' because request.auth.uid != 'user_abc'.
+     * @deny (update) - User with UID 'user_xyz' cannot update the profile of 'user_abc' because request.auth.uid != 'user_abc'.
+     * @deny (delete) - User with UID 'user_xyz' cannot delete the profile of 'user_abc' because request.auth.uid != 'user_abc'.
+     * @principle Enforces document ownership for all operations. Prevents unauthorized access to user data.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isSignedIn() && isSelfCreate(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Secure pet profiles. Only the owner can create, read, update, and delete their pet profiles.
+     * @path /users/{userId}/pets/{petId}
+     * @allow (create) - User with UID 'user_abc' can create a pet profile under their user ID.
+     * @allow (get) - User with UID 'user_abc' can read a pet profile under their user ID.
+     * @allow (list) - User with UID 'user_abc' can list pet profiles under their user ID.
+     * @allow (update) - User with UID 'user_abc' can update a pet profile under their user ID.
+     * @allow (delete) - User with UID 'user_abc' can delete a pet profile under their user ID.
+     * @deny (create) - User with UID 'user_xyz' cannot create a pet profile under 'user_abc's user ID.
+     * @deny (get) - User with UID 'user_xyz' cannot read a pet profile under 'user_abc's user ID.
+     * @deny (update) - User with UID 'user_xyz' cannot update a pet profile under 'user_abc's user ID.
+     * @deny (delete) - User with UID 'user_xyz' cannot delete a pet profile under 'user_abc's user ID.
+     * @principle Enforces path-based ownership. Users can only manage data under their own user ID.
+     */
+    match /users/{userId}/pets/{petId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isExistingOwner(userId) && resource.data.userId == userId;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Secure vaccination records for pets. Only the owner can manage these records.
+     * @path /users/{userId}/pets/{petId}/vaccinations/{vaccinationId}
+     * @allow (create) - User with UID 'user_abc' can create a vaccination record for their pet.
+     * @allow (get) - User with UID 'user_abc' can read a vaccination record for their pet.
+     * @allow (list) - User with UID 'user_abc' can list vaccination records for their pet.
+     * @allow (update) - User with UID 'user_abc' can update a vaccination record for their pet.
+     * @allow (delete) - User with UID 'user_abc' can delete a vaccination record for their pet.
+     * @deny (create) - User with UID 'user_xyz' cannot create a vaccination record for 'user_abc's pet.
+     * @deny (get) - User with UID 'user_xyz' cannot read a vaccination record for 'user_abc's pet.
+     * @deny (update) - User with UID 'user_xyz' cannot update a vaccination record for 'user_abc's pet.
+     * @deny (delete) - User with UID 'user_xyz' cannot delete a vaccination record for 'user_abc's pet.
+     * @principle Enforces strict ownership based on the path.
+     */
+    match /users/{userId}/pets/{petId}/vaccinations/{vaccinationId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && get(/databases/$(database)/documents/users/$(userId)/pets/$(petId)).data.userId == userId && request.resource.data.petId == petId;
+      allow update: if isExistingOwner(userId) && get(/databases/$(database)/documents/users/$(userId)/pets/$(petId)).data.userId == userId && resource.data.petId == petId;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Secure deworming records for pets. Only the owner can manage these records.
+     * @path /users/{userId}/pets/{petId}/dewormings/{dewormingId}
+     * @allow (create) - User with UID 'user_abc' can create a deworming record for their pet.
+     * @allow (get) - User with UID 'user_abc' can read a deworming record for their pet.
+     * @allow (list) - User with UID 'user_abc' can list deworming records for their pet.
+     * @allow (update) - User with UID 'user_abc' can update a deworming record for their pet.
+     * @allow (delete) - User with UID 'user_abc' can delete a deworming record for their pet.
+     * @deny (create) - User with UID 'user_xyz' cannot create a deworming record for 'user_abc's pet.
+     * @deny (get) - User with UID 'user_xyz' cannot read a deworming record for 'user_abc's pet.
+     * @deny (update) - User with UID 'user_xyz' cannot update a deworming record for 'user_abc's pet.
+     * @deny (delete) - User with UID 'user_xyz' cannot delete a deworming record for 'user_abc's pet.
+     * @principle Enforces strict ownership based on the path.
+     */
+    match /users/{userId}/pets/{petId}/dewormings/{dewormingId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && get(/databases/$(database)/documents/users/$(userId)/pets/$(petId)).data.userId == userId && request.resource.data.petId == petId;
+      allow update: if isExistingOwner(userId) && get(/databases/$(database)/documents/users/$(userId)/pets/$(petId)).data.userId == userId && resource.data.petId == petId;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Secure treatment records for pets. Only the owner can manage these records.
+     * @path /users/{userId}/pets/{petId}/treatments/{treatmentId}
+     * @allow (create) - User with UID 'user_abc' can create a treatment record for their pet.
+     * @allow (get) - User with UID 'user_abc' can read a treatment record for their pet.
+     * @allow (list) - User with UID 'user_abc' can list treatment records for their pet.
+     * @allow (update) - User with UID 'user_abc' can update a treatment record for their pet.
+     * @allow (delete) - User with UID 'user_abc' can delete a treatment record for their pet.
+     * @deny (create) - User with UID 'user_xyz' cannot create a treatment record for 'user_abc's pet.
+     * @deny (get) - User with UID 'user_xyz' cannot read a treatment record for 'user_abc's pet.
+     * @deny (update) - User with UID 'user_xyz' cannot update a treatment record for 'user_abc's pet.
+     * @deny (delete) - User with UID 'user_xyz' cannot delete a treatment record for 'user_abc's pet.
+     * @principle Enforces strict ownership based on the path.
+     */
+    match /users/{userId}/pets/{petId}/treatments/{treatmentId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && get(/databases/$(database)/documents/users/$(userId)/pets/$(petId)).data.userId == userId && request.resource.data.petId == petId;
+      allow update: if isExistingOwner(userId) && get(/databases/$(database)/documents/users/$(userId)/pets/$(petId)).data.userId == userId && resource.data.petId == petId;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Secure reproductive event records for pets. Only the owner can manage these records.
+     * @path /users/{userId}/pets/{petId}/reproductiveEvents/{reproductiveEventId}
+     * @allow (create) - User with UID 'user_abc' can create a reproductive event record for their pet.
+     * @allow (get) - User with UID 'user_abc' can read a reproductive event record for their pet.
+     * @allow (list) - User with UID 'user_abc' can list reproductive event records for their pet.
+     * @allow (update) - User with UID 'user_abc' can update a reproductive event record for their pet.
+     * @allow (delete) - User with UID 'user_abc' can delete a reproductive event record for their pet.
+     * @deny (create) - User with UID 'user_xyz' cannot create a reproductive event record for 'user_abc's pet.
+     * @deny (get) - User with UID 'user_xyz' cannot read a reproductive event record for 'user_abc's pet.
+     * @deny (update) - User with UID 'user_xyz' cannot update a reproductive event record for 'user_abc's pet.
+     * @deny (delete) - User with UID 'user_xyz' cannot delete a reproductive event record for 'user_abc's pet.
+     * @principle Enforces strict ownership based on the path.
+     */
+    match /users/{userId}/pets/{petId}/reproductiveEvents/{reproductiveEventId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && get(/databases/$(database)/documents/users/$(userId)/pets/$(petId)).data.userId == userId && request.resource.data.petId == petId;
+      allow update: if isExistingOwner(userId) && get(/databases/$(database)/documents/users/$(userId)/pets/$(petId)).data.userId == userId && resource.data.petId == petId;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Secure calendar event records for pets. Only the owner can manage these records.
+     * @path /users/{userId}/pets/{petId}/calendarEvents/{calendarEventId}
+     * @allow (create) - User with UID 'user_abc' can create a calendar event record for their pet.
+     * @allow (get) - User with UID 'user_abc' can read a calendar event record for their pet.
+     * @allow (list) - User with UID 'user_abc' can list calendar event records for their pet.
+     * @allow (update) - User with UID 'user_abc' can update a calendar event record for their pet.
+     * @allow (delete) - User with UID 'user_abc' can delete a calendar event record for their pet.
+     * @deny (create) - User with UID 'user_xyz' cannot create a calendar event record for 'user_abc's pet.
+     * @deny (get) - User with UID 'user_xyz' cannot read a calendar event record for 'user_abc's pet.
+     * @deny (update) - User with UID 'user_xyz' cannot update a calendar event record for 'user_abc's pet.
+     * @deny (delete) - User with UID 'user_xyz' cannot delete a calendar event record for 'user_abc's pet.
+     * @principle Enforces strict ownership based on the path.
+     */
+    match /users/{userId}/pets/{petId}/calendarEvents/{calendarEventId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && get(/databases/$(database)/documents/users/$(userId)/pets/$(petId)).data.userId == userId && request.resource.data.petId == petId;
+      allow update: if isExistingOwner(userId) && get(/databases/$(database)/documents/users/$(userId)/pets/$(petId)).data.userId == userId && resource.data.petId == petId;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    function isSelfCreate(userId) {
+        return isSignedIn() && request.auth.uid == userId;
+    }
+  }
+}

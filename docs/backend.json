@@ -1,0 +1,461 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the PawsHealth Digital application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The user's full name."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address.",
+          "format": "email"
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "The user's phone number (optional)."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "email"
+      ]
+    },
+    "Pet": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Pet",
+      "type": "object",
+      "description": "Represents a pet owned by a user.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Pet entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Pet)"
+        },
+        "name": {
+          "type": "string",
+          "description": "The pet's name."
+        },
+        "species": {
+          "type": "string",
+          "description": "The pet's species (e.g., dog, cat)."
+        },
+        "breed": {
+          "type": "string",
+          "description": "The pet's breed."
+        },
+        "birthDate": {
+          "type": "string",
+          "description": "The pet's date of birth.",
+          "format": "date-time"
+        },
+        "sex": {
+          "type": "string",
+          "description": "The pet's sex (male or female)."
+        },
+        "color": {
+          "type": "string",
+          "description": "The pet's color."
+        },
+        "profilePicture": {
+          "type": "string",
+          "description": "URL of the pet's profile picture.",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "name",
+        "species",
+        "breed",
+        "birthDate",
+        "sex",
+        "color"
+      ]
+    },
+    "Vaccination": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Vaccination",
+      "type": "object",
+      "description": "Represents a vaccination record for a pet.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Vaccination entity."
+        },
+        "petId": {
+          "type": "string",
+          "description": "Reference to Pet. (Relationship: Pet 1:N Vaccination)"
+        },
+        "vaccineType": {
+          "type": "string",
+          "description": "The type of vaccine administered."
+        },
+        "applicationDate": {
+          "type": "string",
+          "description": "The date the vaccine was applied.",
+          "format": "date-time"
+        },
+        "nextDoseDate": {
+          "type": "string",
+          "description": "The date of the next scheduled dose.",
+          "format": "date-time"
+        },
+        "veterinarian": {
+          "type": "string",
+          "description": "The name of the veterinarian who administered the vaccine."
+        },
+        "batchNumber": {
+          "type": "string",
+          "description": "The batch number of the vaccine (optional)."
+        }
+      },
+      "required": [
+        "id",
+        "petId",
+        "vaccineType",
+        "applicationDate",
+        "nextDoseDate",
+        "veterinarian"
+      ]
+    },
+    "Deworming": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Deworming",
+      "type": "object",
+      "description": "Represents a deworming record for a pet.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Deworming entity."
+        },
+        "petId": {
+          "type": "string",
+          "description": "Reference to Pet. (Relationship: Pet 1:N Deworming)"
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of deworming (internal or external)."
+        },
+        "applicationDate": {
+          "type": "string",
+          "description": "The date the deworming treatment was applied.",
+          "format": "date-time"
+        },
+        "nextDoseDate": {
+          "type": "string",
+          "description": "The date of the next scheduled dose.",
+          "format": "date-time"
+        },
+        "observations": {
+          "type": "string",
+          "description": "Any observations regarding the deworming treatment (optional)."
+        }
+      },
+      "required": [
+        "id",
+        "petId",
+        "type",
+        "applicationDate",
+        "nextDoseDate"
+      ]
+    },
+    "Treatment": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Treatment",
+      "type": "object",
+      "description": "Represents a treatment record for a pet.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Treatment entity."
+        },
+        "petId": {
+          "type": "string",
+          "description": "Reference to Pet. (Relationship: Pet 1:N Treatment)"
+        },
+        "medicationName": {
+          "type": "string",
+          "description": "The name of the medication used in the treatment."
+        },
+        "dosage": {
+          "type": "string",
+          "description": "The dosage of the medication."
+        },
+        "duration": {
+          "type": "string",
+          "description": "The duration of the treatment."
+        },
+        "startDate": {
+          "type": "string",
+          "description": "The date the treatment started.",
+          "format": "date-time"
+        },
+        "endDate": {
+          "type": "string",
+          "description": "The date the treatment ended (optional).",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "petId",
+        "medicationName",
+        "dosage",
+        "duration",
+        "startDate"
+      ]
+    },
+    "ReproductiveEvent": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ReproductiveEvent",
+      "type": "object",
+      "description": "Represents a reproductive event for a pet.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the ReproductiveEvent entity."
+        },
+        "petId": {
+          "type": "string",
+          "description": "Reference to Pet. (Relationship: Pet 1:N ReproductiveEvent)"
+        },
+        "eventType": {
+          "type": "string",
+          "description": "The type of reproductive event (e.g., heat cycle)."
+        },
+        "date": {
+          "type": "string",
+          "description": "The date of the reproductive event.",
+          "format": "date-time"
+        },
+        "observations": {
+          "type": "string",
+          "description": "Any observations regarding the reproductive event (optional)."
+        }
+      },
+      "required": [
+        "id",
+        "petId",
+        "eventType",
+        "date"
+      ]
+    },
+    "CalendarEvent": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "CalendarEvent",
+      "type": "object",
+      "description": "Represents a calendar event related to a pet's health.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the CalendarEvent entity."
+        },
+        "petId": {
+          "type": "string",
+          "description": "Reference to Pet. (Relationship: Pet 1:N CalendarEvent)"
+        },
+        "eventType": {
+          "type": "string",
+          "description": "The type of event (e.g., vaccination, deworming, treatment)."
+        },
+        "date": {
+          "type": "string",
+          "description": "The date of the event.",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string",
+          "description": "A description of the event."
+        }
+      },
+      "required": [
+        "id",
+        "petId",
+        "eventType",
+        "date",
+        "description"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Collection for storing user profiles. Each document is a user identified by their unique Firebase Auth UID.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Auth UID of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/pets/{petId}",
+        "definition": {
+          "entityName": "Pet",
+          "schema": {
+            "$ref": "#/backend/entities/Pet"
+          },
+          "description": "Subcollection for storing pets owned by a specific user.  Path-based ownership is enforced.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Auth UID of the user."
+            },
+            {
+              "name": "petId",
+              "description": "The unique ID of the pet."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/pets/{petId}/vaccinations/{vaccinationId}",
+        "definition": {
+          "entityName": "Vaccination",
+          "schema": {
+            "$ref": "#/backend/entities/Vaccination"
+          },
+          "description": "Subcollection for storing vaccination records for a specific pet. Path-based ownership is enforced.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Auth UID of the user."
+            },
+            {
+              "name": "petId",
+              "description": "The unique ID of the pet."
+            },
+            {
+              "name": "vaccinationId",
+              "description": "The unique ID of the vaccination record."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/pets/{petId}/dewormings/{dewormingId}",
+        "definition": {
+          "entityName": "Deworming",
+          "schema": {
+            "$ref": "#/backend/entities/Deworming"
+          },
+          "description": "Subcollection for storing deworming records for a specific pet. Path-based ownership is enforced.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Auth UID of the user."
+            },
+            {
+              "name": "petId",
+              "description": "The unique ID of the pet."
+            },
+            {
+              "name": "dewormingId",
+              "description": "The unique ID of the deworming record."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/pets/{petId}/treatments/{treatmentId}",
+        "definition": {
+          "entityName": "Treatment",
+          "schema": {
+            "$ref": "#/backend/entities/Treatment"
+          },
+          "description": "Subcollection for storing treatment records for a specific pet. Path-based ownership is enforced.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Auth UID of the user."
+            },
+            {
+              "name": "petId",
+              "description": "The unique ID of the pet."
+            },
+            {
+              "name": "treatmentId",
+              "description": "The unique ID of the treatment record."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/pets/{petId}/reproductiveEvents/{reproductiveEventId}",
+        "definition": {
+          "entityName": "ReproductiveEvent",
+          "schema": {
+            "$ref": "#/backend/entities/ReproductiveEvent"
+          },
+          "description": "Subcollection for storing reproductive event records for a specific pet. Path-based ownership is enforced.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Auth UID of the user."
+            },
+            {
+              "name": "petId",
+              "description": "The unique ID of the pet."
+            },
+            {
+              "name": "reproductiveEventId",
+              "description": "The unique ID of the reproductive event record."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/pets/{petId}/calendarEvents/{calendarEventId}",
+        "definition": {
+          "entityName": "CalendarEvent",
+          "schema": {
+            "$ref": "#/backend/entities/CalendarEvent"
+          },
+          "description": "Subcollection for storing calendar event records for a specific pet. Path-based ownership is enforced.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Auth UID of the user."
+            },
+            {
+              "name": "petId",
+              "description": "The unique ID of the pet."
+            },
+            {
+              "name": "calendarEventId",
+              "description": "The unique ID of the calendar event record."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to manage user and pet health data, emphasizing a clear hierarchy for data ownership and access control.  The design adheres to the core principles of Authorization Independence, Clarity of Intent, DBAC, and QAPs. Each data point is secured and easily accessible while maintaining data integrity.  Specifically, the path-based ownership model `/users/{userId}/pets/{petId}/...` is used consistently to define a strict user-pet relationship. This design allows for efficient and secure data retrieval, enforcing that a user can only access data related to their own pets. Since access to a pet's subcollections (Vaccinations, Deworming, etc.) is implicitly tied to pet ownership, authorization independence is naturally achieved as no `get()` calls are needed in the security rules to verify parent document attributes. The structure supports the required QAPs since list operations are scoped to the user and their respective pets. There is no mixing of data with different access needs (e.g., public vs private)."
+  }
+}
