@@ -52,6 +52,7 @@ export default function LoginPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
+      if (!auth) throw new Error('Servicio de autenticación no disponible');
       await signInWithEmailAndPassword(auth, values.email, values.password);
       toast({
         title: '¡Bienvenido de nuevo!',
@@ -63,7 +64,7 @@ export default function LoginPage() {
       toast({
         variant: 'destructive',
         title: 'Error al iniciar sesión',
-        description: error.message || 'Ha ocurrido un error. Por favor, inténtalo de nuevo.',
+        description: 'Credenciales incorrectas o ha ocurrido un error. Por favor, inténtalo de nuevo.',
       });
     } finally {
         setIsSubmitting(false);
@@ -75,8 +76,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
-       <Card className="w-full max-w-md">
+    <div className="flex min-h-[calc(100vh-80px)] flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
+       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="text-center">
             <div className="mx-auto mb-4">
                 <Logo />

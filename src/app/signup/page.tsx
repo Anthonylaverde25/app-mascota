@@ -52,18 +52,23 @@ export default function SignupPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
+      if (!auth) throw new Error('Servicio de autenticación no disponible');
       await createUserWithEmailAndPassword(auth, values.email, values.password);
       toast({
         title: '¡Cuenta creada!',
-        description: 'Tu cuenta ha sido creada exitosamente. Ahora puedes iniciar sesión.',
+        description: 'Tu cuenta ha sido creada exitosamente. Serás redirigido.',
       });
       router.push('/');
     } catch (error: any) {
       console.error("Error signing up:", error);
+      let description = 'Ha ocurrido un error. Por favor, inténtalo de nuevo.';
+      if (error.code === 'auth/email-already-in-use') {
+        description = 'Este correo electrónico ya está en uso. Por favor, intenta iniciar sesión.';
+      }
       toast({
         variant: 'destructive',
         title: 'Error al registrarse',
-        description: error.message || 'Ha ocurrido un error. Por favor, inténtalo de nuevo.',
+        description: description,
       });
     } finally {
         setIsSubmitting(false);
@@ -75,8 +80,8 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md">
+    <div className="flex min-h-[calc(100vh-80px)] flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="text-center">
             <div className="mx-auto mb-4">
                 <Logo />
