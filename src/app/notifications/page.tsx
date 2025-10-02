@@ -135,9 +135,9 @@ export default function NotificationsPage() {
                 {reminderSettings.map((setting, index) => (
                     <React.Fragment key={setting.id}>
                         <div className="flex items-center justify-between">
-                            <div className="flex items-center">
-                                <setting.icon className="h-4 w-4 mr-3 text-muted-foreground" />
-                                <label htmlFor={setting.id} className="text-sm font-medium">
+                            <div className="flex items-center overflow-hidden">
+                                <setting.icon className="h-4 w-4 mr-3 text-muted-foreground flex-shrink-0" />
+                                <label htmlFor={setting.id} className="text-sm font-medium truncate">
                                     {setting.label}
                                 </label>
                             </div>

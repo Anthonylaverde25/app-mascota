@@ -56,7 +56,6 @@ const getVaccineStatus = (latestDose: Vaccine): { text: string, className: strin
     
     const isComplete = latestDose.dosisAplicadas === latestDose.dosisTotales || (!latestDose.dosisTotales && latestDose.dosisAplicadas === 1);
     
-    // For single-dose vaccines or completed series, check the next booster date.
     if (isComplete) {
         if (isPast(latestDose.fechaProximaDosis)) {
             return { text: 'Refuerzo Vencido', className: 'bg-destructive text-destructive-foreground', isComplete: false, isExpired: true };
@@ -64,7 +63,6 @@ const getVaccineStatus = (latestDose: Vaccine): { text: string, className: strin
         return { text: 'Completa', className: 'bg-green-600 text-white', isComplete: true, isExpired: false };
     }
 
-    // For multi-dose vaccines still in progress.
     if (isPast(latestDose.fechaProximaDosis)) {
       return { text: 'Dosis Vencida', className: 'bg-destructive text-destructive-foreground', isComplete: false, isExpired: true };
     }
@@ -75,11 +73,9 @@ const getVaccineStatus = (latestDose: Vaccine): { text: string, className: strin
 };
   
 
-// Helper to group vaccines by type
 const groupVaccines = (vaccines: Vaccine[]) => {
   return vaccines.reduce((acc, vaccine) => {
     (acc[vaccine.tipoVacuna] = acc[vaccine.tipoVacuna] || []).push(vaccine);
-    // Sort by most recent application first
     acc[vaccine.tipoVacuna].sort((a, b) => new Date(b.fechaAplicacion).getTime() - new Date(a.fechaAplicacion).getTime());
     return acc;
   }, {} as Record<string, Vaccine[]>);
@@ -125,30 +121,29 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
   return (
     <Dialog open={!!openDialog} onOpenChange={(isOpen) => !isOpen && setOpenDialog(null)}>
       <Tabs defaultValue="vaccinations" className='w-full'>
-        <TabsList className="grid w-full h-auto grid-cols-2 md:grid-cols-5">
+        <TabsList className="grid w-full h-auto grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
           <TabsTrigger value="vaccinations"><Syringe className="w-4 h-4 mr-2"/>Vacunas</TabsTrigger>
-          <TabsTrigger value="deworming"><Bug className="w-4 h-4 mr-2"/>Desparasitación</TabsTrigger>
+          <TabsTrigger value="deworming"><Bug className="w-4 h-4 mr-2"/>Desparasit.</TabsTrigger>
           <TabsTrigger value="treatments"><Pill className="w-4 h-4 mr-2"/>Tratamientos</TabsTrigger>
           {pet.sexo === 'Hembra' && <TabsTrigger value="reproductive"><HeartPulse className="w-4 h-4 mr-2"/>Reproductivo</TabsTrigger>}
           <TabsTrigger value="weight"><Scale className="w-4 h-4 mr-2"/>Peso</TabsTrigger>
         </TabsList>
         
-        {/* Vaccinations Tab */}
         <TabsContent value="vaccinations">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <CardTitle className="font-headline">Historial de Vacunación</CardTitle>
-              <Button onClick={() => setOpenDialog('vaccine')}>Añadir Dosis</Button>
+              <Button onClick={() => setOpenDialog('vaccine')} className="w-full sm:w-auto">Añadir Dosis</Button>
             </CardHeader>
             <CardContent>
              {Object.keys(groupedVaccines).length > 0 ? (
                  <>
-                    <div className="grid grid-cols-3 gap-4 mb-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                         {summaryItems.map((item) => (
                         <div key={item.label} className="p-3 bg-muted rounded-lg flex items-center border">
                             <item.icon className={cn("h-6 w-6 mr-3", item.color)} />
                             <div>
-                                <p className="text-2xl font-bold">{item.count}</p>
+                                <p className="text-xl sm:text-2xl font-bold">{item.count}</p>
                                 <p className="text-xs text-muted-foreground">{item.label}</p>
                             </div>
                         </div>
@@ -163,15 +158,15 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
                         return (
                           <Collapsible key={vaccineType} className="border rounded-lg">
                             <CollapsibleTrigger className="w-full p-4 hover:bg-muted/50 transition-colors rounded-t-lg">
-                              <div className="flex justify-between items-center w-full">
+                              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-2">
                                 <div className="text-left">
                                   <h3 className="font-bold text-lg">{vaccineType}</h3>
                                   <Badge variant="secondary" className={cn("mt-1 font-semibold", status.className)}>
                                     {status.text}
                                   </Badge>
                                 </div>
-                                <div className="flex items-center gap-4">
-                                   <div className="text-right">
+                                <div className="flex items-center gap-4 w-full sm:w-auto justify-between">
+                                   <div className="text-left sm:text-right">
                                     <p className="text-sm font-semibold">{totalApplied} de {totalDoses} dosis</p>
                                     <p className="text-xs text-muted-foreground">Próx: {formatDate(latestDose.fechaProximaDosis)}</p>
                                    </div>
@@ -241,32 +236,34 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
         {/* Deworming Tab */}
         <TabsContent value="deworming">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <CardTitle className="font-headline">Historial de Desparasitación</CardTitle>
-              <Button onClick={() => setOpenDialog('deworming')}>Añadir Registro</Button>
+              <Button onClick={() => setOpenDialog('deworming')} className="w-full sm:w-auto">Añadir Registro</Button>
             </CardHeader>
             <CardContent>
               {pet.desparasitaciones.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Tipo</TableHead>
-                      <TableHead>Fecha</TableHead>
-                      <TableHead>Próxima Dosis</TableHead>
-                      <TableHead>Observaciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {pet.desparasitaciones.map((d: Deworming) => (
-                      <TableRow key={d.id}>
-                        <TableCell className="capitalize">{d.tipo}</TableCell>
-                        <TableCell>{formatDate(d.fechaAplicacion)}</TableCell>
-                        <TableCell>{formatDate(d.fechaProximaDosis)}</TableCell>
-                        <TableCell>{d.observaciones || 'N/A'}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                <div className="overflow-x-auto">
+                    <Table>
+                    <TableHeader>
+                        <TableRow>
+                        <TableHead>Tipo</TableHead>
+                        <TableHead>Fecha</TableHead>
+                        <TableHead>Próxima Dosis</TableHead>
+                        <TableHead>Observaciones</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {pet.desparasitaciones.map((d: Deworming) => (
+                        <TableRow key={d.id}>
+                            <TableCell className="capitalize">{d.tipo}</TableCell>
+                            <TableCell>{formatDate(d.fechaAplicacion)}</TableCell>
+                            <TableCell>{formatDate(d.fechaProximaDosis)}</TableCell>
+                            <TableCell className="min-w-[150px]">{d.observaciones || 'N/A'}</TableCell>
+                        </TableRow>
+                        ))}
+                    </TableBody>
+                    </Table>
+                </div>
               ) : renderEmptyState('No se encontraron registros de desparasitación.', 'deworming')}
             </CardContent>
           </Card>
@@ -275,32 +272,34 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
         {/* Treatments Tab */}
         <TabsContent value="treatments">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <CardTitle className="font-headline">Historial de Tratamientos</CardTitle>
-              <Button onClick={() => setOpenDialog('treatment')}>Añadir Tratamiento</Button>
+              <Button onClick={() => setOpenDialog('treatment')} className="w-full sm:w-auto">Añadir Tratamiento</Button>
             </CardHeader>
             <CardContent>
               {pet.tratamientos.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Medicamento</TableHead>
-                      <TableHead>Dosis</TableHead>
-                      <TableHead>Fecha de Inicio</TableHead>
-                      <TableHead>Duración</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {pet.tratamientos.map((t: Treatment) => (
-                      <TableRow key={t.id}>
-                        <TableCell>{t.nombreMedicamento}</TableCell>
-                        <TableCell>{t.dosificacion}</TableCell>
-                        <TableCell>{formatDate(t.fechaInicio)}</TableCell>
-                        <TableCell>{t.duracion}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                <div className="overflow-x-auto">
+                    <Table>
+                    <TableHeader>
+                        <TableRow>
+                        <TableHead>Medicamento</TableHead>
+                        <TableHead>Dosis</TableHead>
+                        <TableHead>Fecha de Inicio</TableHead>
+                        <TableHead>Duración</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {pet.tratamientos.map((t: Treatment) => (
+                        <TableRow key={t.id}>
+                            <TableCell>{t.nombreMedicamento}</TableCell>
+                            <TableCell>{t.dosificacion}</TableCell>
+                            <TableCell>{formatDate(t.fechaInicio)}</TableCell>
+                            <TableCell>{t.duracion}</TableCell>
+                        </TableRow>
+                        ))}
+                    </TableBody>
+                    </Table>
+                </div>
               ) : renderEmptyState('No se encontraron registros de tratamientos.', 'treatment')}
             </CardContent>
           </Card>
@@ -310,30 +309,32 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
         {pet.sexo === 'Hembra' && (
         <TabsContent value="reproductive">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <CardTitle className="font-headline">Historial Reproductivo</CardTitle>
-              <Button onClick={() => setOpenDialog('reproductive')}>Añadir Evento</Button>
+              <Button onClick={() => setOpenDialog('reproductive')} className="w-full sm:w-auto">Añadir Evento</Button>
             </CardHeader>
             <CardContent>
               {pet.eventosReproductivos.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Evento</TableHead>
-                      <TableHead>Fecha</TableHead>
-                      <TableHead>Observaciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {pet.eventosReproductivos.map((e: ReproductiveEvent) => (
-                      <TableRow key={e.id}>
-                        <TableCell>{e.tipoEvento}</TableCell>
-                        <TableCell>{formatDate(e.fecha)}</TableCell>
-                        <TableCell>{e.observaciones || 'N/A'}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                <div className="overflow-x-auto">
+                    <Table>
+                    <TableHeader>
+                        <TableRow>
+                        <TableHead>Evento</TableHead>
+                        <TableHead>Fecha</TableHead>
+                        <TableHead>Observaciones</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {pet.eventosReproductivos.map((e: ReproductiveEvent) => (
+                        <TableRow key={e.id}>
+                            <TableCell>{e.tipoEvento}</TableCell>
+                            <TableCell>{formatDate(e.fecha)}</TableCell>
+                            <TableCell className="min-w-[150px]">{e.observaciones || 'N/A'}</TableCell>
+                        </TableRow>
+                        ))}
+                    </TableBody>
+                    </Table>
+                </div>
               ) : renderEmptyState('No se encontraron eventos reproductivos.', 'reproductive')}
             </CardContent>
           </Card>
@@ -343,30 +344,32 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
          {/* Weight Tab */}
         <TabsContent value="weight">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <CardTitle className="font-headline">Historial de Peso</CardTitle>
-              <Button onClick={() => setOpenDialog('weight')}>Añadir Registro de Peso</Button>
+              <Button onClick={() => setOpenDialog('weight')} className="w-full sm:w-auto">Añadir Peso</Button>
             </CardHeader>
             <CardContent>
               {pet.pesos.length > 0 ? (
                 <>
                   <WeightChart data={pet.pesos} />
-                  <Table className="mt-4">
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Fecha</TableHead>
-                        <TableHead>Peso (kg)</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {pet.pesos.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()).map((w: Weight) => (
-                        <TableRow key={w.id}>
-                          <TableCell>{formatDate(w.fecha)}</TableCell>
-                          <TableCell>{w.peso} kg</TableCell>
+                  <div className="overflow-x-auto mt-4">
+                    <Table>
+                        <TableHeader>
+                        <TableRow>
+                            <TableHead>Fecha</TableHead>
+                            <TableHead>Peso (kg)</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                        </TableHeader>
+                        <TableBody>
+                        {pet.pesos.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()).map((w: Weight) => (
+                            <TableRow key={w.id}>
+                            <TableCell>{formatDate(w.fecha)}</TableCell>
+                            <TableCell>{w.peso} kg</TableCell>
+                            </TableRow>
+                        ))}
+                        </TableBody>
+                    </Table>
+                  </div>
                 </>
               ) : renderEmptyState('No se encontraron registros de peso.', 'weight')}
             </CardContent>
@@ -388,14 +391,14 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
         )}
       </Tabs>
       
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-headline">
             {openDialog === 'vaccine' && 'Añadir Nueva Dosis de Vacuna'}
-            {openDialog === 'deworming' && 'Añadir Nuevo Registro de Desparasitación'}
+            {openDialog === 'deworming' && 'Añadir Desparasitación'}
             {openDialog === 'treatment' && 'Añadir Nuevo Tratamiento'}
-            {openDialog === 'reproductive' && 'Añadir Nuevo Evento Reproductivo'}
-            {openDialog === 'weight' && 'Añadir Nuevo Registro de Peso'}
+            {openDialog === 'reproductive' && 'Añadir Evento Reproductivo'}
+            {openDialog === 'weight' && 'Añadir Registro de Peso'}
           </DialogTitle>
         </DialogHeader>
         {openDialog === 'vaccine' && <VaccinationForm petSpecies={pet.especie} closeDialog={() => setOpenDialog(null)} />}
@@ -407,5 +410,3 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
     </Dialog>
   );
 }
-
-    
