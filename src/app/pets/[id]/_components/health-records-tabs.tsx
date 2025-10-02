@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { HeartPulse, Pill, Syringe, Bug, Scale, Image as ImageIcon, CalendarDays, MoreHorizontal, Eye, Pencil, Trash2, ChevronDown, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { HeartPulse, Pill, Syringe, Bug, Scale, Eye, Pencil, Trash2, ChevronDown, CheckCircle, Clock, AlertCircle, MoreHorizontal } from 'lucide-react';
 import type { Pet, Vaccine, Deworming, Treatment, ReproductiveEvent, Weight } from '@/lib/data';
 import { formatDate, cn } from '@/lib/utils';
 import {
@@ -125,13 +125,12 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
   return (
     <Dialog open={!!openDialog} onOpenChange={(isOpen) => !isOpen && setOpenDialog(null)}>
       <Tabs defaultValue="vaccinations" className='w-full'>
-        <TabsList className={cn("grid w-full h-auto", pet.sexo === 'Hembra' ? 'grid-cols-2 md:grid-cols-6' : 'grid-cols-2 md:grid-cols-5')}>
+        <TabsList className="grid w-full h-auto grid-cols-2 md:grid-cols-5">
           <TabsTrigger value="vaccinations"><Syringe className="w-4 h-4 mr-2"/>Vacunas</TabsTrigger>
           <TabsTrigger value="deworming"><Bug className="w-4 h-4 mr-2"/>Desparasitación</TabsTrigger>
           <TabsTrigger value="treatments"><Pill className="w-4 h-4 mr-2"/>Tratamientos</TabsTrigger>
           {pet.sexo === 'Hembra' && <TabsTrigger value="reproductive"><HeartPulse className="w-4 h-4 mr-2"/>Reproductivo</TabsTrigger>}
           <TabsTrigger value="weight"><Scale className="w-4 h-4 mr-2"/>Peso</TabsTrigger>
-          {pet.sexo === 'Hembra' && <TabsTrigger value="reproductive-calendar"><CalendarDays className="w-4 h-4 mr-2"/>Calendario</TabsTrigger>}
         </TabsList>
         
         {/* Vaccinations Tab */}

@@ -40,7 +40,7 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1">
-          <Card className="sticky top-20 shadow-lg">
+          <Card className="sticky top-20">
             <div className="relative h-64 w-full">
               <Image
                 src={pet.fotoPerfil.imageUrl}
