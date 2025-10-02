@@ -58,14 +58,6 @@ export interface Pet {
   pesos: Weight[];
 }
 
-export interface CalendarEvent {
-  petName: string;
-  petId: string;
-  date: Date;
-  type: 'Vacuna' | 'Desparasitación' | 'Tratamiento' | 'Celo' | 'Evento Reproductivo';
-  description: string;
-}
-
 export const VACCINE_TYPES = {
   Perro: [
     { name: 'Rabia', mandatory: true },
@@ -89,27 +81,27 @@ const MOCK_PETS: Pet[] = [
     nombre: 'Buddy',
     especie: 'Perro',
     raza: 'Golden Retriever',
-    fechaNacimiento: new Date('2020-05-15'),
+    fechaNacimiento: new Date('2020-05-15T00:00:00'),
     sexo: 'Macho',
     color: 'Dorado',
     fotoPerfil: PlaceHolderImages.find(img => img.id === 'pet-1')!,
     vacunas: [
-      { id: 'v1', tipoVacuna: 'Rabia', fechaAplicacion: new Date('2023-06-01'), fechaProximaDosis: new Date('2024-06-01'), veterinario: 'Dr. Smith', lote: 'RAB-123' },
-      { id: 'v2', tipoVacuna: 'Moquillo/Distemper', fechaAplicacion: new Date('2023-06-01'), fechaProximaDosis: new Date('2024-06-01'), veterinario: 'Dr. Smith', lote: 'DIS-456' },
+      { id: 'v1', tipoVacuna: 'Rabia', fechaAplicacion: new Date('2023-06-01T00:00:00'), fechaProximaDosis: new Date('2024-06-01T00:00:00'), veterinario: 'Dr. Smith', lote: 'RAB-123' },
+      { id: 'v2', tipoVacuna: 'Moquillo/Distemper', fechaAplicacion: new Date('2023-06-01T00:00:00'), fechaProximaDosis: new Date('2024-06-01T00:00:00'), veterinario: 'Dr. Smith', lote: 'DIS-456' },
     ],
     desparasitaciones: [
-      { id: 'd1', tipo: 'interna', fechaAplicacion: new Date('2023-03-10'), fechaProximaDosis: new Date('2024-06-10') },
+      { id: 'd1', tipo: 'interna', fechaAplicacion: new Date('2023-03-10T00:00:00'), fechaProximaDosis: new Date('2024-06-10T00:00:00') },
     ],
     tratamientos: [
-       { id: 't1', nombreMedicamento: 'Apoquel', dosificacion: '16mg una vez al día', duracion: '30 días', fechaInicio: new Date('2023-08-01') },
+       { id: 't1', nombreMedicamento: 'Apoquel', dosificacion: '16mg una vez al día', duracion: '30 días', fechaInicio: new Date('2023-08-01T00:00:00') },
     ],
     eventosReproductivos: [],
     pesos: [
-      { id: 'w1', fecha: new Date('2022-01-01'), peso: 30 },
-      { id: 'w2', fecha: new Date('2022-07-01'), peso: 32 },
-      { id: 'w3', fecha: new Date('2023-01-01'), peso: 33 },
-      { id: 'w4', fecha: new Date('2023-07-01'), peso: 32.5 },
-      { id: 'w5', fecha: new Date('2024-01-01'), peso: 34 },
+      { id: 'w1', fecha: new Date('2022-01-01T00:00:00'), peso: 30 },
+      { id: 'w2', fecha: new Date('2022-07-01T00:00:00'), peso: 32 },
+      { id: 'w3', fecha: new Date('2023-01-01T00:00:00'), peso: 33 },
+      { id: 'w4', fecha: new Date('2023-07-01T00:00:00'), peso: 32.5 },
+      { id: 'w5', fecha: new Date('2024-01-01T00:00:00'), peso: 34 },
     ],
   },
   {
@@ -117,25 +109,25 @@ const MOCK_PETS: Pet[] = [
     nombre: 'Lucy',
     especie: 'Gato',
     raza: 'Siberiano',
-    fechaNacimiento: new Date('2022-01-20'),
+    fechaNacimiento: new Date('2022-01-20T00:00:00'),
     sexo: 'Hembra',
     color: 'Gris',
     fotoPerfil: PlaceHolderImages.find(img => img.id === 'pet-2')!,
     vacunas: [
-      { id: 'v3', tipoVacuna: 'Triple Felina (Panleucopenia, Rinotraqueitis, Calicivirus)', fechaAplicacion: new Date('2024-03-15'), fechaProximaDosis: new Date('2025-03-15'), veterinario: 'Dr. Smith', lote: 'FEL-789' },
+      { id: 'v3', tipoVacuna: 'Triple Felina (Panleucopenia, Rinotraqueitis, Calicivirus)', fechaAplicacion: new Date('2024-03-15T00:00:00'), fechaProximaDosis: new Date('2025-03-15T00:00:00'), veterinario: 'Dr. Smith', lote: 'FEL-789' },
     ],
     desparasitaciones: [
-        { id: 'd2', tipo: 'externa', fechaAplicacion: new Date('2024-05-01'), fechaProximaDosis: new Date('2024-08-01') },
+        { id: 'd2', tipo: 'externa', fechaAplicacion: new Date('2024-05-01T00:00:00'), fechaProximaDosis: new Date('2024-08-01T00:00:00') },
     ],
     tratamientos: [],
     eventosReproductivos: [
-        { id: 'er1', tipoEvento: 'Celo', fecha: new Date('2023-09-05'), observaciones: 'Primer celo' },
-        { id: 'er2', tipoEvento: 'Celo', fecha: new Date('2024-03-20'), observaciones: 'Celo de primavera' }
+        { id: 'er1', tipoEvento: 'Celo', fecha: new Date('2023-09-05T00:00:00'), observaciones: 'Primer celo' },
+        { id: 'er2', tipoEvento: 'Celo', fecha: new Date('2024-03-20T00:00:00'), observaciones: 'Celo de primavera' }
     ],
     pesos: [
-      { id: 'w6', fecha: new Date('2022-04-01'), peso: 3 },
-      { id: 'w7', fecha: new Date('2023-04-01'), peso: 4 },
-      { id: 'w8', fecha: new Date('2024-04-01'), peso: 4.5 },
+      { id: 'w6', fecha: new Date('2022-04-01T00:00:00'), peso: 3 },
+      { id: 'w7', fecha: new Date('2023-04-01T00:00:00'), peso: 4 },
+      { id: 'w8', fecha: new Date('2024-04-01T00:00:00'), peso: 4.5 },
     ],
   },
   {
@@ -143,12 +135,12 @@ const MOCK_PETS: Pet[] = [
     nombre: 'Rocky',
     especie: 'Perro',
     raza: 'Bulldog Francés',
-    fechaNacimiento: new Date('2023-07-30'),
+    fechaNacimiento: new Date('2023-07-30T00:00:00'),
     sexo: 'Macho',
     color: 'Negro',
     fotoPerfil: PlaceHolderImages.find(img => img.id === 'pet-3')!,
     vacunas: [
-      { id: 'v4', tipoVacuna: 'Parvovirus', fechaAplicacion: new Date('2023-09-15'), fechaProximaDosis: new Date('2024-09-15'), veterinario: 'Dr. Jones', lote: 'PAR-101' },
+      { id: 'v4', tipoVacuna: 'Parvovirus', fechaAplicacion: new Date('2023-09-15T00:00:00'), fechaProximaDosis: new Date('2024-09-15T00:00:00'), veterinario: 'Dr. Jones', lote: 'PAR-101' },
     ],
     desparasitaciones: [],
     tratamientos: [],
@@ -160,7 +152,7 @@ const MOCK_PETS: Pet[] = [
     nombre: 'Kiwi',
     especie: 'Ave',
     raza: 'Loro',
-    fechaNacimiento: new Date('2019-11-10'),
+    fechaNacimiento: new Date('2019-11-10T00:00:00'),
     sexo: 'Hembra',
     color: 'Verde',
     fotoPerfil: PlaceHolderImages.find(img => img.id === 'pet-4')!,
@@ -175,7 +167,7 @@ const MOCK_PETS: Pet[] = [
     nombre: 'Lola',
     especie: 'Perro',
     raza: 'Beagle',
-    fechaNacimiento: new Date('2021-09-01'),
+    fechaNacimiento: new Date('2021-09-01T00:00:00'),
     sexo: 'Hembra',
     color: 'Tricolor',
     fotoPerfil: PlaceHolderImages.find(img => img.id === 'pet-5')!,
@@ -194,33 +186,4 @@ export function getPets(): Pet[] {
 
 export function getPetById(id: string): Pet | undefined {
   return MOCK_PETS.find(pet => pet.id === id);
-}
-
-export function getCalendarEvents(): CalendarEvent[] {
-    const events: CalendarEvent[] = [];
-    MOCK_PETS.forEach(pet => {
-        pet.vacunas.forEach(v => {
-            if (v.fechaProximaDosis > new Date()) {
-                events.push({
-                    petName: pet.nombre,
-                    petId: pet.id,
-                    date: v.fechaProximaDosis,
-                    type: 'Vacuna',
-                    description: `Próxima dosis: ${v.tipoVacuna}`
-                });
-            }
-        });
-        pet.desparasitaciones.forEach(d => {
-            if (d.fechaProximaDosis > new Date()) {
-                events.push({
-                    petName: pet.nombre,
-                    petId: pet.id,
-                    date: d.fechaProximaDosis,
-                    type: 'Desparasitación',
-                    description: `Próxima desparasitación ${d.tipo}`
-                });
-            }
-        });
-    });
-    return events;
 }
