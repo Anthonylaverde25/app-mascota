@@ -4,9 +4,8 @@ import * as React from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import type { ReproductiveEvent } from '@/lib/data';
 import { es } from 'date-fns/locale';
-import { DayPicker } from 'react-day-picker';
+import { DayPicker, DayProps } from 'react-day-picker';
 import { cn } from '@/lib/utils';
-import { Circle } from 'lucide-react';
 
 type ReproductiveCalendarProps = {
   events: ReproductiveEvent[];
@@ -38,21 +37,24 @@ export function ReproductiveCalendar({ events }: ReproductiveCalendarProps) {
     });
     return map;
   }, [events]);
-
-  const EventDay = (props: { date: Date }) => {
+  
+  const DayWithEvents = (props: DayProps) => {
     const dateKey = props.date.toISOString().split('T')[0];
     const dayEvents = eventsByDate.get(dateKey);
 
-    if (!dayEvents) return null;
-
     return (
-      <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex space-x-0.5">
-        {dayEvents.slice(0, 3).map((event) => (
-          <div key={event.id} className={cn('h-1.5 w-1.5 rounded-full', eventColors[event.tipoEvento])} />
-        ))}
-      </div>
-    );
-  };
+        <div className="relative">
+          <DayPicker.Day {...props} />
+          {dayEvents && (
+            <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex space-x-0.5">
+                {dayEvents.slice(0, 3).map((event) => (
+                <div key={event.id} className={cn('h-1.5 w-1.5 rounded-full', eventColors[event.tipoEvento])} />
+                ))}
+            </div>
+          )}
+        </div>
+      );
+  }
   
   return (
     <div className="flex flex-col items-center">
@@ -62,18 +64,7 @@ export function ReproductiveCalendar({ events }: ReproductiveCalendarProps) {
         onMonthChange={setCurrentMonth}
         locale={es}
         className="p-0"
-        components={{
-            Day: ({ date }) => {
-              const dateKey = date.toISOString().split('T')[0];
-              const dayEvents = eventsByDate.get(dateKey);
-              return (
-                <div className="relative">
-                  <DayPicker.Day date={date} />
-                  {dayEvents && <EventDay date={date} />}
-                </div>
-              );
-            },
-          }}
+        components={{ Day: DayWithEvents }}
       />
       <div className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm">
         {Object.entries(eventLabels).map(([type, label]) => (
