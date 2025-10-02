@@ -150,7 +150,7 @@ export function Header() {
                 <Logo />
             </Link>
         </div>
-        <div className="flex flex-1 items-center justify-end gap-4">
+        <div className="flex flex-1 items-center justify-end gap-2">
             <ThemeToggle />
             {renderAuthSection()}
         </div>
