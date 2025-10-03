@@ -121,6 +121,7 @@ export default function SignupPage() {
         }
     }
 
+<<<<<<< HEAD
     async function handleGoogleSignIn() {
         setGoogleIsSubmitting(true)
         try {
@@ -144,6 +145,43 @@ export default function SignupPage() {
         } finally {
             setGoogleIsSubmitting(false)
         }
+=======
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSubmitting(true);
+    try {
+      if (!auth) throw new Error('Servicio de autenticación no disponible');
+      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+      
+      // <<--- AQUÍ IMPRIMIMOS LO QUE DEVUELVE FIREBASE --->>
+      console.log('Firebase userCredential al registrar:', userCredential);
+
+      toast({
+        title: '¡Cuenta creada!',
+        description: 'Tu cuenta ha sido creada exitosamente. Serás redirigido.',
+      });
+      router.push('/');
+    } catch (error: any) {
+      console.error("Error signing up:", error);
+      let description = 'Ha ocurrido un error. Por favor, inténtalo de nuevo.';
+      if (error.code === 'auth/email-already-in-use') {
+        description = 'Este correo electrónico ya está en uso. Por favor, intenta iniciar sesión.';
+      }
+      toast({
+        variant: 'destructive',
+        title: 'Error al registrarse',
+        description: description,
+      });
+    } finally {
+        setIsSubmitting(false);
+>>>>>>> fe9fb69 (tengo una consulta, cuando registro un nuevo usuario, que retorna firebs)
     }
 
     if (isUserLoading || user) {

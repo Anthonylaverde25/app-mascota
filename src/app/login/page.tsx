@@ -67,31 +67,20 @@ function GoogleIcon(props: React.ComponentProps<'svg'>) {
 // Función para llamar a tu API de Laravel con axios
 async function callApiWithToken(token: string) {
     try {
-        // IMPORTANTE: Reemplaza esta URL con la de tu backend si es necesario
-        // const response = await axios.get('http://localhost:8000/api/user', {
-        //   headers: {
-        //     'Authorization': `Bearer ${token}`,
-        //     'Content-Type': 'application/json',
-        //     'Accept': 'application/json',
-        //   },
-        // });
+      
+    const response = await axiosInstance.get('/user')
 
-        const res = await axiosInstance.get('/user')
-
-        console.log('Respuesta de la API de Laravel:', res.data)
-        return res.data
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.error(
-                'Error de Axios al llamar a la API de Laravel:',
-                error.response?.data || error.message
-            )
-        } else {
-            console.error('No se pudo llamar a la API de Laravel:', error)
-        }
-        // Propagar el error para que pueda ser manejado por el llamador si es necesario
-        throw error
+    console.log('Respuesta de la API de Laravel:', response.data);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+        console.error('Error de Axios al llamar a la API de Laravel:', error.response?.data || error.message);
+    } else {
+        console.error('No se pudo llamar a la API de Laravel:', error);
     }
+    // Propagar el error para que pueda ser manejado por el llamador si es necesario
+    throw error;
+  }
 }
 
 export default function LoginPage() {
