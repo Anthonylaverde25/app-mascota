@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import axios from 'axios';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -38,12 +39,11 @@ function GoogleIcon(props: React.ComponentProps<'svg'>) {
     );
 }
 
-// Función para llamar a tu API de Laravel
+// Función para llamar a tu API de Laravel con axios
 async function callApiWithToken(token: string) {
   try {
-    // IMPORTANTE: Reemplaza esta URL con la de tu backend
-    const response = await fetch('http://localhost:8000/api/user', {
-      method: 'GET',
+    // IMPORTANTE: Reemplaza esta URL con la de tu backend si es necesario
+    const response = await axios.get('http://localhost:8000/api/user', {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -51,14 +51,16 @@ async function callApiWithToken(token: string) {
       },
     });
 
-    if (!response.ok) {
-      throw new Error(`Error de la API: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    console.log('Respuesta de la API de Laravel:', data);
+    console.log('Respuesta de la API de Laravel:', response.data);
+    return response.data;
   } catch (error) {
-    console.error('No se pudo llamar a la API de Laravel:', error);
+    if (axios.isAxiosError(error)) {
+        console.error('Error de Axios al llamar a la API de Laravel:', error.response?.data || error.message);
+    } else {
+        console.error('No se pudo llamar a la API de Laravel:', error);
+    }
+    // Propagar el error para que pueda ser manejado por el llamador si es necesario
+    throw error;
   }
 }
 
@@ -94,7 +96,7 @@ export default function LoginPage() {
       const idToken = await userCredential.user.getIdToken();
       console.log('Token de ID de Firebase:', idToken);
 
-      // <<--- AQUÍ HACEMOS LA LLAMADA A TU API --->>
+      // <<--- AQUÍ HACEMOS LA LLAMADA A TU API CON AXIOS --->>
       await callApiWithToken(idToken);
 
       toast({
@@ -124,7 +126,7 @@ export default function LoginPage() {
         const idToken = await userCredential.user.getIdToken();
         console.log('Token de ID de Firebase (Google):', idToken);
         
-        // <<--- AQUÍ HACEMOS LA LLAMADA A TU API --->>
+        // <<--- AQUÍ HACEMOS LA LLAMADA A TU API CON AXIOS --->>
         await callApiWithToken(idToken);
 
         toast({
