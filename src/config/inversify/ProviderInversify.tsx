@@ -2,16 +2,15 @@
 
 import React, { createContext, useContext } from 'react'
 import { Container } from 'inversify'
+import { container } from '@/config/inversify/container' // Importar el contenedor
 
 // Creamos el contexto que va a guardar el contenedor
 const InversifyContext = createContext<Container | null>(null)
 
 // Provider que envolverá tu app
 export const ProviderInversify = ({
-    container,
     children,
 }: {
-    container: Container
     children: React.ReactNode
 }) => {
     return (

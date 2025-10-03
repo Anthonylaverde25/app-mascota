@@ -6,7 +6,6 @@ import { Toaster } from '@/components/ui/toaster'
 import { Header } from '@/components/header'
 import { ThemeProvider } from '@/components/theme-provider'
 import { FirebaseClientProvider } from '@/firebase'
-import { container } from '@/config/inversify/container'
 import { ProviderInversify } from '@/config/inversify/ProviderInversify'
 
 export const metadata: Metadata = {
@@ -42,7 +41,7 @@ export default function RootLayout({
                     'min-h-screen bg-background font-body antialiased'
                 )}
             >
-                <ProviderInversify container={container}>
+                <ProviderInversify>
                     <ThemeProvider
                         attribute="class"
                         defaultTheme="system"
