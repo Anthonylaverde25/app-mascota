@@ -64,7 +64,12 @@ export default function LoginPage() {
     setIsSubmitting(true);
     try {
       if (!auth) throw new Error('Servicio de autenticación no disponible');
-      await signInWithEmailAndPassword(auth, values.email, values.password);
+      const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
+      
+      // Obtener el token de ID
+      const idToken = await userCredential.user.getIdToken();
+      console.log('Firebase ID Token:', idToken);
+
       toast({
         title: '¡Bienvenido de nuevo!',
         description: 'Has iniciado sesión correctamente.',
@@ -87,7 +92,12 @@ export default function LoginPage() {
     try {
         if (!auth) throw new Error('Servicio de autenticación no disponible');
         const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth, provider);
+        const userCredential = await signInWithPopup(auth, provider);
+
+        // Obtener el token de ID
+        const idToken = await userCredential.user.getIdToken();
+        console.log('Firebase ID Token (Google):', idToken);
+        
         toast({
             title: '¡Bienvenido!',
             description: 'Has iniciado sesión con Google correctamente.',
