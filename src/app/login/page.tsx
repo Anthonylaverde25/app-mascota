@@ -38,6 +38,31 @@ function GoogleIcon(props: React.ComponentProps<'svg'>) {
     );
 }
 
+// Función para llamar a tu API de Laravel
+async function callApiWithToken(token: string) {
+  try {
+    // IMPORTANTE: Reemplaza esta URL con la de tu backend
+    const response = await fetch('http://localhost:8000/api/user', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error de la API: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log('Respuesta de la API de Laravel:', data);
+  } catch (error) {
+    console.error('No se pudo llamar a la API de Laravel:', error);
+  }
+}
+
+
 export default function LoginPage() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
@@ -66,9 +91,11 @@ export default function LoginPage() {
       if (!auth) throw new Error('Servicio de autenticación no disponible');
       const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
       
-      // Obtener el token de ID
       const idToken = await userCredential.user.getIdToken();
-      console.log('Firebase ID Token:', idToken);
+      console.log('Token de ID de Firebase:', idToken);
+
+      // <<--- AQUÍ HACEMOS LA LLAMADA A TU API --->>
+      await callApiWithToken(idToken);
 
       toast({
         title: '¡Bienvenido de nuevo!',
@@ -94,10 +121,12 @@ export default function LoginPage() {
         const provider = new GoogleAuthProvider();
         const userCredential = await signInWithPopup(auth, provider);
 
-        // Obtener el token de ID
         const idToken = await userCredential.user.getIdToken();
-        console.log('Firebase ID Token (Google):', idToken);
+        console.log('Token de ID de Firebase (Google):', idToken);
         
+        // <<--- AQUÍ HACEMOS LA LLAMADA A TU API --->>
+        await callApiWithToken(idToken);
+
         toast({
             title: '¡Bienvenido!',
             description: 'Has iniciado sesión con Google correctamente.',
