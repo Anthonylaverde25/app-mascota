@@ -55,6 +55,13 @@ export interface AuthTokenHookResult {
 // React Context
 export const FirebaseContext = createContext<FirebaseContextState | undefined>(undefined);
 
+interface FirebaseProviderProps {
+  children: ReactNode;
+  firebaseApp: FirebaseApp | null;
+  firestore: Firestore | null;
+  auth: Auth | null;
+}
+
 /**
  * FirebaseProvider manages and provides Firebase services and user authentication state.
  */
