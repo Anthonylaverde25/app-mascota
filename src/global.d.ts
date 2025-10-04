@@ -16,7 +16,7 @@ declare global {
     }
 
     interface UserCredentialImpl {
-        operationType: 'signIn' | 'login'
+        operationType: 'signIn' | 'signUp'
         authUser: AuthSession
     }
 }

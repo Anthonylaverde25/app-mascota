@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify'
 import type { authInterface } from '../application/interface'
 import { toast } from '@/hooks/use-toast'
-import { Auth } from 'firebase/auth'
+import { Auth, UserCredential } from 'firebase/auth'
 
 @injectable()
 
@@ -17,13 +17,13 @@ export class AuthRepositoryUseCase {
         private readonly repository: authInterface
     ) {}
 
-    async register(credential: CredentialRegister): Promise<{ auth: any }> {
+    async register(credential: CredentialRegister): Promise<{ session: UserCredential }> {
         try {
-            const response = await this.repository.register(
+            const {session} = await this.repository.register(
                 credential
             )
 
-            return { auth: response }
+            return { session}
         } catch (error) {
             console.log('error al registrar desde el hook')
             throw error
