@@ -60,6 +60,16 @@ export interface Pet {
   pesos: Weight[];
 }
 
+export interface CommunityMember {
+  id: string;
+  name: string;
+  category: 'Veterinario' | 'Paseador' | 'Tienda';
+  description: string;
+  location: string;
+  image: ImagePlaceholder;
+}
+
+
 export const VACCINE_TYPES = {
   Perro: [
     { name: 'Rabia', mandatory: true },
@@ -183,6 +193,49 @@ const MOCK_PETS: Pet[] = [
   },
 ];
 
+const MOCK_COMMUNITY_MEMBERS: CommunityMember[] = [
+  {
+    id: 'com-1',
+    name: 'Clínica Veterinaria Amigo Fiel',
+    category: 'Veterinario',
+    description: 'Atención 24 horas, cirugía especializada y vacunación. Contamos con más de 15 años de experiencia.',
+    location: 'Ciudad Capital, Av. Principal 123',
+    image: PlaceHolderImages.find(img => img.id === 'com-vet')!,
+  },
+  {
+    id: 'com-2',
+    name: 'Paseos Felices con Juan',
+    category: 'Paseador',
+    description: 'Paseos grupales e individuales para perros de todas las razas y tamaños. Amor y dedicación garantizados.',
+    location: 'Zona Residencial Norte',
+    image: PlaceHolderImages.find(img => img.id === 'com-walker')!,
+  },
+  {
+    id: 'com-3',
+    name: 'Todo Mascotas Pet Shop',
+    category: 'Tienda',
+    description: 'La más amplia variedad de alimentos, juguetes y accesorios para tus compañeros de vida.',
+    location: 'Centro Comercial El Paseo, Local 14',
+    image: PlaceHolderImages.find(img => img.id === 'com-store')!,
+  },
+    {
+    id: 'com-4',
+    name: 'Dra. Isabela Rojas - Veterinaria a Domicilio',
+    category: 'Veterinario',
+    description: 'Consultas, vacunación y cuidados básicos en la comodidad de tu hogar. Especialista en gatos.',
+    location: 'Servicio a domicilio en toda la ciudad',
+    image: PlaceHolderImages.find(img => img.id === 'com-vet-2')!,
+  },
+  {
+    id: 'com-5',
+    name: 'Dogventure - Paseos y Aventura',
+    category: 'Paseador',
+    description: 'Excursiones y paseos de aventura en parques y montañas. Ideal para perros con mucha energía.',
+    location: 'Punto de encuentro: Parque Central',
+    image: PlaceHolderImages.find(img => img.id === 'com-walker-2')!,
+  },
+];
+
 // Data Access Functions
 export function getPets(): Pet[] {
   return MOCK_PETS;
@@ -192,4 +245,6 @@ export function getPetById(id: string): Pet | undefined {
   return MOCK_PETS.find(pet => pet.id === id);
 }
 
-    
+export function getCommunityMembers(): CommunityMember[] {
+    return MOCK_COMMUNITY_MEMBERS;
+}

@@ -29,6 +29,36 @@
       "description": "A curious beagle looking at the camera.",
       "imageUrl": "https://images.unsplash.com/photo-1594273012142-335a20d4f135?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxiZWFnbGV8ZW58MHx8fHwxNzU5NDA0NjQzfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "beagle dog"
+    },
+    {
+      "id": "com-vet",
+      "description": "Veterinary clinic with modern equipment.",
+      "imageUrl": "https://images.unsplash.com/photo-1583224964986-6f5d68352654?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx2ZXRlcmluYXJ5JTIwY2xpbmljfGVufDB8fHx8MTc1OTU4NDU5Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "veterinary clinic"
+    },
+    {
+      "id": "com-walker",
+      "description": "A person walking several dogs in a park.",
+      "imageUrl": "https://images.unsplash.com/photo-1599423697969-3a42935f8263?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxkb2clMjB3YWxrZXJ8ZW58MHx8fHwxNzU5NTg0NjM3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dog walker"
+    },
+    {
+      "id": "com-store",
+      "description": "A pet store with shelves full of products.",
+      "imageUrl": "https://images.unsplash.com/photo-1601662659445-9244642b5247?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwZXQlMjBzdG9yZXxlbnwwfHx8fDE3NTk1ODQ2NjV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "pet store"
+    },
+    {
+      "id": "com-vet-2",
+      "description": "A female veterinarian smiling.",
+      "imageUrl": "https://images.unsplash.com/photo-1605207621245-f046034cb27c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmZW1hbGUlMjB2ZXRlcmluYXJpYW58ZW58MHx8fHwxNzU5NTg0NzEwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "female veterinarian"
+    },
+    {
+      "id": "com-walker-2",
+      "description": "A person with a dog on a mountain.",
+      "imageUrl": "https://images.unsplash.com/photo-1529429617124-95b109e86bb8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxkb2clMjBoaWtpbmd8ZW58MHx8fHwxNzU5NTg0NzQxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dog hiking"
     }
   ]
 }

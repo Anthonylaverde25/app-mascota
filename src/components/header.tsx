@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, LogOut, User as UserIcon } from 'lucide-react';
+import { Menu, LogOut, User as UserIcon, Users } from 'lucide-react';
 import { useAuth, useUser } from '@/firebase';
 import { getAuth } from 'firebase/auth';
 
@@ -24,6 +24,7 @@ import { Skeleton } from './ui/skeleton';
 
 const navLinks = [
   { href: '/', label: 'Mis Mascotas' },
+  { href: '/community', label: 'Comunidad' },
   { href: '/notifications', label: 'Recordatorios' },
 ];
 
