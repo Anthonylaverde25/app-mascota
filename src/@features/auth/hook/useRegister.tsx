@@ -42,6 +42,7 @@ import { container } from '@/config/inversify/container'
 import { toast } from '@/hooks/use-toast'
 import { AuthRepositoryUseCase } from '../use-case/authUseCase'
 import { Auth, UserCredential } from 'firebase/auth'
+import { useRegisterSyncApi } from './useRegisterSyncApi'
 
 interface CredentialRegister {
     auth: Auth
@@ -51,6 +52,7 @@ interface CredentialRegister {
 
 export default function useRegister() {
     const authUseCase = container.get(AuthRepositoryUseCase)
+    const syncMutation = useRegisterSyncApi()
 
     const handleRegister = async (
         credential: CredentialRegister
@@ -58,12 +60,13 @@ export default function useRegister() {
         try {
             // authUseCase.register debería devolver algo como { auth: { session: UserCredential } }
             const { session } = await authUseCase.register(credential)
+            console.log('session desde el register', session)
             if (session) {
-                const { operationType, user } = session
+                const { operationType } = session
                 if (operationType === 'signIn') {
-                    const authToken = user.getIdToken() // queda como una promesa pendiente
-                    console.log('token obtenido', authToken)
-
+                    await syncMutation.mutateAsync(session)
+                    // const authToken = user.getIdToken() // queda como una promesa pendiente
+                    // console.log('token obtenido', authToken)
                     // entonces, si iniciamos session al registrarnos y tenemos el objecto user,
                     // debemos guardar ese objecto en la base de datos de nuestra api
                 }
