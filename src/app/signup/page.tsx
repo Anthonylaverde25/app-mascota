@@ -26,6 +26,7 @@ import { useAuth, useUser } from '@/firebase'
 import { useToast } from '@/hooks/use-toast'
 import { Logo } from '@/components/logo'
 import useRegister from '@/@features/auth/hook/useRegister'
+import useRegisterSyncApi from '@/@features/auth/hook/useRegisterSyncApi'
 
 const formSchema = z.object({
     email: z
