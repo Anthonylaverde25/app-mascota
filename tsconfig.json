@@ -5,6 +5,8 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    "experimentalDecorators": true, // ✅ Habilita decoradores
+    "emitDecoratorMetadata": true,  // ✅ Genera metadata de tipos para Inversify
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
