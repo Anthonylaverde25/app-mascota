@@ -8,16 +8,12 @@ export function useRegisterSyncApi() {
             if (!session) return
             const { user } = session
 
-            const regiterData = {
-                name: user.displayName,
-                email: user.email,
-                uid: user.uid,
-            }
-
             const idToken = await user.getIdToken()
             const { data, status } = await axios.post(
                 'http://localhost:8000/api/auth/register-sync',
-                regiterData,
+                {
+                    /**aqui enviaremos el payload */
+                },
                 {
                     headers: { Authorization: `Bearer ${idToken}` },
                 }
