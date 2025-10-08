@@ -233,7 +233,7 @@ export default function SignupPage() {
                 <div className="text-center space-y-2">
                     <Logo className="mx-auto h-8 w-8" />
                     <h1 className="text-2xl font-semibold tracking-tight font-headline">
-                        Crea una cuenta
+                        Crea una cuenta1
                     </h1>
                     <p className="text-sm text-muted-foreground">
                         Introduce tus datos para crear tu cuenta
