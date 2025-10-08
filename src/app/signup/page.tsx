@@ -22,31 +22,46 @@ import { useAuth, useUser } from '@/firebase'
 import { useToast } from '@/hooks/use-toast'
 import { Logo } from '@/components/logo'
 import useRegister from '@/@features/auth/hook/useRegister'
+import axiosInstance from '@/lib/@axios'
+
+// ==================== TYPES ====================
+
+type EntityType = 'owner' | 'service'
+
+type EntityTypeElement = {
+    id: number
+    code: EntityType
+    description: string
+}
+
+interface EntityTypesResponse {
+    entityTypes: EntityTypeElement[]
+}
 
 // ==================== SCHEMA ====================
 
 const formSchema = z
     .object({
+        name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres.'),
         email: z
             .string()
             .email('Por favor, introduce un correo electrónico válido.'),
         password: z
             .string()
             .min(6, 'La contraseña debe tener al menos 6 caracteres.'),
-        entityType: z.enum(['owner', 'service'], {
-            required_error: 'Selecciona un tipo de entidad',
+        entityType: z.object({
+            id: z.number(),
+            code: z.enum(['owner', 'service']),
         }),
         phone: z.string().optional(),
         dni: z.string().optional(),
         address: z.string().optional(),
     })
     .refine(
-        (data) => {
-            if (data.entityType === 'service') {
-                return data.dni && data.address
-            }
-            return true
-        },
+        (data) =>
+            data.entityType.code === 'service'
+                ? data.dni && data.address
+                : true,
         {
             message: 'DNI y Dirección son requeridos para servicios',
             path: ['dni'],
@@ -60,8 +75,8 @@ function GoogleIcon(props: React.ComponentProps<'svg'>) {
         <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 48 48"
-            width="24px"
-            height="24px"
+            width="24"
+            height="24"
             {...props}
         >
             <path
@@ -87,6 +102,7 @@ function GoogleIcon(props: React.ComponentProps<'svg'>) {
 // ==================== COMPONENT ====================
 
 export default function SignupPage() {
+    const [entityTypes, setEntityTypes] = useState<EntityTypeElement[]>([])
     const { handleRegister } = useRegister()
     const { user, isUserLoading } = useUser()
     const auth = useAuth()
@@ -95,41 +111,81 @@ export default function SignupPage() {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isGoogleSubmitting, setGoogleIsSubmitting] = useState(false)
 
-    useEffect(() => {
-        if (!isUserLoading && user) {
-            router.push('/')
-        }
-    }, [user, isUserLoading, router])
-
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            name: '',
             email: '',
             password: '',
-            entityType: 'owner',
+            entityType: {
+                id: 1,
+                code: 'owner',
+            },
             phone: '',
             dni: '',
             address: '',
         },
     })
 
+    const selectedEntity = form.watch('entityType')
+
+    useEffect(() => {
+        if (!isUserLoading && user) router.push('/')
+    }, [user, isUserLoading, router])
+
+    useEffect(() => {
+        const fetchTypes = async () => {
+            try {
+                const {
+                    data: { entityTypes },
+                } = await axiosInstance.get<EntityTypesResponse>('entity-types')
+
+                setEntityTypes(entityTypes)
+
+                // Establecer el primer tipo como predeterminado
+                if (entityTypes.length > 0) {
+                    form.setValue('entityType', {
+                        id: entityTypes[0].id,
+                        code: entityTypes[0].code,
+                    })
+                }
+            } catch (error) {
+                console.error('Error al cargar tipos de entidad:', error)
+                toast({
+                    variant: 'destructive',
+                    title: 'Error',
+                    description: 'No se pudieron cargar los tipos de usuario.',
+                })
+            }
+        }
+
+        fetchTypes()
+    }, [form, toast])
+
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         setIsSubmitting(true)
         try {
             if (!auth)
                 throw new Error('Servicio de autenticación no disponible')
-            await handleRegister({ auth, ...values })
+
+            // Preparar los datos para enviar al backend
+            const registrationData = {
+                ...values,
+                entityTypeId: values.entityType.id,
+                entityTypeCode: values.entityType.code,
+            }
+
+            await handleRegister({ auth, ...registrationData })
             toast({
                 title: '¡Cuenta creada!',
                 description: 'Tu cuenta ha sido creada exitosamente.',
             })
             router.push('/')
         } catch (error: any) {
-            console.error(error)
-            let description = 'Ha ocurrido un error. Inténtalo de nuevo.'
-            if (error.code === 'auth/email-already-in-use') {
-                description = 'Este correo electrónico ya está en uso.'
-            }
+            let description =
+                error.code === 'auth/email-already-in-use'
+                    ? 'Este correo electrónico ya está en uso.'
+                    : 'Ha ocurrido un error. Inténtalo de nuevo.'
             toast({
                 variant: 'destructive',
                 title: 'Error al registrarse',
@@ -152,8 +208,7 @@ export default function SignupPage() {
                 description: 'Has iniciado sesión con Google correctamente.',
             })
             router.push('/')
-        } catch (error: any) {
-            console.error(error)
+        } catch {
             toast({
                 variant: 'destructive',
                 title: 'Error de Google',
@@ -164,20 +219,18 @@ export default function SignupPage() {
         }
     }
 
-    if (isUserLoading || user) {
+    if (isUserLoading || user)
         return (
             <div className="flex justify-center items-center h-screen">
                 Cargando...
             </div>
         )
-    }
-
-    const selectedEntity = form.watch('entityType')
 
     return (
         <div className="flex min-h-[calc(100vh-80px)] flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
-            <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[400px]">
-                <div className="flex flex-col space-y-2 text-center">
+            <div className="mx-auto w-full sm:w-[400px] space-y-6">
+                {/* Header */}
+                <div className="text-center space-y-2">
                     <Logo className="mx-auto h-8 w-8" />
                     <h1 className="text-2xl font-semibold tracking-tight font-headline">
                         Crea una cuenta
@@ -186,52 +239,70 @@ export default function SignupPage() {
                         Introduce tus datos para crear tu cuenta
                     </p>
                 </div>
+
+                {/* Form */}
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit(onSubmit)}
                         className="grid gap-4"
                     >
-                        {/* ENTITY TYPE */}
-                        {/* ENTITY TYPE COMO CARDS */}
+                        {/* NAME */}
+                        <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Nombre completo</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            placeholder="Tu nombre completo"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* ENTITY TYPE CARDS */}
                         <FormField
                             control={form.control}
                             name="entityType"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Tipo de usuario</FormLabel>
-                                    <div className="flex gap-4 mt-2">
-                                        {/* Owner */}
-                                        <div
-                                            className={`flex-1 cursor-pointer border rounded-lg p-4 text-center transition 
-            ${
-                field.value === 'owner'
-                    ? 'border-primary bg-primary/10'
-                    : 'border-gray-300 bg-background'
-            }`}
-                                            onClick={() =>
-                                                field.onChange('owner')
-                                            }
-                                        >
-                                            <p className="font-medium">Dueno</p>
-                                        </div>
 
-                                        {/* Service */}
-                                        <div
-                                            className={`flex-1 cursor-pointer border rounded-lg p-4 text-center transition 
-            ${
-                field.value === 'service'
-                    ? 'border-primary bg-primary/10'
-                    : 'border-gray-300 bg-background'
-            }`}
-                                            onClick={() =>
-                                                field.onChange('service')
-                                            }
-                                        >
-                                            <p className="font-medium">
-                                                Servicio
-                                            </p>
-                                        </div>
+                                    <div className="flex gap-4 mt-2">
+                                        {entityTypes?.map((type) => {
+                                            const isSelected =
+                                                field.value?.id === type.id
+
+                                            return (
+                                                <div
+                                                    key={type.id}
+                                                    onClick={() =>
+                                                        field.onChange({
+                                                            id: type.id,
+                                                            code: type.code,
+                                                        })
+                                                    }
+                                                    className={`flex-1 cursor-pointer rounded-xl p-2.5 text-center transition-all duration-200 border ${
+                                                        isSelected
+                                                            ? 'border-primary bg-primary/10 shadow-md'
+                                                            : 'border-gray-300 hover:border-primary hover:bg-primary/5'
+                                                    }`}
+                                                >
+                                                    <p className="text-sm font-medium">
+                                                        {type.description}
+                                                    </p>
+                                                    <p className="text-xs text-gray-500 mt-1">
+                                                        {type.code}
+                                                    </p>
+                                                </div>
+                                            )
+                                        })}
                                     </div>
+
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -256,6 +327,7 @@ export default function SignupPage() {
                                 </FormItem>
                             )}
                         />
+
                         {/* PASSWORD */}
                         <FormField
                             control={form.control}
@@ -294,8 +366,9 @@ export default function SignupPage() {
                                 </FormItem>
                             )}
                         />
-                        {/* DNI y DIRECCIÓN SOLO PARA SERVICE */}
-                        {selectedEntity === 'service' && (
+
+                        {/* DNI y DIRECCIÓN solo para SERVICE */}
+                        {selectedEntity?.code === 'service' && (
                             <>
                                 <FormField
                                     control={form.control}
@@ -331,6 +404,8 @@ export default function SignupPage() {
                                 />
                             </>
                         )}
+
+                        {/* SUBMIT BUTTON */}
                         <Button
                             type="submit"
                             className="w-full"
@@ -342,6 +417,8 @@ export default function SignupPage() {
                         </Button>
                     </form>
                 </Form>
+
+                {/* OR DIVIDER */}
                 <div className="relative my-4">
                     <div className="absolute inset-0 flex items-center">
                         <span className="w-full border-t" />
@@ -352,11 +429,14 @@ export default function SignupPage() {
                         </span>
                     </div>
                 </div>
+
+                {/* GOOGLE SIGNIN */}
                 <Button
                     variant="outline"
                     type="button"
                     onClick={handleGoogleSignIn}
                     disabled={isSubmitting || isGoogleSubmitting}
+                    className="w-full"
                 >
                     {isGoogleSubmitting ? (
                         'Cargando...'
@@ -366,6 +446,8 @@ export default function SignupPage() {
                         </>
                     )}
                 </Button>
+
+                {/* LOGIN LINK */}
                 <p className="px-8 text-center text-sm text-muted-foreground mt-4">
                     ¿Ya tienes una cuenta?{' '}
                     <Link

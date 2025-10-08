@@ -2,9 +2,17 @@ import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 import { UserCredential } from 'firebase/auth'
 
+// debo hacer llegar hasta aqui el resto del payload
+
 export function useRegisterSyncApi() {
     const mutation = useMutation({
-        mutationFn: async (session: UserCredential) => {
+        mutationFn: async ({
+            session,
+            payload,
+        }: {
+            session: UserCredential
+            payload: RegisterFieldsEntity
+        }) => {
             if (!session) return
             const { user } = session
 
@@ -12,7 +20,7 @@ export function useRegisterSyncApi() {
             const { data, status } = await axios.post(
                 'http://localhost:8000/api/auth/register-sync',
                 {
-                    /**aqui enviaremos el payload */
+                    entityData: payload,
                 },
                 {
                     headers: { Authorization: `Bearer ${idToken}` },

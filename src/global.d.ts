@@ -19,4 +19,13 @@ declare global {
         operationType: 'signIn' | 'signUp'
         authUser: AuthSession
     }
+
+    type EntityType = 'service' | 'owner'
+
+    interface RegisterFieldsEntity {
+        name: string
+        phone?: string
+        dni?: string
+        entityType: EntityType
+    }
 }
