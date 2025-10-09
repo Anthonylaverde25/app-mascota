@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
 import { UserCredential } from 'firebase/auth'
 import { useAxiosInstance } from '@/lib/@axios'
+import { mapUserFromApi } from '../auth.mapper'
 
 // debo hacer llegar hasta aqui el resto del payload
 
@@ -15,6 +16,8 @@ export function useLoginSyncApi() {
             })
 
             console.log('data desde el login', data)
+            const user = mapUserFromApi(data)
+            console.log('user mapeado', user)
 
             if (!data) {
                 throw new Error('Error al sincronizar usuario con la API')

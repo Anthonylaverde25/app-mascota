@@ -34,4 +34,31 @@ declare global {
         dni?: string
         entityType: EntityType
     }
+
+    interface EntityTypeDTO {
+        id: number
+        code: string
+        description: string
+    }
+
+    interface EntityDTO {
+        id: number
+        name: string
+        profile_complete: boolean
+        type: EntityTypeDTO[]
+    }
+
+    export type ProfileDTO = {
+        id: number
+        description: string
+        avatar_url?: string | null
+    }
+
+    interface AuthUser {
+        id: number
+        email: string
+        name: string
+        entityType: EntityTypeDTO[]
+        profile: ProfileDTO | null
+    }
 }
