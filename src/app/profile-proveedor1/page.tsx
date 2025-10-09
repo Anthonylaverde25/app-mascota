@@ -18,7 +18,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Briefcase, Plus, MapPin, Phone, Mail, Calendar, IdCard, Building } from 'lucide-react';
+import { Briefcase, Plus, MapPin, Phone, Mail, Calendar, IdCard, Building, MoreHorizontal } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
