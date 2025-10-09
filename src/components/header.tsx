@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, LogOut, User as UserIcon, Users } from 'lucide-react';
+import { Menu, LogOut, User as UserIcon, Users, Settings } from 'lucide-react';
 import { useAuth, useUser } from '@/firebase';
 import { getAuth } from 'firebase/auth';
 
@@ -86,6 +86,19 @@ export function Header() {
                   </p>
                 </div>
               </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+               <DropdownMenuItem asChild>
+                <Link href="/profile-owner">
+                  <UserIcon className="mr-2 h-4 w-4" />
+                  <span>Perfil (Dueño)</span>
+                </Link>
+              </DropdownMenuItem>
+               <DropdownMenuItem asChild>
+                 <Link href="/profile-service">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Perfil (Servicio)</span>
+                 </Link>
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout}>
                 <LogOut className="mr-2 h-4 w-4" />
