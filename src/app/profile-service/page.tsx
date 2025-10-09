@@ -4,7 +4,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/firebase';
 import { Button } from '@/components/ui/button';
@@ -23,7 +23,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Briefcase } from 'lucide-react';
+import { Briefcase, Pencil } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 const serviceProfileSchema = z.object({
   serviceName: z.string().min(3, { message: 'El nombre del servicio es requerido.' }),
@@ -34,76 +41,32 @@ const serviceProfileSchema = z.object({
   website: z.string().url({ message: 'Por favor, introduce una URL válida.' }).optional().or(z.literal('')),
 });
 
-export default function ProfileServicePage() {
-  const { user, isUserLoading } = useUser();
-  const router = useRouter();
-  const { toast } = useToast();
-
-  const form = useForm<z.infer<typeof serviceProfileSchema>>({
-    resolver: zodResolver(serviceProfileSchema),
-    defaultValues: {
-      serviceName: '',
-      description: '',
-      location: '',
-      phone: '',
-      website: '',
-    },
-  });
-
-  useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/login');
-    } else if (user) {
-      // Here you would fetch the service provider's data from your backend
-      // and populate the form. For now, we use mock data.
-      form.reset({
-        serviceName: user.displayName ? `${user.displayName}'s Service` : 'Mi Servicio',
-        category: 'Veterinario', // default
-        description: 'Servicios profesionales para el cuidado de tu mascota.',
-        location: 'Ciudad Capital',
-        phone: '123-456-7890',
-        website: 'https://myservice.com'
-      });
-    }
-  }, [user, isUserLoading, router, form]);
-  
-  function onSubmit(values: z.infer<typeof serviceProfileSchema>) {
-    console.log(values);
-    toast({
-      title: 'Perfil de Servicio Actualizado',
-      description: 'Tu información pública ha sido guardada correctamente.',
+function EditServiceForm({ user, closeDialog }: { user: any, closeDialog: () => void }) {
+    const { toast } = useToast();
+    const form = useForm<z.infer<typeof serviceProfileSchema>>({
+        resolver: zodResolver(serviceProfileSchema),
+        defaultValues: {
+            serviceName: user.displayName ? `${user.displayName}'s Service` : 'Mi Servicio',
+            category: 'Veterinario',
+            description: 'Servicios profesionales para el cuidado de tu mascota.',
+            location: 'Ciudad Capital',
+            phone: '123-456-7890',
+            website: 'https://myservice.com'
+        },
     });
-  }
 
-  if (isUserLoading || !user) {
+    function onSubmit(values: z.infer<typeof serviceProfileSchema>) {
+        console.log(values);
+        toast({
+            title: 'Perfil de Servicio Actualizado',
+            description: 'Tu información pública ha sido guardada correctamente.',
+        });
+        closeDialog();
+    }
+    
     return (
-      <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <Skeleton className="h-96 w-full" />
-      </div>
-    );
-  }
-
-  return (
-    <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <Card>
-          <CardHeader>
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? 'Servicio'} />
-                  <AvatarFallback><Briefcase /></AvatarFallback>
-                </Avatar>
-              </div>
-              <div className="flex-grow">
-                <CardTitle className="font-headline text-3xl">Perfil de Proveedor (Genérico)</CardTitle>
-                <CardDescription>Esta es la información que otros usuarios verán en la sección de Comunidad.</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                    <FormField
                     control={form.control}
@@ -203,9 +166,73 @@ export default function ProfileServicePage() {
                   <Button type="submit">Guardar Perfil de Servicio</Button>
                 </div>
               </form>
-            </Form>
-          </CardContent>
-        </Card>
+        </Form>
+    );
+}
+
+export default function ProfileServicePage() {
+  const { user, isUserLoading } = useUser();
+  const router = useRouter();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, isUserLoading, router]);
+  
+  if (isUserLoading || !user) {
+    return (
+      <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <Skeleton className="h-96 w-full max-w-4xl mx-auto" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <Card>
+                <CardHeader>
+                    <div className="flex justify-between items-start">
+                        <div className="flex items-start gap-4">
+                            <Avatar className="h-16 w-16">
+                                <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? 'Servicio'} />
+                                <AvatarFallback><Briefcase /></AvatarFallback>
+                            </Avatar>
+                            <div className="flex-grow">
+                                <CardTitle className="font-headline text-3xl">Mi Servicio</CardTitle>
+                                <CardDescription>Esta es la información que otros usuarios verán en la sección de Comunidad.</CardDescription>
+                            </div>
+                        </div>
+                        <DialogTrigger asChild>
+                            <Button variant="outline" size="icon">
+                                <Pencil className="h-4 w-4" />
+                                <span className="sr-only">Editar Perfil</span>
+                            </Button>
+                        </DialogTrigger>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    {/* Placeholder content - will be dynamic */}
+                     <ul className="text-sm text-muted-foreground space-y-2">
+                        <li><span className="font-semibold text-foreground">Categoría:</span> Veterinario</li>
+                        <li><span className="font-semibold text-foreground">Descripción:</span> Servicios profesionales para el cuidado de tu mascota.</li>
+                        <li><span className="font-semibold text-foreground">Ubicación:</span> Ciudad Capital</li>
+                        <li><span className="font-semibold text-foreground">Teléfono:</span> 123-456-7890</li>
+                        <li><span className="font-semibold text-foreground">Sitio Web:</span> <a href="https://myservice.com" target="_blank" rel="noreferrer" className="text-primary hover:underline">myservice.com</a></li>
+                    </ul>
+                </CardContent>
+            </Card>
+
+            <DialogContent className="sm:max-w-[625px]">
+                <DialogHeader>
+                    <DialogTitle>Editar Perfil de Servicio</DialogTitle>
+                </DialogHeader>
+                <EditServiceForm user={user} closeDialog={() => setIsDialogOpen(false)} />
+            </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

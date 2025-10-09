@@ -4,7 +4,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/firebase';
 import { Button } from '@/components/ui/button';
@@ -23,7 +23,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Briefcase } from 'lucide-react';
+import { Briefcase, Pencil } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 const serviceProfileSchema = z.object({
   serviceName: z.string().min(3, { message: 'El nombre del servicio es requerido.' }),
@@ -34,67 +41,34 @@ const serviceProfileSchema = z.object({
   website: z.string().url({ message: 'Por favor, introduce una URL válida.' }).optional().or(z.literal('')),
 });
 
-export default function ProfilePaseadorPage() {
-  const { user, isUserLoading } = useUser();
-  const router = useRouter();
-  const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof serviceProfileSchema>>({
-    resolver: zodResolver(serviceProfileSchema),
-    defaultValues: {
-      serviceName: 'Paseos Felices con Juan',
-      category: 'Paseador',
-      description: 'Paseos grupales e individuales para perros de todas las razas y tamaños. Amor y dedicación garantizados.',
-      location: 'Zona Residencial Norte',
-      phone: '+54 9 11 3456-7890',
-      website: 'https://instagram.com/paseosfelices',
-    },
-  });
-
-  useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/login');
-    }
-  }, [user, isUserLoading, router]);
-  
-  function onSubmit(values: z.infer<typeof serviceProfileSchema>) {
-    console.log(values);
-    toast({
-      title: 'Perfil de Servicio Actualizado',
-      description: 'Tu información pública ha sido guardada correctamente.',
+function EditServiceForm({ closeDialog }: { closeDialog: () => void }) {
+    const { toast } = useToast();
+    const form = useForm<z.infer<typeof serviceProfileSchema>>({
+        resolver: zodResolver(serviceProfileSchema),
+        defaultValues: {
+            serviceName: 'Paseos Felices con Juan',
+            category: 'Paseador',
+            description: 'Paseos grupales e individuales para perros de todas las razas y tamaños. Amor y dedicación garantizados.',
+            location: 'Zona Residencial Norte',
+            phone: '+54 9 11 3456-7890',
+            website: 'https://instagram.com/paseosfelices',
+        },
     });
-  }
 
-  if (isUserLoading || !user) {
+    function onSubmit(values: z.infer<typeof serviceProfileSchema>) {
+        console.log(values);
+        toast({
+            title: 'Perfil de Servicio Actualizado',
+            description: 'Tu información pública ha sido guardada correctamente.',
+        });
+        closeDialog();
+    }
+
     return (
-      <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <Skeleton className="h-96 w-full max-w-4xl mx-auto" />
-      </div>
-    );
-  }
-
-  return (
-    <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <Card>
-          <CardHeader>
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={'https://images.unsplash.com/photo-1599423697969-3a42935f8263?w=400'} alt={'Paseos Felices con Juan'} />
-                  <AvatarFallback><Briefcase /></AvatarFallback>
-                </Avatar>
-              </div>
-              <div className="flex-grow">
-                <CardTitle className="font-headline text-3xl">Perfil de Proveedor</CardTitle>
-                <CardDescription>Esta es la información que otros usuarios verán en la sección de Comunidad.</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                 <div className="grid md:grid-cols-2 gap-6">
                    <FormField
                     control={form.control}
                     name="serviceName"
@@ -190,12 +164,77 @@ export default function ProfilePaseadorPage() {
                 />
                 
                 <div className="flex justify-end pt-4">
-                  <Button type="submit">Guardar Perfil de Servicio</Button>
+                  <Button type="submit">Guardar Perfil</Button>
                 </div>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+            </form>
+        </Form>
+    );
+}
+
+export default function ProfilePaseadorPage() {
+  const { user, isUserLoading } = useUser();
+  const router = useRouter();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, isUserLoading, router]);
+  
+  if (isUserLoading || !user) {
+    return (
+      <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <Skeleton className="h-96 w-full max-w-4xl mx-auto" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <Card>
+            <CardHeader>
+                <div className="flex justify-between items-start">
+                    <div className="flex items-start gap-4">
+                        <Avatar className="h-16 w-16">
+                            <AvatarImage src={'https://images.unsplash.com/photo-1599423697969-3a42935f8263?w=400'} alt={'Paseos Felices con Juan'} />
+                            <AvatarFallback><Briefcase /></AvatarFallback>
+                        </Avatar>
+                        <div className="flex-grow">
+                            <CardTitle className="font-headline text-3xl">Paseos Felices con Juan</CardTitle>
+                            <CardDescription>Esta es la información que otros usuarios verán en la sección de Comunidad.</CardDescription>
+                        </div>
+                    </div>
+                    <DialogTrigger asChild>
+                        <Button variant="outline" size="icon">
+                            <Pencil className="h-4 w-4" />
+                            <span className="sr-only">Editar Perfil</span>
+                        </Button>
+                    </DialogTrigger>
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <h3 className="font-bold">Descripción</h3>
+                <p className="text-muted-foreground text-sm">Paseos grupales e individuales para perros de todas las razas y tamaños. Amor y dedicación garantizados.</p>
+                <h3 className="font-bold">Información de Contacto</h3>
+                <ul className="text-sm text-muted-foreground space-y-2">
+                    <li><span className="font-semibold text-foreground">Categoría:</span> Paseador</li>
+                    <li><span className="font-semibold text-foreground">Ubicación:</span> Zona Residencial Norte</li>
+                    <li><span className="font-semibold text-foreground">Teléfono:</span> +54 9 11 3456-7890</li>
+                    <li><span className="font-semibold text-foreground">Instagram:</span> <a href="https://instagram.com/paseosfelices" target="_blank" rel="noreferrer" className="text-primary hover:underline">@paseosfelices</a></li>
+                </ul>
+            </CardContent>
+            </Card>
+
+            <DialogContent className="sm:max-w-[625px]">
+                <DialogHeader>
+                    <DialogTitle>Editar Perfil de Servicio</DialogTitle>
+                </DialogHeader>
+                <EditServiceForm closeDialog={() => setIsDialogOpen(false)} />
+            </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

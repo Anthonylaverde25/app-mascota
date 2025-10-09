@@ -4,7 +4,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/firebase';
 import { Button } from '@/components/ui/button';
@@ -23,7 +23,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Briefcase } from 'lucide-react';
+import { Briefcase, Pencil } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 const serviceProfileSchema = z.object({
   serviceName: z.string().min(3, { message: 'El nombre del servicio es requerido.' }),
@@ -34,67 +41,33 @@ const serviceProfileSchema = z.object({
   website: z.string().url({ message: 'Por favor, introduce una URL válida.' }).optional().or(z.literal('')),
 });
 
-export default function ProfileVeterinariaPage() {
-  const { user, isUserLoading } = useUser();
-  const router = useRouter();
-  const { toast } = useToast();
-
-  const form = useForm<z.infer<typeof serviceProfileSchema>>({
-    resolver: zodResolver(serviceProfileSchema),
-    defaultValues: {
-      serviceName: 'Clínica Veterinaria Amigo Fiel',
-      category: 'Veterinario',
-      description: 'Atención 24 horas, cirugía especializada y vacunación. Contamos con más de 15 años de experiencia.',
-      location: 'Ciudad Capital, Av. Principal 123',
-      phone: '+54 11 4555-1234',
-      website: 'https://vet-amigofiel.com',
-    },
-  });
-
-  useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/login');
-    }
-  }, [user, isUserLoading, router]);
-  
-  function onSubmit(values: z.infer<typeof serviceProfileSchema>) {
-    console.log(values);
-    toast({
-      title: 'Perfil de Servicio Actualizado',
-      description: 'Tu información pública ha sido guardada correctamente.',
+function EditServiceForm({ closeDialog }: { closeDialog: () => void }) {
+    const { toast } = useToast();
+    const form = useForm<z.infer<typeof serviceProfileSchema>>({
+        resolver: zodResolver(serviceProfileSchema),
+        defaultValues: {
+            serviceName: 'Clínica Veterinaria Amigo Fiel',
+            category: 'Veterinario',
+            description: 'Atención 24 horas, cirugía especializada y vacunación. Contamos con más de 15 años de experiencia.',
+            location: 'Ciudad Capital, Av. Principal 123',
+            phone: '+54 11 4555-1234',
+            website: 'https://vet-amigofiel.com',
+        },
     });
-  }
 
-  if (isUserLoading || !user) {
+    function onSubmit(values: z.infer<typeof serviceProfileSchema>) {
+        console.log(values);
+        toast({
+            title: 'Perfil de Servicio Actualizado',
+            description: 'Tu información pública ha sido guardada correctamente.',
+        });
+        closeDialog();
+    }
+
     return (
-      <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <Skeleton className="h-96 w-full max-w-4xl mx-auto" />
-      </div>
-    );
-  }
-
-  return (
-    <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <Card>
-          <CardHeader>
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src={'https://images.unsplash.com/photo-1583224964986-6f5d68352654?w=400'} alt={'Clínica Veterinaria Amigo Fiel'} />
-                  <AvatarFallback><Briefcase /></AvatarFallback>
-                </Avatar>
-              </div>
-              <div className="flex-grow">
-                <CardTitle className="font-headline text-3xl">Perfil de Proveedor</CardTitle>
-                <CardDescription>Esta es la información que otros usuarios verán en la sección de Comunidad.</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                 <div className="grid md:grid-cols-2 gap-6">
                    <FormField
                     control={form.control}
                     name="serviceName"
@@ -190,12 +163,77 @@ export default function ProfileVeterinariaPage() {
                 />
                 
                 <div className="flex justify-end pt-4">
-                  <Button type="submit">Guardar Perfil de Servicio</Button>
+                  <Button type="submit">Guardar Perfil</Button>
                 </div>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+            </form>
+        </Form>
+    );
+}
+
+export default function ProfileVeterinariaPage() {
+  const { user, isUserLoading } = useUser();
+  const router = useRouter();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, isUserLoading, router]);
+  
+  if (isUserLoading || !user) {
+    return (
+      <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <Skeleton className="h-96 w-full max-w-4xl mx-auto" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <Card>
+            <CardHeader>
+                <div className="flex justify-between items-start">
+                    <div className="flex items-start gap-4">
+                        <Avatar className="h-16 w-16">
+                            <AvatarImage src={'https://images.unsplash.com/photo-1583224964986-6f5d68352654?w=400'} alt={'Clínica Veterinaria Amigo Fiel'} />
+                            <AvatarFallback><Briefcase /></AvatarFallback>
+                        </Avatar>
+                        <div className="flex-grow">
+                            <CardTitle className="font-headline text-3xl">Clínica Veterinaria Amigo Fiel</CardTitle>
+                            <CardDescription>Esta es la información que otros usuarios verán en la sección de Comunidad.</CardDescription>
+                        </div>
+                    </div>
+                    <DialogTrigger asChild>
+                        <Button variant="outline" size="icon">
+                            <Pencil className="h-4 w-4" />
+                            <span className="sr-only">Editar Perfil</span>
+                        </Button>
+                    </DialogTrigger>
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <h3 className="font-bold">Descripción</h3>
+                <p className="text-muted-foreground text-sm">Atención 24 horas, cirugía especializada y vacunación. Contamos con más de 15 años de experiencia.</p>
+                <h3 className="font-bold">Información de Contacto</h3>
+                <ul className="text-sm text-muted-foreground space-y-2">
+                    <li><span className="font-semibold text-foreground">Categoría:</span> Veterinario</li>
+                    <li><span className="font-semibold text-foreground">Ubicación:</span> Ciudad Capital, Av. Principal 123</li>
+                    <li><span className="font-semibold text-foreground">Teléfono:</span> +54 11 4555-1234</li>
+                    <li><span className="font-semibold text-foreground">Sitio Web:</span> <a href="https://vet-amigofiel.com" target="_blank" rel="noreferrer" className="text-primary hover:underline">vet-amigofiel.com</a></li>
+                </ul>
+            </CardContent>
+            </Card>
+
+            <DialogContent className="sm:max-w-[625px]">
+                <DialogHeader>
+                    <DialogTitle>Editar Perfil de Servicio</DialogTitle>
+                </DialogHeader>
+                <EditServiceForm closeDialog={() => setIsDialogOpen(false)} />
+            </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
