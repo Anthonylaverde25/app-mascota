@@ -23,6 +23,7 @@ import { useToast } from '@/hooks/use-toast'
 import { Logo } from '@/components/logo'
 import useRegister from '@/@features/auth/hook/useRegister'
 import axiosInstance from '@/lib/@axios'
+import { useApiAvailable } from '@/hooks/useApiAvailable'
 
 // ==================== TYPES ====================
 
@@ -164,6 +165,9 @@ export default function SignupPage() {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         setIsSubmitting(true)
+        const { checkApi } = useApiAvailable(
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/health`
+        )
         try {
             if (!auth)
                 throw new Error('Servicio de autenticación no disponible')

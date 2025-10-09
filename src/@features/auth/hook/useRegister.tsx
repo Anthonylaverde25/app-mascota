@@ -21,10 +21,8 @@ export default function useRegister() {
     const handleRegister = async (
         credential: CredentialRegister
     ): Promise<UserCredential> => {
-        console.log('credenciales para enviar de payload', credential)
         // debugger
         try {
-            // authUseCase.register debería devolver algo como { auth: { session: UserCredential } }
             const payloadData: RegisterFieldsEntity = {
                 name: credential.name,
                 phone: credential.phone,
@@ -32,7 +30,6 @@ export default function useRegister() {
                 dni: credential.dni,
             }
             const { session } = await authUseCase.register(credential)
-            console.log('session desde el register', session)
             if (session) {
                 const { operationType } = session
                 if (operationType === 'signIn') {

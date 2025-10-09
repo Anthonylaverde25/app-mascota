@@ -27,6 +27,7 @@ import { useAuth, useUser } from '@/firebase'
 import { useToast } from '@/hooks/use-toast'
 import { Logo } from '@/components/logo'
 import axiosInstance from '@/lib/@axios'
+import { useApiAvailable } from '@/hooks/useApiAvailable'
 
 const formSchema = z.object({
     email: z
@@ -67,23 +68,27 @@ function GoogleIcon(props: React.ComponentProps<'svg'>) {
 // Función para llamar a tu API de Laravel con axios
 async function callApiWithToken(token: string) {
     try {
-      
-    const response = await axiosInstance.get('/user')
+        const response = await axiosInstance.get('/user')
 
-    console.log('Respuesta de la API de Laravel:', response.data);
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-        console.error('Error de Axios al llamar a la API de Laravel:', error.response?.data || error.message);
-    } else {
-        console.error('No se pudo llamar a la API de Laravel:', error);
+        return response.data
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.error(
+                'Error de Axios al llamar a la API de Laravel:',
+                error.response?.data || error.message
+            )
+        } else {
+            console.error('No se pudo llamar a la API de Laravel:', error)
+        }
+        // Propagar el error para que pueda ser manejado por el llamador si es necesario
+        throw error
     }
-    // Propagar el error para que pueda ser manejado por el llamador si es necesario
-    throw error;
-  }
 }
 
 export default function LoginPage() {
+    const { checkApi, isAvailable } = useApiAvailable(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/health`
+    )
     const { user, isUserLoading } = useUser()
     const auth = useAuth()
     const router = useRouter()
@@ -110,6 +115,17 @@ export default function LoginPage() {
         try {
             if (!auth)
                 throw new Error('Servicio de autenticación no disponible')
+            const apiIsUp = await checkApi()
+            if (!apiIsUp) {
+                toast({
+                    variant: 'destructive',
+                    title: 'API no disponible',
+                    description:
+                        'No se puede iniciar sesión, intenta más tarde.',
+                })
+                return
+            }
+
             const userCredential = await signInWithEmailAndPassword(
                 auth,
                 values.email,
