@@ -68,7 +68,7 @@ export default function ProfilePaseadorPage() {
   if (isUserLoading || !user) {
     return (
       <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <Skeleton className="h-96 w-full" />
+        <Skeleton className="h-96 w-full max-w-4xl mx-auto" />
       </div>
     );
   }
@@ -86,7 +86,7 @@ export default function ProfilePaseadorPage() {
                 </Avatar>
               </div>
               <div className="flex-grow">
-                <CardTitle className="font-headline text-3xl">Perfil de Proveedor (Paseador)</CardTitle>
+                <CardTitle className="font-headline text-3xl">Perfil de Proveedor</CardTitle>
                 <CardDescription>Esta es la información que otros usuarios verán en la sección de Comunidad.</CardDescription>
               </div>
             </div>
@@ -102,7 +102,7 @@ export default function ProfilePaseadorPage() {
                       <FormItem>
                         <FormLabel>Nombre del Servicio</FormLabel>
                         <FormControl>
-                          <Input placeholder="Ej: Veterinaria San Roque" {...field} />
+                          <Input placeholder="Ej: Paseos Caninos Contentos" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -152,9 +152,9 @@ export default function ProfilePaseadorPage() {
                     name="location"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Ubicación</FormLabel>
+                        <FormLabel>Ubicación o Zona de Servicio</FormLabel>
                         <FormControl>
-                          <Input placeholder="Ej: Av. Principal 123, Ciudad" {...field} />
+                          <Input placeholder="Ej: Palermo, Buenos Aires" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -182,7 +182,7 @@ export default function ProfilePaseadorPage() {
                     <FormItem>
                       <FormLabel>Sitio Web o Red Social (Opcional)</FormLabel>
                       <FormControl>
-                        <Input placeholder="https://tu-sitio.com" {...field} />
+                        <Input placeholder="https://instagram.com/tu-usuario" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

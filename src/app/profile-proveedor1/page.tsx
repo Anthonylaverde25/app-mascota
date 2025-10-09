@@ -68,7 +68,7 @@ export default function ProfileVeterinariaPage() {
   if (isUserLoading || !user) {
     return (
       <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <Skeleton className="h-96 w-full" />
+        <Skeleton className="h-96 w-full max-w-4xl mx-auto" />
       </div>
     );
   }
@@ -86,7 +86,7 @@ export default function ProfileVeterinariaPage() {
                 </Avatar>
               </div>
               <div className="flex-grow">
-                <CardTitle className="font-headline text-3xl">Perfil de Proveedor (Veterinaria)</CardTitle>
+                <CardTitle className="font-headline text-3xl">Perfil de Proveedor</CardTitle>
                 <CardDescription>Esta es la información que otros usuarios verán en la sección de Comunidad.</CardDescription>
               </div>
             </div>
