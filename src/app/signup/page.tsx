@@ -6,11 +6,7 @@ import { z } from 'zod'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import {
-    createUserWithEmailAndPassword,
-    GoogleAuthProvider,
-    signInWithPopup,
-} from 'firebase/auth'
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -26,24 +22,61 @@ import { useAuth, useUser } from '@/firebase'
 import { useToast } from '@/hooks/use-toast'
 import { Logo } from '@/components/logo'
 import useRegister from '@/@features/auth/hook/useRegister'
-import useRegisterSyncApi from '@/@features/auth/hook/useRegisterSyncApi'
+import axiosInstance from '@/lib/@axios'
 
-const formSchema = z.object({
-    email: z
-        .string()
-        .email('Por favor, introduce un correo electrónico válido.'),
-    password: z
-        .string()
-        .min(6, 'La contraseña debe tener al menos 6 caracteres.'),
-})
+// ==================== TYPES ====================
+
+type EntityType = 'owner' | 'service'
+
+type EntityTypeElement = {
+    id: number
+    code: EntityType
+    description: string
+}
+
+interface EntityTypesResponse {
+    entityTypes: EntityTypeElement[]
+}
+
+// ==================== SCHEMA ====================
+
+const formSchema = z
+    .object({
+        name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres.'),
+        email: z
+            .string()
+            .email('Por favor, introduce un correo electrónico válido.'),
+        password: z
+            .string()
+            .min(6, 'La contraseña debe tener al menos 6 caracteres.'),
+        entityType: z.object({
+            id: z.number(),
+            code: z.enum(['owner', 'service']),
+        }),
+        phone: z.string().optional(),
+        dni: z.string().optional(),
+        address: z.string().optional(),
+    })
+    .refine(
+        (data) =>
+            data.entityType.code === 'service'
+                ? data.dni && data.address
+                : true,
+        {
+            message: 'DNI y Dirección son requeridos para servicios',
+            path: ['dni'],
+        }
+    )
+
+// ==================== ICON ====================
 
 function GoogleIcon(props: React.ComponentProps<'svg'>) {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 48 48"
-            width="24px"
-            height="24px"
+            width="24"
+            height="24"
             {...props}
         >
             <path
@@ -66,7 +99,10 @@ function GoogleIcon(props: React.ComponentProps<'svg'>) {
     )
 }
 
+// ==================== COMPONENT ====================
+
 export default function SignupPage() {
+    const [entityTypes, setEntityTypes] = useState<EntityTypeElement[]>([])
     const { handleRegister } = useRegister()
     const { user, isUserLoading } = useUser()
     const auth = useAuth()
@@ -75,46 +111,81 @@ export default function SignupPage() {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isGoogleSubmitting, setGoogleIsSubmitting] = useState(false)
 
-    useEffect(() => {
-        if (!isUserLoading && user) {
-            router.push('/')
-        }
-    }, [user, isUserLoading, router])
-
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            name: '',
             email: '',
             password: '',
+            entityType: {
+                id: 1,
+                code: 'owner',
+            },
+            phone: '',
+            dni: '',
+            address: '',
         },
     })
 
-    async function onSubmit(values: z.infer<typeof formSchema>) {
+    const selectedEntity = form.watch('entityType')
+
+    useEffect(() => {
+        if (!isUserLoading && user) router.push('/')
+    }, [user, isUserLoading, router])
+
+    useEffect(() => {
+        const fetchTypes = async () => {
+            try {
+                const {
+                    data: { entityTypes },
+                } = await axiosInstance.get<EntityTypesResponse>('entity-types')
+
+                setEntityTypes(entityTypes)
+
+                // Establecer el primer tipo como predeterminado
+                if (entityTypes.length > 0) {
+                    form.setValue('entityType', {
+                        id: entityTypes[0].id,
+                        code: entityTypes[0].code,
+                    })
+                }
+            } catch (error) {
+                console.error('Error al cargar tipos de entidad:', error)
+                toast({
+                    variant: 'destructive',
+                    title: 'Error',
+                    description: 'No se pudieron cargar los tipos de usuario.',
+                })
+            }
+        }
+
+        fetchTypes()
+    }, [form, toast])
+
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
         setIsSubmitting(true)
         try {
             if (!auth)
                 throw new Error('Servicio de autenticación no disponible')
 
-            const credentials = {
-                auth,
-                email: values?.email,
-                password: values?.password,
+            // Preparar los datos para enviar al backend
+            const registrationData = {
+                ...values,
+                entityTypeId: values.entityType.id,
+                entityTypeCode: values.entityType.code,
             }
-            await handleRegister(credentials)
+
+            await handleRegister({ auth, ...registrationData })
             toast({
                 title: '¡Cuenta creada!',
-                description:
-                    'Tu cuenta ha sido creada exitosamente. Serás redirigido.',
+                description: 'Tu cuenta ha sido creada exitosamente.',
             })
             router.push('/')
         } catch (error: any) {
-            console.error('Error signing up:', error)
             let description =
-                'Ha ocurrido un error. Por favor, inténtalo de nuevo.'
-            if (error.code === 'auth/email-already-in-use') {
-                description =
-                    'Este correo electrónico ya está en uso. Por favor, intenta iniciar sesión.'
-            }
+                error.code === 'auth/email-already-in-use'
+                    ? 'Este correo electrónico ya está en uso.'
+                    : 'Ha ocurrido un error. Inténtalo de nuevo.'
             toast({
                 variant: 'destructive',
                 title: 'Error al registrarse',
@@ -125,7 +196,7 @@ export default function SignupPage() {
         }
     }
 
-    async function handleGoogleSignIn() {
+    const handleGoogleSignIn = async () => {
         setGoogleIsSubmitting(true)
         try {
             if (!auth)
@@ -137,119 +208,247 @@ export default function SignupPage() {
                 description: 'Has iniciado sesión con Google correctamente.',
             })
             router.push('/')
-        } catch (error: any) {
-            console.error('Error with Google sign in:', error)
+        } catch {
             toast({
                 variant: 'destructive',
                 title: 'Error de Google',
-                description:
-                    'No se pudo iniciar sesión con Google. Inténtalo de nuevo.',
+                description: 'No se pudo iniciar sesión con Google.',
             })
         } finally {
             setGoogleIsSubmitting(false)
         }
     }
 
-    if (isUserLoading || user) {
+    if (isUserLoading || user)
         return (
             <div className="flex justify-center items-center h-screen">
                 Cargando...
             </div>
         )
-    }
 
     return (
         <div className="flex min-h-[calc(100vh-80px)] flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
-            <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-                <div className="flex flex-col space-y-2 text-center">
+            <div className="mx-auto w-full sm:w-[400px] space-y-6">
+                {/* Header */}
+                <div className="text-center space-y-2">
                     <Logo className="mx-auto h-8 w-8" />
                     <h1 className="text-2xl font-semibold tracking-tight font-headline">
-                        Crea una cuenta
+                        Crea una cuenta1
                     </h1>
                     <p className="text-sm text-muted-foreground">
-                        Introduce tu correo electrónico para crear tu cuenta
+                        Introduce tus datos para crear tu cuenta
                     </p>
                 </div>
-                <div className="grid gap-6">
-                    <Form {...form}>
-                        <form
-                            onSubmit={form.handleSubmit(onSubmit)}
-                            className="grid gap-4"
-                        >
-                            <FormField
-                                control={form.control}
-                                name="email"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="sr-only">
-                                            Correo Electrónico
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                placeholder="nombre@ejemplo.com"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="password"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className="sr-only">
-                                            Contraseña
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="password"
-                                                placeholder="Contraseña"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <Button
-                                type="submit"
-                                className="w-full"
-                                disabled={isSubmitting || isGoogleSubmitting}
-                            >
-                                {isSubmitting
-                                    ? 'Creando cuenta...'
-                                    : 'Crear Cuenta'}
-                            </Button>
-                        </form>
-                    </Form>
-                    <div className="relative">
-                        <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t" />
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-background px-2 text-muted-foreground">
-                                O continuar con
-                            </span>
-                        </div>
-                    </div>
-                    <Button
-                        variant="outline"
-                        type="button"
-                        onClick={handleGoogleSignIn}
-                        disabled={isSubmitting || isGoogleSubmitting}
+
+                {/* Form */}
+                <Form {...form}>
+                    <form
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="grid gap-4"
                     >
-                        {isGoogleSubmitting ? (
-                            'Cargando...'
-                        ) : (
+                        {/* NAME */}
+                        <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Nombre completo</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            placeholder="Tu nombre completo"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* ENTITY TYPE CARDS */}
+                        <FormField
+                            control={form.control}
+                            name="entityType"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Tipo de usuario</FormLabel>
+
+                                    <div className="flex gap-4 mt-2">
+                                        {entityTypes?.map((type) => {
+                                            const isSelected =
+                                                field.value?.id === type.id
+
+                                            return (
+                                                <div
+                                                    key={type.id}
+                                                    onClick={() =>
+                                                        field.onChange({
+                                                            id: type.id,
+                                                            code: type.code,
+                                                        })
+                                                    }
+                                                    className={`flex-1 cursor-pointer rounded-xl p-2.5 text-center transition-all duration-200 border ${
+                                                        isSelected
+                                                            ? 'border-primary bg-primary/10 shadow-md'
+                                                            : 'border-gray-300 hover:border-primary hover:bg-primary/5'
+                                                    }`}
+                                                >
+                                                    <p className="text-sm font-medium">
+                                                        {type.description}
+                                                    </p>
+                                                    <p className="text-xs text-gray-500 mt-1">
+                                                        {type.code}
+                                                    </p>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* EMAIL */}
+                        <FormField
+                            control={form.control}
+                            name="email"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="sr-only">
+                                        Correo Electrónico
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            placeholder="nombre@ejemplo.com"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* PASSWORD */}
+                        <FormField
+                            control={form.control}
+                            name="password"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="sr-only">
+                                        Contraseña
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="password"
+                                            placeholder="Contraseña"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* PHONE */}
+                        <FormField
+                            control={form.control}
+                            name="phone"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Teléfono (opcional)</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            placeholder="+54 9 11 1234 5678"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* DNI y DIRECCIÓN solo para SERVICE */}
+                        {selectedEntity?.code === 'service' && (
                             <>
-                                <GoogleIcon className="mr-2 h-4 w-4" /> Google
+                                <FormField
+                                    control={form.control}
+                                    name="dni"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>DNI</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="DNI"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="address"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Dirección</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="Dirección completa"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
                             </>
                         )}
-                    </Button>
+
+                        {/* SUBMIT BUTTON */}
+                        <Button
+                            type="submit"
+                            className="w-full"
+                            disabled={isSubmitting || isGoogleSubmitting}
+                        >
+                            {isSubmitting
+                                ? 'Creando cuenta...'
+                                : 'Crear Cuenta'}
+                        </Button>
+                    </form>
+                </Form>
+
+                {/* OR DIVIDER */}
+                <div className="relative my-4">
+                    <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-background px-2 text-muted-foreground">
+                            O continuar con
+                        </span>
+                    </div>
                 </div>
-                <p className="px-8 text-center text-sm text-muted-foreground">
+
+                {/* GOOGLE SIGNIN */}
+                <Button
+                    variant="outline"
+                    type="button"
+                    onClick={handleGoogleSignIn}
+                    disabled={isSubmitting || isGoogleSubmitting}
+                    className="w-full"
+                >
+                    {isGoogleSubmitting ? (
+                        'Cargando...'
+                    ) : (
+                        <>
+                            <GoogleIcon className="mr-2 h-4 w-4" /> Google
+                        </>
+                    )}
+                </Button>
+
+                {/* LOGIN LINK */}
+                <p className="px-8 text-center text-sm text-muted-foreground mt-4">
                     ¿Ya tienes una cuenta?{' '}
                     <Link
                         href="/login"

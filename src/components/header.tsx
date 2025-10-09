@@ -23,7 +23,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from './ui/skeleton';
 
 const navLinks = [
-  { href: '/', label: 'Mis Mascotas' },
+  { href: '/', label: 'Buscar' },
   { href: '/community', label: 'Comunidad' },
   { href: '/notifications', label: 'Recordatorios' },
 ];

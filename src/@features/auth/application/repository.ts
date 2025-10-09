@@ -13,6 +13,8 @@ export class AuthRepository implements authInterface {
                 password
             )
 
+            console.log('responde del register desde el repository', response)
+
             return { session: response }
         } catch (error) {
             throw error

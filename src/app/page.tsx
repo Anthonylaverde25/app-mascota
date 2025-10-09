@@ -1,84 +1,148 @@
-'use client';
+'use client'
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import { useUser } from '@/firebase';
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import { useUser } from '@/firebase'
 
-import { getPets } from '@/lib/data';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { PlusCircle } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button'
+import {
+    Search,
+    Stethoscope,
+    Footprints,
+    Store,
+    MapPin,
+} from 'lucide-react'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Input } from '@/components/ui/input'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select'
+import { Card } from '@/components/ui/card'
+import { PlaceHolderImages } from '@/lib/placeholder-images'
 
 export default function Home() {
-  const { user, isUserLoading } = useUser();
-  const router = useRouter();
-  const pets = getPets();
+    const { user, isUserLoading } = useUser()
+    const router = useRouter()
+    const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-main')
 
-  useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/login');
+    useEffect(() => {
+        if (!isUserLoading && !user) {
+            router.push('/login')
+        }
+    }, [user, isUserLoading, router])
+
+    if (isUserLoading || !user) {
+        return (
+            <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+                <Skeleton className="h-[60vh] w-full rounded-lg" />
+            </div>
+        )
     }
-  }, [user, isUserLoading, router]);
 
-  if (isUserLoading || !user) {
+    const handleSearch = () => {
+        router.push('/community')
+    }
+
     return (
-      <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center mb-8">
-          <Skeleton className="h-10 w-48" />
-          <Skeleton className="h-10 w-36" />
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="aspect-square w-full rounded-lg" />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-headline font-bold">Tus Mascotas</h1>
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Añadir Mascota
-        </Button>
-      </div>
-      
-      {pets.length === 0 ? (
-        <div className="text-center py-20 border-2 border-dashed rounded-lg">
-          <p className="text-muted-foreground">Aún no has añadido ninguna mascota.</p>
-          <Button variant="link" className="text-primary">Añade tu primera mascota</Button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {pets.map((pet) => (
-            <Link key={pet.id} href={`/pets/${pet.id}`} className="group relative block">
-              <div className="relative aspect-square w-full overflow-hidden rounded-lg">
+        <div className="relative w-full h-[calc(100vh-80px)] flex items-center justify-center">
+            {heroImage && (
                 <Image
-                  src={pet.fotoPerfil.imageUrl}
-                  alt={pet.fotoPerfil.description}
-                  data-ai-hint={pet.fotoPerfil.imageHint}
-                  fill
-                  className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                    src={heroImage.imageUrl}
+                    alt={heroImage.description}
+                    data-ai-hint={heroImage.imageHint}
+                    fill
+                    className="object-cover object-center"
+                    priority
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                  <h3 className="text-xl font-headline font-bold">{pet.nombre}</h3>
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out mt-1">
-                      <p className="text-sm text-gray-200">{pet.raza}</p>
-                      <Badge variant="secondary" className="mt-2 text-xs">{pet.especie}</Badge>
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
+            )}
+            <div className="absolute inset-0 bg-black/50" />
+            <div className="relative z-10 flex flex-col items-center text-center text-white px-4">
+                <h1 className="text-4xl md:text-6xl font-headline font-bold drop-shadow-md">
+                    El cuidado que tu mascota merece
+                </h1>
+                <p className="mt-4 text-lg md:text-xl max-w-2xl drop-shadow">
+                    Encuentra veterinarios, paseadores y tiendas cerca de ti.
+                    Todo en un solo lugar.
+                </p>
+                <Card className="mt-8 p-4 w-full max-w-3xl bg-background/90 text-foreground shadow-2xl backdrop-blur-sm">
+                    <div className="flex flex-col md:flex-row gap-2">
+                        <Select defaultValue="veterinario">
+                            <SelectTrigger className="w-full md:w-[180px] text-sm">
+                                <SelectValue placeholder="Tipo de servicio" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="veterinario">
+                                    <div className="flex items-center">
+                                        <Stethoscope className="mr-2 h-4 w-4" />
+                                        Veterinario
+                                    </div>
+                                </SelectItem>
+                                <SelectItem value="paseador">
+                                    <div className="flex items-center">
+                                        <Footprints className="mr-2 h-4 w-4" />
+                                        Paseador
+                                    </div>
+                                </SelectItem>
+                                <SelectItem value="tienda">
+                                    <div className="flex items-center">
+                                        <Store className="mr-2 h-4 w-4" />
+                                        Tienda
+                                    </div>
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <div className="relative flex-grow">
+                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                            <Input
+                                placeholder="Ingresá tu ubicación"
+                                className="pl-10 w-full"
+                            />
+                        </div>
+                        <Button
+                            size="lg"
+                            className="w-full md:w-auto"
+                            onClick={handleSearch}
+                        >
+                            <Search className="mr-2 h-5 w-5" />
+                            Buscar
+                        </Button>
+                    </div>
+                    <div className="flex flex-wrap items-center justify-center gap-2 mt-4 text-sm">
+                        <span className="text-muted-foreground mr-2">
+                            Búsqueda rápida:
+                        </span>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleSearch}
+                        >
+                            <Stethoscope />
+                            Veterinarias
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleSearch}
+                        >
+                            <Footprints />
+                            Paseadores
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleSearch}
+                        >
+                            <Store />
+                            Tiendas
+                        </Button>
+                    </div>
+                </Card>
+            </div>
         </div>
-      )}
-    </div>
-  );
+    )
 }

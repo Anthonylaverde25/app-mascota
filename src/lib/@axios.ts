@@ -24,6 +24,8 @@ const getToken = (): string | null => {
     }
 }
 
+console.log('tenemos tokens?', getToken())
+
 // Interceptor que agrega el Bearer token a cada request
 axiosInstance.interceptors.request.use((config) => {
     const token = getToken()
