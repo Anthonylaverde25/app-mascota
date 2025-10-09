@@ -94,9 +94,15 @@ export function Header() {
                 </Link>
               </DropdownMenuItem>
                <DropdownMenuItem asChild>
-                 <Link href="/profile-service">
+                 <Link href="/profile-proveedor1">
                     <Settings className="mr-2 h-4 w-4" />
-                    <span>Perfil (Servicio)</span>
+                    <span>Perfil (Veterinaria)</span>
+                 </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                 <Link href="/profile-proveedor2">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Perfil (Paseador)</span>
                  </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />

@@ -34,7 +34,7 @@ const serviceProfileSchema = z.object({
   website: z.string().url({ message: 'Por favor, introduce una URL válida.' }).optional().or(z.literal('')),
 });
 
-export default function ProfileServicePage() {
+export default function ProfileVeterinariaPage() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
   const { toast } = useToast();
@@ -42,30 +42,20 @@ export default function ProfileServicePage() {
   const form = useForm<z.infer<typeof serviceProfileSchema>>({
     resolver: zodResolver(serviceProfileSchema),
     defaultValues: {
-      serviceName: '',
-      description: '',
-      location: '',
-      phone: '',
-      website: '',
+      serviceName: 'Clínica Veterinaria Amigo Fiel',
+      category: 'Veterinario',
+      description: 'Atención 24 horas, cirugía especializada y vacunación. Contamos con más de 15 años de experiencia.',
+      location: 'Ciudad Capital, Av. Principal 123',
+      phone: '+54 11 4555-1234',
+      website: 'https://vet-amigofiel.com',
     },
   });
 
   useEffect(() => {
     if (!isUserLoading && !user) {
       router.push('/login');
-    } else if (user) {
-      // Here you would fetch the service provider's data from your backend
-      // and populate the form. For now, we use mock data.
-      form.reset({
-        serviceName: user.displayName ? `${user.displayName}'s Service` : 'Mi Servicio',
-        category: 'Veterinario', // default
-        description: 'Servicios profesionales para el cuidado de tu mascota.',
-        location: 'Ciudad Capital',
-        phone: '123-456-7890',
-        website: 'https://myservice.com'
-      });
     }
-  }, [user, isUserLoading, router, form]);
+  }, [user, isUserLoading, router]);
   
   function onSubmit(values: z.infer<typeof serviceProfileSchema>) {
     console.log(values);
@@ -91,12 +81,12 @@ export default function ProfileServicePage() {
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
                 <Avatar className="h-16 w-16">
-                  <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? 'Servicio'} />
+                  <AvatarImage src={'https://images.unsplash.com/photo-1583224964986-6f5d68352654?w=400'} alt={'Clínica Veterinaria Amigo Fiel'} />
                   <AvatarFallback><Briefcase /></AvatarFallback>
                 </Avatar>
               </div>
               <div className="flex-grow">
-                <CardTitle className="font-headline text-3xl">Perfil de Proveedor (Genérico)</CardTitle>
+                <CardTitle className="font-headline text-3xl">Perfil de Proveedor (Veterinaria)</CardTitle>
                 <CardDescription>Esta es la información que otros usuarios verán en la sección de Comunidad.</CardDescription>
               </div>
             </div>
