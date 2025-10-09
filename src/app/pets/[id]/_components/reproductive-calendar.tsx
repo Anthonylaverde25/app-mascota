@@ -33,15 +33,40 @@ export function ReproductiveCalendar({ events, species }: CalendarProps) {
     nextHeat: [],
   };
   const modifierStyles = {
-    heat: { backgroundColor: 'var(--color-celo)' },
+    heat: { 
+        backgroundColor: 'var(--color-celo)',
+        borderRadius: '0.5rem',
+    },
     fertilityWindow: {
       backgroundColor: 'var(--color-fertilidad-bg)',
       color: 'var(--color-fertilidad-fg)',
+      borderRadius: '0',
     },
-    mating: { backgroundColor: 'var(--color-monta)' },
-    ultrasound: { '--icon': "'🩺'", '::after': { content: 'var(--icon)' } },
-    dueDate: { '--icon': "'🍼'", '::after': { content: 'var(--icon)' } },
-    nextHeat: { '--icon': "'🔥'", '::after': { content: 'var(--icon)' } },
+    mating: { 
+        backgroundColor: 'var(--color-monta)',
+        borderRadius: '0.5rem',
+    },
+    ultrasound: { '--icon': "'🩺'", '::after': { 
+        content: 'var(--icon)',
+        position: 'absolute',
+        bottom: '2px',
+        right: '2px',
+        fontSize: '0.8rem',
+    } },
+    dueDate: { '--icon': "'🍼'", '::after': { 
+        content: 'var(--icon)',
+        position: 'absolute',
+        bottom: '2px',
+        right: '2px',
+        fontSize: '0.8rem',
+    } },
+    nextHeat: { '--icon': "'🔥'", '::after': { 
+        content: 'var(--icon)',
+        position: 'absolute',
+        bottom: '2px',
+        right: '2px',
+        fontSize: '0.8rem',
+    } },
   };
 
   heatEvents.forEach((event) => {
@@ -86,16 +111,9 @@ export function ReproductiveCalendar({ events, species }: CalendarProps) {
       <style>{`
         :root {
           --color-celo: hsl(340 84% 60% / 0.3);
-          --color-fertilidad-bg: hsl(340 84% 60% / 0.6);
-          --color-fertilidad-fg: #fff;
-          --color-monta: hsl(142 76% 36% / 0.4);
-        }
-        .rdp-day_nextHeat::after, .rdp-day_dueDate::after, .rdp-day_ultrasound::after {
-          position: absolute;
-          bottom: 2px;
-          right: 2px;
-          font-size: 0.75rem;
-          line-height: 1;
+          --color-fertilidad-bg: hsl(340 84% 60% / 0.15);
+          --color-fertilidad-fg: hsl(var(--foreground));
+          --color-monta: hsl(142 76% 36% / 0.3);
         }
       `}</style>
       <Calendar

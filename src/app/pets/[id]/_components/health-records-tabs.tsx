@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { HeartPulse, Pill, Syringe, Bug, Scale, Eye, Pencil, Trash2, ChevronDown, CheckCircle, Clock, AlertCircle, MoreHorizontal } from 'lucide-react';
+import { HeartPulse, Pill, Syringe, Bug, Scale, Eye, Pencil, Trash2, ChevronDown, CheckCircle, Clock, AlertCircle, MoreHorizontal, CalendarHeart, Bone, Weight as WeightIcon } from 'lucide-react';
 import type { Pet, Vaccine, Deworming, Treatment, ReproductiveEvent, Weight } from '@/lib/data';
 import { formatDate, cn } from '@/lib/utils';
 import {
@@ -13,7 +13,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -80,11 +80,25 @@ const groupVaccines = (vaccines: Vaccine[]) => {
     return acc;
   }, {} as Record<string, Vaccine[]>);
 };
-  
 
+const TABS_CONFIG = [
+    { value: 'vaccinations', label: 'Vacunas', icon: Syringe },
+    { value: 'deworming', label: 'Desparasit.', icon: Bug },
+    { value: 'treatments', label: 'Tratamientos', icon: Pill },
+    { value: 'weight', label: 'Peso', icon: WeightIcon },
+];
+
+const FEMALE_TABS_CONFIG = [
+    ...TABS_CONFIG,
+    { value: 'reproductive', label: 'Reproductivo', icon: HeartPulse },
+    { value: 'reproductive-calendar', label: 'Calendario', icon: CalendarHeart },
+]
+  
 export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
   const [openDialog, setOpenDialog] = useState<DialogState>(null);
   const groupedVaccines = groupVaccines(pet.vacunas);
+  
+  const currentTabs = pet.sexo === 'Hembra' ? FEMALE_TABS_CONFIG : TABS_CONFIG;
 
   const vaccineSummary = Object.values(groupedVaccines).reduce(
     (acc, doses) => {
@@ -109,271 +123,293 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
     { label: 'Vencidas', count: vaccineSummary.expired, icon: AlertCircle, color: 'text-destructive' },
   ];
 
-  const renderEmptyState = (text: string, dialog: DialogState) => (
-    <div className="text-center py-10 border-2 border-dashed rounded-lg">
-      <p className="text-muted-foreground mb-2">{text}</p>
-      <Button variant="link" onClick={() => setOpenDialog(dialog)}>
-        Añadir el primer registro
-      </Button>
-    </div>
+  const renderEmptyState = (title: string, description: string, buttonText: string, dialog: DialogState) => (
+    <Card>
+      <CardHeader>
+        <CardTitle className="font-headline">{title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-center py-10 border-2 border-dashed rounded-lg flex flex-col items-center">
+            <div className="bg-secondary p-4 rounded-full mb-4">
+                <Bone className="h-10 w-10 text-muted-foreground" />
+            </div>
+            <p className="font-semibold text-lg">{description}</p>
+            <p className="text-muted-foreground text-sm mb-4">Empieza a construir el historial de salud de {pet.nombre}.</p>
+            <Button onClick={() => setOpenDialog(dialog)}>
+                {buttonText}
+            </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 
   return (
     <Dialog open={!!openDialog} onOpenChange={(isOpen) => !isOpen && setOpenDialog(null)}>
       <Tabs defaultValue="vaccinations" className='w-full'>
-        <TabsList className="grid w-full h-auto grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-          <TabsTrigger value="vaccinations"><Syringe className="w-4 h-4 mr-2"/>Vacunas</TabsTrigger>
-          <TabsTrigger value="deworming"><Bug className="w-4 h-4 mr-2"/>Desparasit.</TabsTrigger>
-          <TabsTrigger value="treatments"><Pill className="w-4 h-4 mr-2"/>Tratamientos</TabsTrigger>
-          {pet.sexo === 'Hembra' && <TabsTrigger value="reproductive"><HeartPulse className="w-4 h-4 mr-2"/>Reproductivo</TabsTrigger>}
-          <TabsTrigger value="weight"><Scale className="w-4 h-4 mr-2"/>Peso</TabsTrigger>
+        <TabsList className="grid w-full h-auto grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
+            {currentTabs.map(({ value, label, icon: Icon }) => (
+                <TabsTrigger key={value} value={value}>
+                    <Icon className="w-4 h-4 mr-2"/>{label}
+                </TabsTrigger>
+            ))}
         </TabsList>
         
         <TabsContent value="vaccinations">
-          <Card>
-            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <CardTitle className="font-headline">Historial de Vacunación</CardTitle>
-              <Button onClick={() => setOpenDialog('vaccine')} className="w-full sm:w-auto">Añadir Dosis</Button>
-            </CardHeader>
-            <CardContent>
              {Object.keys(groupedVaccines).length > 0 ? (
-                 <>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                        {summaryItems.map((item) => (
-                        <div key={item.label} className="p-3 bg-muted rounded-lg flex items-center border">
-                            <item.icon className={cn("h-6 w-6 mr-3", item.color)} />
-                            <div>
-                                <p className="text-xl sm:text-2xl font-bold">{item.count}</p>
-                                <p className="text-xs text-muted-foreground">{item.label}</p>
-                            </div>
+                <Card>
+                    <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                            <CardTitle className="font-headline">Historial de Vacunación</CardTitle>
+                            <CardDescription>Resumen y detalle de todas las dosis aplicadas.</CardDescription>
                         </div>
-                        ))}
-                    </div>
-                    <div className="space-y-4">
-                      {Object.entries(groupedVaccines).map(([vaccineType, doses]) => {
-                        const latestDose = doses[0];
-                        const status = getVaccineStatus(latestDose);
-                        const totalApplied = doses.length;
-                        const totalDoses = latestDose.dosisTotales || 1;
-                        return (
-                          <Collapsible key={vaccineType} className="border rounded-lg">
-                            <CollapsibleTrigger className="w-full p-4 hover:bg-muted/50 transition-colors rounded-t-lg">
-                              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-2">
-                                <div className="text-left">
-                                  <h3 className="font-bold text-lg">{vaccineType}</h3>
-                                  <Badge variant="secondary" className={cn("mt-1 font-semibold", status.className)}>
-                                    {status.text}
-                                  </Badge>
+                        <Button onClick={() => setOpenDialog('vaccine')} className="w-full sm:w-auto">Añadir Dosis</Button>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                            {summaryItems.map((item) => (
+                            <div key={item.label} className="p-3 bg-muted rounded-lg flex items-center border">
+                                <item.icon className={cn("h-6 w-6 mr-3", item.color)} />
+                                <div>
+                                    <p className="text-xl sm:text-2xl font-bold">{item.count}</p>
+                                    <p className="text-xs text-muted-foreground">{item.label}</p>
                                 </div>
-                                <div className="flex items-center gap-4 w-full sm:w-auto justify-between">
-                                   <div className="text-left sm:text-right">
-                                    <p className="text-sm font-semibold">{totalApplied} de {totalDoses} dosis</p>
-                                    <p className="text-xs text-muted-foreground">Próx: {formatDate(latestDose.fechaProximaDosis)}</p>
-                                   </div>
-                                   <ChevronDown className="h-5 w-5 transition-transform duration-300 [&[data-state=open]]:rotate-180" />
+                            </div>
+                            ))}
+                        </div>
+                        <div className="space-y-4">
+                        {Object.entries(groupedVaccines).map(([vaccineType, doses]) => {
+                            const latestDose = doses[0];
+                            const status = getVaccineStatus(latestDose);
+                            const totalApplied = doses.length;
+                            const totalDoses = latestDose.dosisTotales || 1;
+                            return (
+                            <Collapsible key={vaccineType} className="border rounded-lg">
+                                <CollapsibleTrigger className="w-full p-4 hover:bg-muted/50 transition-colors rounded-t-lg">
+                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-2">
+                                    <div className="text-left">
+                                    <h3 className="font-bold text-lg">{vaccineType}</h3>
+                                    <Badge variant="secondary" className={cn("mt-1 font-semibold", status.className)}>
+                                        {status.text}
+                                    </Badge>
+                                    </div>
+                                    <div className="flex items-center gap-4 w-full sm:w-auto justify-between">
+                                    <div className="text-left sm:text-right">
+                                        <p className="text-sm font-semibold">{totalApplied} de {totalDoses} dosis</p>
+                                        <p className="text-xs text-muted-foreground">Próx: {formatDate(latestDose.fechaProximaDosis)}</p>
+                                    </div>
+                                    <ChevronDown className="h-5 w-5 transition-transform duration-300 [&[data-state=open]]:rotate-180" />
+                                    </div>
                                 </div>
-                              </div>
-                            </CollapsibleTrigger>
-                            <CollapsibleContent>
-                              <div className="p-4 border-t space-y-4">
-                                <h4 className="font-semibold">Historial de Dosis</h4>
-                                {doses.map((dose) => (
-                                  <div key={dose.id} className="p-3 bg-muted/30 rounded-md border">
-                                     <div className="flex justify-between items-start">
-                                        <div>
-                                          <p className="font-semibold">Dosis {doses.length - doses.indexOf(dose)}</p>
-                                          <p className="text-sm text-muted-foreground">Aplicada: {formatDate(dose.fechaAplicacion)}</p>
+                                </CollapsibleTrigger>
+                                <CollapsibleContent>
+                                <div className="p-4 border-t space-y-4">
+                                    <h4 className="font-semibold">Historial de Dosis</h4>
+                                    {doses.map((dose) => (
+                                    <div key={dose.id} className="p-3 bg-muted/30 rounded-md border">
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                            <p className="font-semibold">Dosis {doses.length - doses.indexOf(dose)}</p>
+                                            <p className="text-sm text-muted-foreground">Aplicada: {formatDate(dose.fechaAplicacion)}</p>
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                            {dose.etiquetaUrl && (
+                                                <Link href={dose.etiquetaUrl} target="_blank" rel="noopener noreferrer">
+                                                    <Button variant="ghost" size="icon">
+                                                        <Eye className="h-5 w-5" />
+                                                        <span className="sr-only">Ver Etiqueta</span>
+                                                    </Button>
+                                                </Link>
+                                            )}
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="icon">
+                                                        <MoreHorizontal className="h-5 w-5" />
+                                                        <span className="sr-only">Más opciones</span>
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuItem>
+                                                        <Pencil className="mr-2 h-4 w-4" />
+                                                        Editar
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem className="text-destructive focus:text-destructive">
+                                                        <Trash2 className="mr-2 h-4 w-4" />
+                                                        Eliminar
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </div>
-                                        <div className="flex items-center gap-1">
-                                          {dose.etiquetaUrl && (
-                                              <Link href={dose.etiquetaUrl} target="_blank" rel="noopener noreferrer">
-                                                  <Button variant="ghost" size="icon">
-                                                      <Eye className="h-5 w-5" />
-                                                      <span className="sr-only">Ver Etiqueta</span>
-                                                  </Button>
-                                              </Link>
-                                          )}
-                                          <DropdownMenu>
-                                              <DropdownMenuTrigger asChild>
-                                                  <Button variant="ghost" size="icon">
-                                                      <MoreHorizontal className="h-5 w-5" />
-                                                      <span className="sr-only">Más opciones</span>
-                                                  </Button>
-                                              </DropdownMenuTrigger>
-                                              <DropdownMenuContent align="end">
-                                                  <DropdownMenuItem>
-                                                      <Pencil className="mr-2 h-4 w-4" />
-                                                      Editar
-                                                  </DropdownMenuItem>
-                                                  <DropdownMenuItem className="text-destructive focus:text-destructive">
-                                                      <Trash2 className="mr-2 h-4 w-4" />
-                                                      Eliminar
-                                                  </DropdownMenuItem>
-                                              </DropdownMenuContent>
-                                          </DropdownMenu>
-                                      </div>
+                                        </div>
+                                        <Separator className="my-2" />
+                                        <div className="text-xs space-y-1">
+                                            <p><span className="font-medium text-muted-foreground">Veterinario:</span> {dose.veterinario}</p>
+                                            {dose.lote && <p><span className="font-medium text-muted-foreground">Lote:</span> <span className="font-bold">{dose.lote}</span></p>}
+                                        </div>
                                     </div>
-                                    <Separator className="my-2" />
-                                    <div className="text-xs space-y-1">
-                                        <p><span className="font-medium text-muted-foreground">Veterinario:</span> {dose.veterinario}</p>
-                                        {dose.lote && <p><span className="font-medium text-muted-foreground">Lote:</span> <span className="font-bold">{dose.lote}</span></p>}
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </CollapsibleContent>
-                          </Collapsible>
-                        )
-                      })}
-                    </div>
-                </>
-              ) : renderEmptyState('No se encontraron registros de vacunación.', 'vaccine')}
-            </CardContent>
-          </Card>
+                                    ))}
+                                </div>
+                                </CollapsibleContent>
+                            </Collapsible>
+                            )
+                        })}
+                        </div>
+                    </CardContent>
+                </Card>
+              ) : renderEmptyState('Historial de Vacunación', 'No se encontraron registros de vacunación.', 'Añadir Primera Dosis', 'vaccine')}
         </TabsContent>
 
 
         {/* Deworming Tab */}
         <TabsContent value="deworming">
-          <Card>
-            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <CardTitle className="font-headline">Historial de Desparasitación</CardTitle>
-              <Button onClick={() => setOpenDialog('deworming')} className="w-full sm:w-auto">Añadir Registro</Button>
-            </CardHeader>
-            <CardContent>
-              {pet.desparasitaciones.length > 0 ? (
-                <div className="overflow-x-auto">
-                    <Table>
-                    <TableHeader>
-                        <TableRow>
-                        <TableHead>Tipo</TableHead>
-                        <TableHead>Fecha</TableHead>
-                        <TableHead>Próxima Dosis</TableHead>
-                        <TableHead>Observaciones</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {pet.desparasitaciones.map((d: Deworming) => (
-                        <TableRow key={d.id}>
-                            <TableCell className="capitalize">{d.tipo}</TableCell>
-                            <TableCell>{formatDate(d.fechaAplicacion)}</TableCell>
-                            <TableCell>{formatDate(d.fechaProximaDosis)}</TableCell>
-                            <TableCell className="min-w-[150px]">{d.observaciones || 'N/A'}</TableCell>
-                        </TableRow>
-                        ))}
-                    </TableBody>
-                    </Table>
-                </div>
-              ) : renderEmptyState('No se encontraron registros de desparasitación.', 'deworming')}
-            </CardContent>
-          </Card>
+            {pet.desparasitaciones.length > 0 ? (
+                <Card>
+                    <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                        <CardTitle className="font-headline">Historial de Desparasitación</CardTitle>
+                        <CardDescription>Todos los tratamientos internos y externos.</CardDescription>
+                        </div>
+                        <Button onClick={() => setOpenDialog('deworming')} className="w-full sm:w-auto">Añadir Registro</Button>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="overflow-x-auto">
+                            <Table>
+                            <TableHeader>
+                                <TableRow>
+                                <TableHead>Tipo</TableHead>
+                                <TableHead>Fecha</TableHead>
+                                <TableHead>Próxima Dosis</TableHead>
+                                <TableHead>Observaciones</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {pet.desparasitaciones.map((d: Deworming) => (
+                                <TableRow key={d.id}>
+                                    <TableCell className="capitalize">{d.tipo}</TableCell>
+                                    <TableCell>{formatDate(d.fechaAplicacion)}</TableCell>
+                                    <TableCell>{formatDate(d.fechaProximaDosis)}</TableCell>
+                                    <TableCell className="min-w-[150px]">{d.observaciones || 'N/A'}</TableCell>
+                                </TableRow>
+                                ))}
+                            </TableBody>
+                            </Table>
+                        </div>
+                    </CardContent>
+                </Card>
+             ) : renderEmptyState('Historial de Desparasitación', 'No hay registros de desparasitación.', 'Añadir Desparasitación', 'deworming')}
         </TabsContent>
 
         {/* Treatments Tab */}
         <TabsContent value="treatments">
-          <Card>
-            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <CardTitle className="font-headline">Historial de Tratamientos</CardTitle>
-              <Button onClick={() => setOpenDialog('treatment')} className="w-full sm:w-auto">Añadir Tratamiento</Button>
-            </CardHeader>
-            <CardContent>
-              {pet.tratamientos.length > 0 ? (
-                <div className="overflow-x-auto">
-                    <Table>
-                    <TableHeader>
-                        <TableRow>
-                        <TableHead>Medicamento</TableHead>
-                        <TableHead>Dosis</TableHead>
-                        <TableHead>Fecha de Inicio</TableHead>
-                        <TableHead>Duración</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {pet.tratamientos.map((t: Treatment) => (
-                        <TableRow key={t.id}>
-                            <TableCell>{t.nombreMedicamento}</TableCell>
-                            <TableCell>{t.dosificacion}</TableCell>
-                            <TableCell>{formatDate(t.fechaInicio)}</TableCell>
-                            <TableCell>{t.duracion}</TableCell>
-                        </TableRow>
-                        ))}
-                    </TableBody>
-                    </Table>
-                </div>
-              ) : renderEmptyState('No se encontraron registros de tratamientos.', 'treatment')}
-            </CardContent>
-          </Card>
+           {pet.tratamientos.length > 0 ? (
+                <Card>
+                    <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                        <CardTitle className="font-headline">Historial de Tratamientos</CardTitle>
+                        <CardDescription>Medicamentos recetados y su duración.</CardDescription>
+                        </div>
+                        <Button onClick={() => setOpenDialog('treatment')} className="w-full sm:w-auto">Añadir Tratamiento</Button>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="overflow-x-auto">
+                            <Table>
+                            <TableHeader>
+                                <TableRow>
+                                <TableHead>Medicamento</TableHead>
+                                <TableHead>Dosis</TableHead>
+                                <TableHead>Fecha de Inicio</TableHead>
+                                <TableHead>Duración</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {pet.tratamientos.map((t: Treatment) => (
+                                <TableRow key={t.id}>
+                                    <TableCell>{t.nombreMedicamento}</TableCell>
+                                    <TableCell>{t.dosificacion}</TableCell>
+                                    <TableCell>{formatDate(t.fechaInicio)}</TableCell>
+                                    <TableCell>{t.duracion}</TableCell>
+                                </TableRow>
+                                ))}
+                            </TableBody>
+                            </Table>
+                        </div>
+                    </CardContent>
+                </Card>
+             ) : renderEmptyState('Historial de Tratamientos', 'No hay registros de tratamientos.', 'Añadir Tratamiento', 'treatment')}
         </TabsContent>
 
         {/* Reproductive Events Tab */}
         {pet.sexo === 'Hembra' && (
         <TabsContent value="reproductive">
-          <Card>
-            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <CardTitle className="font-headline">Historial Reproductivo</CardTitle>
-              <Button onClick={() => setOpenDialog('reproductive')} className="w-full sm:w-auto">Añadir Evento</Button>
-            </CardHeader>
-            <CardContent>
-              {pet.eventosReproductivos.length > 0 ? (
-                <div className="overflow-x-auto">
-                    <Table>
-                    <TableHeader>
-                        <TableRow>
-                        <TableHead>Evento</TableHead>
-                        <TableHead>Fecha</TableHead>
-                        <TableHead>Observaciones</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {pet.eventosReproductivos.map((e: ReproductiveEvent) => (
-                        <TableRow key={e.id}>
-                            <TableCell>{e.tipoEvento}</TableCell>
-                            <TableCell>{formatDate(e.fecha)}</TableCell>
-                            <TableCell className="min-w-[150px]">{e.observaciones || 'N/A'}</TableCell>
-                        </TableRow>
-                        ))}
-                    </TableBody>
-                    </Table>
-                </div>
-              ) : renderEmptyState('No se encontraron eventos reproductivos.', 'reproductive')}
-            </CardContent>
-          </Card>
+           {pet.eventosReproductivos.length > 0 ? (
+                <Card>
+                    <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                            <CardTitle className="font-headline">Historial Reproductivo</CardTitle>
+                             <CardDescription>Seguimiento de celos, montas y partos.</CardDescription>
+                        </div>
+                        <Button onClick={() => setOpenDialog('reproductive')} className="w-full sm:w-auto">Añadir Evento</Button>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="overflow-x-auto">
+                            <Table>
+                            <TableHeader>
+                                <TableRow>
+                                <TableHead>Evento</TableHead>
+                                <TableHead>Fecha</TableHead>
+                                <TableHead>Observaciones</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {pet.eventosReproductivos.map((e: ReproductiveEvent) => (
+                                <TableRow key={e.id}>
+                                    <TableCell>{e.tipoEvento}</TableCell>
+                                    <TableCell>{formatDate(e.fecha)}</TableCell>
+                                    <TableCell className="min-w-[150px]">{e.observaciones || 'N/A'}</TableCell>
+                                </TableRow>
+                                ))}
+                            </TableBody>
+                            </Table>
+                        </div>
+                    </CardContent>
+                </Card>
+             ) : renderEmptyState('Historial Reproductivo', 'No se encontraron eventos reproductivos.', 'Añadir Evento', 'reproductive')}
         </TabsContent>
         )}
 
          {/* Weight Tab */}
         <TabsContent value="weight">
-          <Card>
-            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <CardTitle className="font-headline">Historial de Peso</CardTitle>
-              <Button onClick={() => setOpenDialog('weight')} className="w-full sm:w-auto">Añadir Peso</Button>
-            </CardHeader>
-            <CardContent>
-              {pet.pesos.length > 0 ? (
-                <>
-                  <WeightChart data={pet.pesos} />
-                  <div className="overflow-x-auto mt-4">
-                    <Table>
-                        <TableHeader>
-                        <TableRow>
-                            <TableHead>Fecha</TableHead>
-                            <TableHead>Peso (kg)</TableHead>
-                        </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                        {pet.pesos.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()).map((w: Weight) => (
-                            <TableRow key={w.id}>
-                            <TableCell>{formatDate(w.fecha)}</TableCell>
-                            <TableCell>{w.peso} kg</TableCell>
+          {pet.pesos.length > 0 ? (
+            <Card>
+                <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                    <CardTitle className="font-headline">Historial de Peso</CardTitle>
+                    <CardDescription>Seguimiento del peso a lo largo del tiempo.</CardDescription>
+                    </div>
+                    <Button onClick={() => setOpenDialog('weight')} className="w-full sm:w-auto">Añadir Peso</Button>
+                </CardHeader>
+                <CardContent>
+                    <WeightChart data={pet.pesos} />
+                    <div className="overflow-x-auto mt-4">
+                        <Table>
+                            <TableHeader>
+                            <TableRow>
+                                <TableHead>Fecha</TableHead>
+                                <TableHead>Peso (kg)</TableHead>
                             </TableRow>
-                        ))}
-                        </TableBody>
-                    </Table>
-                  </div>
-                </>
-              ) : renderEmptyState('No se encontraron registros de peso.', 'weight')}
-            </CardContent>
-          </Card>
+                            </TableHeader>
+                            <TableBody>
+                            {pet.pesos.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()).map((w: Weight) => (
+                                <TableRow key={w.id}>
+                                <TableCell>{formatDate(w.fecha)}</TableCell>
+                                <TableCell>{w.peso} kg</TableCell>
+                                </TableRow>
+                            ))}
+                            </TableBody>
+                        </Table>
+                    </div>
+                </CardContent>
+            </Card>
+          ) : renderEmptyState('Historial de Peso', 'No hay registros de peso.', 'Añadir Registro de Peso', 'weight')}
         </TabsContent>
         
         {/* Reproductive Calendar Tab */}
@@ -382,6 +418,7 @@ export default function HealthRecordsTabs({ pet }: HealthRecordsTabsProps) {
           <Card>
             <CardHeader>
               <CardTitle className="font-headline">Calendario Reproductivo</CardTitle>
+              <CardDescription>Previsiones de celo, fertilidad y fechas de parto estimadas.</CardDescription>
             </CardHeader>
             <CardContent className="max-w-none">
                 <ReproductiveCalendar events={pet.eventosReproductivos} species={pet.especie} />
