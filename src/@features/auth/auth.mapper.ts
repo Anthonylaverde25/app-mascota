@@ -5,5 +5,6 @@ export const mapUserFromApi = (data: UserApiDTO): AuthUser => ({
     email: data.email,
     name: data.entity.name,
     entityType: data.entity.type,
-    profile: data?.profile,
+    profile: data.entity.profile,
+    profile_complete: data.entity.profile_complete,
 })

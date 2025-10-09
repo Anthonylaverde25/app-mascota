@@ -41,17 +41,19 @@ declare global {
         description: string
     }
 
+    export type ProfileDTO = {
+        id: number
+        description: string
+        avatar_url?: string | null
+    }
+
     interface EntityDTO {
         id: number
         name: string
         profile_complete: boolean
         type: EntityTypeDTO[]
-    }
-
-    export type ProfileDTO = {
-        id: number
-        description: string
-        avatar_url?: string | null
+        profile: ProfileDTO | null
+        profile_complete: boolean
     }
 
     interface AuthUser {
@@ -60,5 +62,6 @@ declare global {
         name: string
         entityType: EntityTypeDTO[]
         profile: ProfileDTO | null
+        profile_complete: boolean
     }
 }
