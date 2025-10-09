@@ -22,8 +22,8 @@ import { useAuth, useUser } from '@/firebase'
 import { useToast } from '@/hooks/use-toast'
 import { Logo } from '@/components/logo'
 import useRegister from '@/@features/auth/hook/useRegister'
-import axiosInstance from '@/lib/@axios'
 import { useApiAvailable } from '@/hooks/useApiAvailable'
+import { useAxiosInstance } from '@/lib/@axios'
 
 // ==================== TYPES ====================
 
@@ -103,6 +103,8 @@ function GoogleIcon(props: React.ComponentProps<'svg'>) {
 // ==================== COMPONENT ====================
 
 export default function SignupPage() {
+    const axiosInstance = useAxiosInstance()
+
     const [entityTypes, setEntityTypes] = useState<EntityTypeElement[]>([])
     const { handleRegister } = useRegister()
     const { user, isUserLoading } = useUser()
@@ -165,9 +167,9 @@ export default function SignupPage() {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         setIsSubmitting(true)
-        const { checkApi } = useApiAvailable(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/health`
-        )
+        // const { checkApi } = useApiAvailable(
+        //     `${process.env.NEXT_PUBLIC_API_BASE_URL}/health`
+        // )
         try {
             if (!auth)
                 throw new Error('Servicio de autenticación no disponible')

@@ -8,6 +8,7 @@ import { Footer } from '@/components/footer' // Importar el nuevo Footer
 import { ThemeProvider } from '@/components/theme-provider'
 import { FirebaseClientProvider } from '@/firebase'
 import { Providers } from '@/providers/Providers'
+import { AuthProvider } from '@/context/Auth/AuthContext'
 export const metadata: Metadata = {
     title: 'PawsHealth Digital',
     description: 'Carnet de salud digital para tus mascotas',
@@ -18,7 +19,6 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode
 }>) {
-
     return (
         <html lang="es" suppressHydrationWarning>
             <head>
@@ -50,12 +50,14 @@ export default function RootLayout({
                         disableTransitionOnChange
                     >
                         <FirebaseClientProvider>
-                            <div className="relative flex min-h-screen flex-col">
-                                <Header />
-                                <main className="flex-1">{children}</main>
-                                <Footer />
-                            </div>
-                            <Toaster />
+                            <AuthProvider>
+                                <div className="relative flex min-h-screen flex-col">
+                                    <Header />
+                                    <main className="flex-1">{children}</main>
+                                    <Footer />
+                                </div>
+                                <Toaster />
+                            </AuthProvider>
                         </FirebaseClientProvider>
                     </ThemeProvider>
                 </Providers>
@@ -63,5 +65,3 @@ export default function RootLayout({
         </html>
     )
 }
-
-    

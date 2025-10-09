@@ -26,8 +26,8 @@ import { Input } from '@/components/ui/input'
 import { useAuth, useUser } from '@/firebase'
 import { useToast } from '@/hooks/use-toast'
 import { Logo } from '@/components/logo'
-import axiosInstance from '@/lib/@axios'
 import { useApiAvailable } from '@/hooks/useApiAvailable'
+import useLogin from '@/@features/auth/hook/useLogin'
 
 const formSchema = z.object({
     email: z
@@ -65,30 +65,8 @@ function GoogleIcon(props: React.ComponentProps<'svg'>) {
     )
 }
 
-// Función para llamar a tu API de Laravel con axios
-async function callApiWithToken(token: string) {
-    try {
-        const response = await axiosInstance.get('/user')
-
-        return response.data
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.error(
-                'Error de Axios al llamar a la API de Laravel:',
-                error.response?.data || error.message
-            )
-        } else {
-            console.error('No se pudo llamar a la API de Laravel:', error)
-        }
-        // Propagar el error para que pueda ser manejado por el llamador si es necesario
-        throw error
-    }
-}
-
 export default function LoginPage() {
-    const { checkApi, isAvailable } = useApiAvailable(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/health`
-    )
+    const { handleLogin } = useLogin()
     const { user, isUserLoading } = useUser()
     const auth = useAuth()
     const router = useRouter()
@@ -115,28 +93,14 @@ export default function LoginPage() {
         try {
             if (!auth)
                 throw new Error('Servicio de autenticación no disponible')
-            const apiIsUp = await checkApi()
-            if (!apiIsUp) {
-                toast({
-                    variant: 'destructive',
-                    title: 'API no disponible',
-                    description:
-                        'No se puede iniciar sesión, intenta más tarde.',
-                })
-                return
+
+            const loginData = {
+                auth,
+                email: values.email,
+                password: values.password,
             }
 
-            const userCredential = await signInWithEmailAndPassword(
-                auth,
-                values.email,
-                values.password
-            )
-
-            const idToken = await userCredential.user.getIdToken()
-            console.log('Token de ID de Firebase:', idToken)
-
-            // <<--- AQUÍ HACEMOS LA LLAMADA A TU API CON AXIOS --->>
-            await callApiWithToken(idToken)
+            await handleLogin(loginData)
 
             toast({
                 title: '¡Bienvenido de nuevo!',

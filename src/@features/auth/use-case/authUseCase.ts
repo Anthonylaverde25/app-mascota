@@ -17,6 +17,17 @@ export class AuthRepositoryUseCase {
         private readonly repository: authInterface
     ) {}
 
+
+    async login(credentials: CredentialLogin): Promise<{ session: UserCredential }> {
+        try {
+            const {session} = await this.repository.login(credentials)
+            return { session}
+        } catch (error) {
+            console.log('error al hacer login desde el caso de uso')
+            throw error
+        }
+    }
+
     async register(credential: CredentialRegister): Promise<{ session: UserCredential }> {
         try {
             const {session} = await this.repository.register(

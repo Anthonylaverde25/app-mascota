@@ -9,6 +9,12 @@ declare global {
         accessToken: string
     }
 
+    interface CredentialLogin {
+        auth: any
+        email: string
+        password: string
+    }
+
     interface CredentialRegister {
         auth: any
         email: string
