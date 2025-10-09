@@ -23,7 +23,7 @@ import { useToast } from '@/hooks/use-toast';
 import { getPets, type Pet } from '@/lib/data';
 import Link from 'next/link';
 import Image from 'next/image';
-import { PawPrint, Pencil, Plus, Mail, Phone, User as UserIcon } from 'lucide-react';
+import { PawPrint, Pencil, Plus, Mail, Phone, User as UserIcon, Calendar, IdCard, Building } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -115,7 +115,6 @@ function EditProfileForm({ user, closeDialog }: { user: any, closeDialog: () => 
     );
 }
 
-
 export default function ProfileOwnerPage() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
@@ -130,7 +129,7 @@ export default function ProfileOwnerPage() {
 
   if (isUserLoading || !user) {
     return (
-      <div className="bg-secondary/50 min-h-screen">
+      <div className="bg-background min-h-screen">
           <div className="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <Skeleton className="h-9 w-48 mb-6" />
             <div className="grid grid-cols-12 gap-6">

@@ -4,54 +4,54 @@
 
 @layer base {
   :root {
-    --background: 24 20% 98%;
+    --background: 180 17% 98%;
     --foreground: 24 10% 10%;
     --card: 0 0% 100%;
     --card-foreground: 24 10% 10%;
     --popover: 0 0% 100%;
     --popover-foreground: 24 10% 10%;
-    --primary: 6 78% 57%; /* #e74c3c */
+    --primary: 178 75% 44%; /* Soft teal */
     --primary-foreground: 0 0% 100%;
-    --secondary: 24 20% 94%;
+    --secondary: 180 17% 92%;
     --secondary-foreground: 24 10% 10%;
-    --muted: 24 20% 90%;
+    --muted: 180 17% 95%;
     --muted-foreground: 24 5% 45%;
-    --accent: 24 20% 94%;
+    --accent: 8 95% 79%; /* Coral */
     --accent-foreground: 24 10% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 24 20% 88%;
-    --input: 24 20% 90%;
-    --ring: 6 78% 57%;
-    --chart-1: 6 70% 50%;
-    --chart-2: 173 58% 39%;
+    --border: 180 17% 85%;
+    --input: 180 17% 90%;
+    --ring: 178 75% 44%;
+    --chart-1: 178 70% 40%;
+    --chart-2: 8 80% 70%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
   }
   .dark {
-    --background: 24 10% 4%;
+    --background: 180 10% 4%;
     --foreground: 0 0% 98%;
-    --card: 24 10% 10%;
+    --card: 180 10% 10%;
     --card-foreground: 0 0% 98%;
-    --popover: 24 10% 4%;
+    --popover: 180 10% 4%;
     --popover-foreground: 0 0% 98%;
-    --primary: 6 78% 57%;
+    --primary: 178 75% 44%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 24 10% 15%;
+    --secondary: 180 10% 15%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 24 10% 20%;
+    --muted: 180 10% 20%;
     --muted-foreground: 24 5% 63%;
-    --accent: 24 10% 15%;
+    --accent: 8 95% 79%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 24 10% 25%;
-    --input: 24 10% 25%;
-    --ring: 6 78% 57%;
-    --chart-1: 6 70% 50%;
-    --chart-2: 173 58% 39%;
+    --border: 180 10% 25%;
+    --input: 180 10% 25%;
+    --ring: 178 75% 44%;
+    --chart-1: 178 70% 40%;
+    --chart-2: 8 80% 70%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
@@ -78,5 +78,3 @@
         background-color: hsl(142 76% 36% / 0.8);
     }
 }
-
-    
