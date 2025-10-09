@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,7 +22,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Briefcase, Pencil } from 'lucide-react';
+import { Briefcase, Pencil, MapPin, Phone, Globe } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -184,57 +183,80 @@ export default function ProfilePaseadorPage() {
   
   if (isUserLoading || !user) {
     return (
-      <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <Skeleton className="h-96 w-full max-w-4xl mx-auto" />
-      </div>
+       <div className="min-h-screen bg-secondary/30 dark:bg-background">
+            <div className="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                 <div className="flex justify-between items-center mb-6">
+                    <Skeleton className="h-9 w-48" />
+                    <Skeleton className="h-10 w-32" />
+                </div>
+                <div className="max-w-4xl mx-auto">
+                    <Skeleton className="h-64 w-full" />
+                </div>
+            </div>
+       </div>
     );
   }
 
   return (
-    <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-secondary/30 dark:bg-background">
+      <div className="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
+         <div className="flex justify-between items-center mb-6">
+             <h1 className="text-3xl font-bold font-headline">Perfil de Servicio</h1>
+             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                    <Button>
+                        <Pencil className="h-4 w-4 mr-2" />
+                        Editar Perfil
+                    </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[625px]">
+                    <DialogHeader>
+                        <DialogTitle>Editar Perfil de Servicio</DialogTitle>
+                    </DialogHeader>
+                    <EditServiceForm closeDialog={() => setIsDialogOpen(false)} />
+                </DialogContent>
+            </Dialog>
+        </div>
       <div className="max-w-4xl mx-auto">
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <Card>
-            <CardHeader>
-                <div className="flex justify-between items-start">
-                    <div className="flex items-start gap-4">
-                        <Avatar className="h-16 w-16">
-                            <AvatarImage src={'https://images.unsplash.com/photo-1599423697969-3a42935f8263?w=400'} alt={'Paseos Felices con Juan'} />
-                            <AvatarFallback><Briefcase /></AvatarFallback>
-                        </Avatar>
-                        <div className="flex-grow">
-                            <CardTitle className="font-headline text-3xl">Paseos Felices con Juan</CardTitle>
-                            <CardDescription>Esta es la información que otros usuarios verán en la sección de Comunidad.</CardDescription>
-                        </div>
-                    </div>
-                    <DialogTrigger asChild>
-                        <Button variant="outline" size="icon">
-                            <Pencil className="h-4 w-4" />
-                            <span className="sr-only">Editar Perfil</span>
-                        </Button>
-                    </DialogTrigger>
-                </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <h3 className="font-bold">Descripción</h3>
-                <p className="text-muted-foreground text-sm">Paseos grupales e individuales para perros de todas las razas y tamaños. Amor y dedicación garantizados.</p>
-                <h3 className="font-bold">Información de Contacto</h3>
-                <ul className="text-sm text-muted-foreground space-y-2">
-                    <li><span className="font-semibold text-foreground">Categoría:</span> Paseador</li>
-                    <li><span className="font-semibold text-foreground">Ubicación:</span> Zona Residencial Norte</li>
-                    <li><span className="font-semibold text-foreground">Teléfono:</span> +54 9 11 3456-7890</li>
-                    <li><span className="font-semibold text-foreground">Instagram:</span> <a href="https://instagram.com/paseosfelices" target="_blank" rel="noreferrer" className="text-primary hover:underline">@paseosfelices</a></li>
-                </ul>
-            </CardContent>
-            </Card>
-
-            <DialogContent className="sm:max-w-[625px]">
-                <DialogHeader>
-                    <DialogTitle>Editar Perfil de Servicio</DialogTitle>
-                </DialogHeader>
-                <EditServiceForm closeDialog={() => setIsDialogOpen(false)} />
-            </DialogContent>
-        </Dialog>
+        <Card>
+          <CardHeader>
+              <div className="flex items-start gap-4">
+                  <Avatar className="h-16 w-16">
+                      <AvatarImage src={'https://images.unsplash.com/photo-1599423697969-3a42935f8263?w=400'} alt={'Paseos Felices con Juan'} />
+                      <AvatarFallback className="bg-primary/10"><Briefcase className="text-primary" /></AvatarFallback>
+                  </Avatar>
+                  <div className="flex-grow">
+                      <CardTitle className="font-headline text-2xl">Paseos Felices con Juan</CardTitle>
+                      <CardDescription>Paseador</CardDescription>
+                  </div>
+              </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+              <div>
+                  <h3 className="font-semibold text-sm mb-2">Acerca de</h3>
+                  <p className="text-muted-foreground text-sm">Paseos grupales e individuales para perros de todas las razas y tamaños. Amor y dedicación garantizados.</p>
+              </div>
+              <div>
+                  <h3 className="font-semibold text-sm mb-2">Información de Contacto</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                      <div className="flex items-center gap-3">
+                          <MapPin className="h-4 w-4 text-muted-foreground" />
+                          <span>Zona Residencial Norte</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                          <Phone className="h-4 w-4 text-muted-foreground" />
+                          <span>+54 9 11 3456-7890</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                          <Globe className="h-4 w-4 text-muted-foreground" />
+                          <a href="https://instagram.com/paseosfelices" target="_blank" rel="noreferrer" className="text-primary hover:underline">
+                              @paseosfelices
+                          </a>
+                      </div>
+                  </div>
+              </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

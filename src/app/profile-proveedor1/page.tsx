@@ -14,7 +14,7 @@ import {
     FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Textarea } from '@/components/ui/textarea'
 import {
@@ -30,9 +30,8 @@ import {
     MapPin,
     Phone,
     Mail,
-    Calendar,
-    IdCard,
-    Building,
+    Globe,
+    Pencil
 } from 'lucide-react'
 import {
     Dialog,
@@ -42,6 +41,7 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useToast } from '@/hooks/use-toast'
 
 const serviceProfileSchema = z.object({
     serviceName: z
@@ -56,6 +56,7 @@ const serviceProfileSchema = z.object({
         .optional(),
     location: z.string().optional(),
     phone: z.string().optional(),
+    email: z.string().email({ message: 'Por favor, introduce una URL válida.' }).optional(),
     website: z
         .string()
         .url({ message: 'Por favor, introduce una URL válida.' })
@@ -64,6 +65,7 @@ const serviceProfileSchema = z.object({
 })
 
 function EditServiceForm({ closeDialog }: { closeDialog: () => void }) {
+    const { toast } = useToast();
     const form = useForm<z.infer<typeof serviceProfileSchema>>({
         resolver: zodResolver(serviceProfileSchema),
         defaultValues: {
@@ -73,12 +75,17 @@ function EditServiceForm({ closeDialog }: { closeDialog: () => void }) {
                 'Atención 24 horas, cirugía especializada y vacunación. Contamos con más de 15 años de experiencia.',
             location: 'Ciudad Capital, Av. Principal 123',
             phone: '+54 11 4555-1234',
+            email: 'contacto@vet-amigofiel.com',
             website: 'https://vet-amigofiel.com',
         },
     })
 
     function onSubmit(values: z.infer<typeof serviceProfileSchema>) {
         console.log(values)
+        toast({
+            title: "Perfil Actualizado",
+            description: "La información de tu servicio ha sido guardada."
+        });
         closeDialog()
     }
 
@@ -186,7 +193,19 @@ function EditServiceForm({ closeDialog }: { closeDialog: () => void }) {
                         )}
                     />
                 </div>
-
+                 <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Email de Contacto</FormLabel>
+                            <FormControl>
+                                <Input placeholder="contacto@tu-servicio.com" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
                 <FormField
                     control={form.control}
                     name="website"
@@ -214,86 +233,26 @@ function EditServiceForm({ closeDialog }: { closeDialog: () => void }) {
     )
 }
 
-const jobData = [
-    {
-        department: 'Cirugía Veterinaria',
-        division: 'Especialidades',
-        manager: 'Dr. Carlos Méndez',
-        hireDate: 'May 13, 2024',
-        location: 'Buenos Aires, AR',
-    },
-    {
-        department: 'Consultas Generales',
-        division: 'Atención Primaria',
-        manager: 'Dra. Ana Torres',
-        hireDate: 'Sep 05, 2024',
-        location: 'Córdoba, AR',
-    },
-    {
-        department: 'Emergencias',
-        division: 'Cuidados Intensivos',
-        manager: 'Dr. Luis Ramírez',
-        hireDate: 'Jun 08, 2023',
-        location: 'Rosario, AR',
-    },
-]
-
 const activityData = [
-    {
-        name: 'Dr. Juan Pérez',
-        action: 'realizó una cirugía',
-        date: 'Jul 13, 2024',
-        time: '05:35 PM',
-        avatar: 'https://i.pravatar.cc/150?img=12',
-    },
-    {
-        name: 'Dra. María González',
-        action: 'atendió consulta',
-        date: 'Sep 08, 2024',
-        time: '03:12 PM',
-        avatar: 'https://i.pravatar.cc/150?img=45',
-    },
-    {
-        name: 'Dr. Roberto Silva',
-        action: 'actualizó expediente',
-        date: 'Aug 15, 2023',
-        time: '05:35 PM',
-        avatar: 'https://i.pravatar.cc/150?img=33',
-    },
+    { name: 'Dr. Juan Pérez', action: 'atendió una emergencia.', time: 'hace 35 min', avatar: 'https://i.pravatar.cc/150?img=12' },
+    { name: 'Dra. María González', action: 'completó una cirugía.', time: 'hace 2 horas', avatar: 'https://i.pravatar.cc/150?img=45' },
+    { name: 'Recepción', action: 'agendó una nueva cita.', time: 'hace 3 horas', avatar: 'https://i.pravatar.cc/150?img=3' },
 ]
 
-const compensationData = [
-    {
-        amount: '862.00 USD',
-        period: 'por mes',
-        effectiveDate: 'May 10, 2015',
-    },
-    {
-        amount: '1560.00 USD',
-        period: 'por trimestre',
-        effectiveDate: 'Jun 08, 2022',
-    },
-    {
-        amount: '378.00 USD',
-        period: 'por semana',
-        effectiveDate: 'Jun 08, 2022',
-    },
-]
 
 export default function ProfileVeterinariaPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-secondary/30 dark:bg-background">
             <div className="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                {/* Header */}
                 <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-3xl font-bold">Perfil</h1>
+                    <h1 className="text-3xl font-bold font-headline">Perfil de Servicio</h1>
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button>
-                                <Plus className="h-4 w-4 mr-2" />
-                                Agregar Empleado
+                             <Button>
+                                <Pencil className="h-4 w-4 mr-2" />
+                                Editar Perfil
                             </Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-[625px]">
@@ -309,53 +268,45 @@ export default function ProfileVeterinariaPage() {
                     </Dialog>
                 </div>
 
-                {/* Tabs */}
                 <Tabs defaultValue="overview" className="mb-6">
-                    <TabsList className="bg-transparent border-b border-gray-200 rounded-none h-auto p-0 w-full justify-start">
+                    <TabsList className="bg-transparent border-b rounded-none h-auto p-0 w-full justify-start">
                         <TabsTrigger
                             value="overview"
-                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-500 data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-3"
+                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-3"
                         >
-                            Vista General
+                            Resumen
                         </TabsTrigger>
                         <TabsTrigger
-                            value="compensation"
-                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-500 data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-3"
+                            value="team"
+                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-3"
                         >
-                            Compensación
+                            Equipo
                         </TabsTrigger>
                         <TabsTrigger
-                            value="emergency"
-                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-500 data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-3"
+                            value="services"
+                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-3"
                         >
-                            Emergencias
-                        </TabsTrigger>
-                        <TabsTrigger
-                            value="timeoff"
-                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-500 data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-3"
-                        >
-                            Tiempo Libre
+                            Servicios
                         </TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="overview" className="mt-6">
                         <div className="grid grid-cols-12 gap-6">
-                            {/* Left Column - About */}
-                            <div className="col-span-12 lg:col-span-3 space-y-6">
+                            <div className="col-span-12 lg:col-span-4 xl:col-span-3 space-y-6">
                                 <Card>
                                     <CardContent className="p-6">
                                         <div className="flex flex-col items-center text-center mb-6">
                                             <Avatar className="h-24 w-24 mb-4">
                                                 <AvatarImage src="https://images.unsplash.com/photo-1583224964986-6f5d68352654?w=400" />
-                                                <AvatarFallback className="bg-orange-100">
-                                                    <Briefcase className="h-12 w-12 text-orange-600" />
+                                                <AvatarFallback className="bg-primary/10">
+                                                    <Briefcase className="h-12 w-12 text-primary" />
                                                 </AvatarFallback>
                                             </Avatar>
                                             <h2 className="text-xl font-bold mb-1">
-                                                Clínica Veterinaria Amigo Fiel
+                                                Clínica Amigo Fiel
                                             </h2>
-                                            <p className="text-sm text-gray-500">
-                                                #ERX249654
+                                            <p className="text-sm text-muted-foreground">
+                                                Veterinaria
                                             </p>
                                         </div>
 
@@ -364,125 +315,41 @@ export default function ProfileVeterinariaPage() {
                                                 <h3 className="text-sm font-semibold mb-3">
                                                     Acerca de
                                                 </h3>
-                                                <div className="space-y-3">
-                                                    <div className="flex items-start gap-3 text-sm">
-                                                        <Phone className="h-4 w-4 text-gray-400 mt-0.5" />
-                                                        <div>
-                                                            <p className="text-gray-500 text-xs">
-                                                                Teléfono
-                                                            </p>
-                                                            <p className="font-medium">
-                                                                (629) 555-0123
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-start gap-3 text-sm">
-                                                        <Mail className="h-4 w-4 text-gray-400 mt-0.5" />
-                                                        <div>
-                                                            <p className="text-gray-500 text-xs">
-                                                                Email
-                                                            </p>
-                                                            <p className="font-medium text-xs break-all">
-                                                                clinicavet@gmail.com
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                <p className="text-sm text-muted-foreground">
+                                                    Atención 24 horas, cirugía especializada y vacunación. Con más de 15 años de experiencia.
+                                                </p>
                                             </div>
-
                                             <div className="border-t pt-4">
                                                 <h3 className="text-sm font-semibold mb-3">
-                                                    Dirección
+                                                    Contacto
                                                 </h3>
                                                 <div className="space-y-3">
-                                                    <div className="flex items-start gap-3 text-sm">
-                                                        <MapPin className="h-4 w-4 text-gray-400 mt-0.5" />
+                                                     <div className="flex items-start gap-3 text-sm">
+                                                        <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
                                                         <div>
-                                                            <p className="text-gray-500 text-xs">
-                                                                Dirección
-                                                            </p>
-                                                            <p className="font-medium">
-                                                                390 Market
-                                                                Street, Suite
-                                                                200
-                                                            </p>
+                                                            <p className="text-muted-foreground text-xs">Ubicación</p>
+                                                            <p className="font-medium">Ciudad Capital, Av. Principal 123</p>
                                                         </div>
                                                     </div>
                                                     <div className="flex items-start gap-3 text-sm">
-                                                        <Building className="h-4 w-4 text-gray-400 mt-0.5" />
+                                                        <Phone className="h-4 w-4 text-muted-foreground mt-0.5" />
                                                         <div>
-                                                            <p className="text-gray-500 text-xs">
-                                                                Ciudad/Estado
-                                                            </p>
-                                                            <p className="font-medium">
-                                                                Buenos Aires, AR
-                                                            </p>
+                                                            <p className="text-muted-foreground text-xs">Teléfono</p>
+                                                            <p className="font-medium">+54 11 4555-1234</p>
                                                         </div>
                                                     </div>
-                                                    <div className="flex items-start gap-3 text-sm">
-                                                        <Mail className="h-4 w-4 text-gray-400 mt-0.5" />
+                                                     <div className="flex items-start gap-3 text-sm">
+                                                        <Mail className="h-4 w-4 text-muted-foreground mt-0.5" />
                                                         <div>
-                                                            <p className="text-gray-500 text-xs">
-                                                                Código Postal
-                                                            </p>
-                                                            <p className="font-medium">
-                                                                94102
-                                                            </p>
+                                                            <p className="text-muted-foreground text-xs">Email</p>
+                                                            <p className="font-medium text-xs break-all">contacto@vet-amigofiel.com</p>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="border-t pt-4">
-                                                <h3 className="text-sm font-semibold mb-3">
-                                                    Detalles del Empleado
-                                                </h3>
-                                                <div className="space-y-3">
-                                                    <div className="flex items-start gap-3 text-sm">
-                                                        <Calendar className="h-4 w-4 text-gray-400 mt-0.5" />
+                                                     <div className="flex items-start gap-3 text-sm">
+                                                        <Globe className="h-4 w-4 text-muted-foreground mt-0.5" />
                                                         <div>
-                                                            <p className="text-gray-500 text-xs">
-                                                                Fecha de
-                                                                Nacimiento
-                                                            </p>
-                                                            <p className="font-medium">
-                                                                Sep 26, 1988
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-start gap-3 text-sm">
-                                                        <IdCard className="h-4 w-4 text-gray-400 mt-0.5" />
-                                                        <div>
-                                                            <p className="text-gray-500 text-xs">
-                                                                ID Nacional
-                                                            </p>
-                                                            <p className="font-medium">
-                                                                GE9162N854
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-start gap-3 text-sm">
-                                                        <Briefcase className="h-4 w-4 text-gray-400 mt-0.5" />
-                                                        <div>
-                                                            <p className="text-gray-500 text-xs">
-                                                                Título
-                                                            </p>
-                                                            <p className="font-medium">
-                                                                Gerente de
-                                                                Proyecto
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-start gap-3 text-sm">
-                                                        <Calendar className="h-4 w-4 text-gray-400 mt-0.5" />
-                                                        <div>
-                                                            <p className="text-gray-500 text-xs">
-                                                                Fecha de
-                                                                Contratación
-                                                            </p>
-                                                            <p className="font-medium">
-                                                                Jan 05, 2023
-                                                            </p>
+                                                            <p className="text-muted-foreground text-xs">Sitio Web</p>
+                                                            <a href="#" className="font-medium text-primary hover:underline">vet-amigofiel.com</a>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -492,203 +359,60 @@ export default function ProfileVeterinariaPage() {
                                 </Card>
                             </div>
 
-                            {/* Right Column - Job Information */}
-                            <div className="col-span-12 lg:col-span-9 space-y-6">
-                                {/* Job Information Table */}
+                            <div className="col-span-12 lg:col-span-8 xl:col-span-9 space-y-6">
                                 <Card>
-                                    <CardContent className="p-6">
-                                        <div className="flex justify-between items-center mb-4">
-                                            <h3 className="text-lg font-semibold">
-                                                Información del Trabajo
-                                            </h3>
-                                            <Button
-                                                variant="link"
-                                                className="text-orange-600 hover:text-orange-700 p-0"
-                                            >
-                                                + Agregar Info
-                                            </Button>
-                                        </div>
-                                        <div className="overflow-x-auto">
-                                            <table className="w-full">
-                                                <thead>
-                                                    <tr className="border-b text-left text-xs text-gray-500 uppercase">
-                                                        <th className="pb-3 font-medium">
-                                                            Departamento
-                                                        </th>
-                                                        <th className="pb-3 font-medium">
-                                                            División
-                                                        </th>
-                                                        <th className="pb-3 font-medium">
-                                                            Gerente
-                                                        </th>
-                                                        <th className="pb-3 font-medium">
-                                                            Fecha de
-                                                            Contratación
-                                                        </th>
-                                                        <th className="pb-3 font-medium">
-                                                            Ubicación
-                                                        </th>
-                                                        <th className="pb-3 font-medium"></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="text-sm">
-                                                    {jobData.map(
-                                                        (job, index) => (
-                                                            <tr
-                                                                key={index}
-                                                                className="border-b last:border-0"
-                                                            >
-                                                                <td className="py-4">
-                                                                    {
-                                                                        job.department
-                                                                    }
-                                                                </td>
-                                                                <td className="py-4">
-                                                                    {
-                                                                        job.division
-                                                                    }
-                                                                </td>
-                                                                <td className="py-4">
-                                                                    {
-                                                                        job.manager
-                                                                    }
-                                                                </td>
-                                                                <td className="py-4">
-                                                                    {
-                                                                        job.hireDate
-                                                                    }
-                                                                </td>
-                                                                <td className="py-4">
-                                                                    {
-                                                                        job.location
-                                                                    }
-                                                                </td>
-                                                                <td className="py-4 text-right">
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="sm"
-                                                                        className="h-6 w-6 p-0"
-                                                                    >
-                                                                        ⋯
-                                                                    </Button>
-                                                                </td>
-                                                            </tr>
-                                                        )
-                                                    )}
-                                                </tbody>
-                                            </table>
+                                    <CardHeader>
+                                        <CardTitle>Actividad Reciente</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="space-y-4">
+                                            {activityData.map(
+                                                (activity, index) => (
+                                                    <div
+                                                        key={index}
+                                                        className="flex items-start gap-3"
+                                                    >
+                                                        <Avatar className="h-10 w-10">
+                                                            <AvatarImage src={activity.avatar} />
+                                                            <AvatarFallback>
+                                                                {activity.name.charAt(0)}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="text-sm">
+                                                                <span className="font-medium">{activity.name}</span>{' '}
+                                                                <span className="text-muted-foreground">{activity.action}</span>
+                                                            </p>
+                                                            <p className="text-xs text-muted-foreground">{activity.time}</p>
+                                                        </div>
+                                                    </div>
+                                                )
+                                            )}
                                         </div>
                                     </CardContent>
                                 </Card>
-
-                                {/* Activity and Compensation Row */}
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    {/* Activity */}
-                                    <Card>
-                                        <CardContent className="p-6">
-                                            <h3 className="text-lg font-semibold mb-4">
-                                                Actividad
-                                            </h3>
-                                            <div className="space-y-4">
-                                                {activityData.map(
-                                                    (activity, index) => (
-                                                        <div
-                                                            key={index}
-                                                            className="flex items-start gap-3"
-                                                        >
-                                                            <Avatar className="h-10 w-10">
-                                                                <AvatarImage
-                                                                    src={
-                                                                        activity.avatar
-                                                                    }
-                                                                />
-                                                                <AvatarFallback>
-                                                                    {activity.name.charAt(
-                                                                        0
-                                                                    )}
-                                                                </AvatarFallback>
-                                                            </Avatar>
-                                                            <div className="flex-1 min-w-0">
-                                                                <p className="text-sm">
-                                                                    <span className="font-medium">
-                                                                        {
-                                                                            activity.name
-                                                                        }
-                                                                    </span>{' '}
-                                                                    <span className="text-gray-600">
-                                                                        {
-                                                                            activity.action
-                                                                        }
-                                                                    </span>{' '}
-                                                                    <span className="text-gray-600">
-                                                                        el{' '}
-                                                                        {
-                                                                            activity.date
-                                                                        }
-                                                                    </span>
-                                                                </p>
-                                                                <p className="text-xs text-gray-500">
-                                                                    {
-                                                                        activity.time
-                                                                    }
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    )
-                                                )}
-                                                <Button
-                                                    variant="link"
-                                                    className="text-orange-600 hover:text-orange-700 p-0 text-sm"
-                                                >
-                                                    Ver todo
-                                                </Button>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-
-                                    {/* Compensation */}
-                                    <Card>
-                                        <CardContent className="p-6">
-                                            <h3 className="text-lg font-semibold mb-4">
-                                                Compensación
-                                            </h3>
-                                            <div className="space-y-4">
-                                                {compensationData.map(
-                                                    (comp, index) => (
-                                                        <div
-                                                            key={index}
-                                                            className="border-b last:border-0 pb-4 last:pb-0"
-                                                        >
-                                                            <p className="text-lg font-semibold">
-                                                                {comp.amount}{' '}
-                                                                <span className="text-sm font-normal text-gray-600">
-                                                                    {
-                                                                        comp.period
-                                                                    }
-                                                                </span>
-                                                            </p>
-                                                            <p className="text-xs text-gray-500">
-                                                                Fecha efectiva
-                                                                el{' '}
-                                                                {
-                                                                    comp.effectiveDate
-                                                                }
-                                                            </p>
-                                                        </div>
-                                                    )
-                                                )}
-                                                <Button
-                                                    variant="link"
-                                                    className="text-orange-600 hover:text-orange-700 p-0 text-sm"
-                                                >
-                                                    Ver todo
-                                                </Button>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                </div>
                             </div>
                         </div>
+                    </TabsContent>
+                    <TabsContent value="team" className="mt-6">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Equipo</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-muted-foreground">Información sobre el equipo de la veterinaria (en construcción).</p>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+                     <TabsContent value="services" className="mt-6">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Servicios Ofrecidos</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-muted-foreground">Detalles de los servicios ofrecidos (en construcción).</p>
+                            </CardContent>
+                        </Card>
                     </TabsContent>
                 </Tabs>
             </div>
