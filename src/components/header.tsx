@@ -24,6 +24,7 @@ import { Skeleton } from './ui/skeleton';
 
 const navLinks = [
   { href: '/', label: 'Buscar' },
+  { href: '/pets', label: 'Mis Mascotas' },
   { href: '/community', label: 'Comunidad' },
   { href: '/notifications', label: 'Recordatorios' },
 ];
