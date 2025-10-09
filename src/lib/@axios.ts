@@ -14,8 +14,9 @@ const axiosInstance = axios.create({
 const getToken = (): string | null => {
     try {
         if (typeof window !== 'undefined') {
-            const item = window.localStorage.getItem('jwt_access_token')
-            return item ? JSON.parse(item) : null
+            // Un token JWT es una cadena, no necesita ser parseado desde JSON.
+            // Se devuelve directamente.
+            return window.localStorage.getItem('jwt_access_token')
         }
         return null
     } catch (error) {
