@@ -4,10 +4,9 @@ import './globals.css'
 import { cn } from '@/lib/utils'
 import { Toaster } from '@/components/ui/toaster'
 import { Header } from '@/components/header'
+import { Footer } from '@/components/footer' // Importar el nuevo Footer
 import { ThemeProvider } from '@/components/theme-provider'
 import { FirebaseClientProvider } from '@/firebase'
-import { ProviderInversify } from '@/config/inversify/ProviderInversify'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Providers } from '@/providers/Providers'
 export const metadata: Metadata = {
     title: 'PawsHealth Digital',
@@ -19,7 +18,6 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode
 }>) {
-    const queryClient = new QueryClient()
 
     return (
         <html lang="es" suppressHydrationWarning>
@@ -55,31 +53,15 @@ export default function RootLayout({
                             <div className="relative flex min-h-screen flex-col">
                                 <Header />
                                 <main className="flex-1">{children}</main>
+                                <Footer />
                             </div>
                             <Toaster />
                         </FirebaseClientProvider>
                     </ThemeProvider>
                 </Providers>
-
-                {/* <ProviderInversify>
-                    <QueryClientProvider client={queryClient}>
-                        <ThemeProvider
-                            attribute="class"
-                            defaultTheme="system"
-                            enableSystem
-                            disableTransitionOnChange
-                        >
-                            <FirebaseClientProvider>
-                                <div className="relative flex min-h-screen flex-col">
-                                    <Header />
-                                    <main className="flex-1">{children}</main>
-                                </div>
-                                <Toaster />
-                            </FirebaseClientProvider>
-                        </ThemeProvider>
-                    </QueryClientProvider>
-                </ProviderInversify> */}
             </body>
         </html>
     )
 }
+
+    

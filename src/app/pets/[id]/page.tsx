@@ -33,17 +33,14 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
   const pet = getPetById(params.id);
 
   useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/login');
-    }
+    // We don't want to redirect if the page is public
+    // if (!isUserLoading && !user) {
+    //   router.push('/login');
+    // }
   }, [user, isUserLoading, router]);
 
-  if (!pet) {
-    notFound();
-  }
-
-  if (isUserLoading || !user) {
-    return (
+  if (isUserLoading) {
+     return (
         <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-1">
@@ -69,6 +66,11 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
         </div>
     )
   }
+
+  if (!pet) {
+    notFound();
+  }
+
 
   const petDetails = [
     { icon: pet.especie === 'Perro' ? Dog : Cat, label: 'Especie', value: pet.especie },
@@ -137,3 +139,5 @@ export default function PetDetailPage({ params }: { params: { id: string } }) {
     </div>
   );
 }
+
+    
