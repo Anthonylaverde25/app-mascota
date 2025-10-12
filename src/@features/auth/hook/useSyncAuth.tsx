@@ -15,5 +15,7 @@ export default function useSyncAuth() {
         queryFn: () => authUseCase.currentUser(),
     })
 
-    return { data, isLoading, error }
+    const { authUser } = data || {}
+
+    return { authUser, isLoading, error }
 }

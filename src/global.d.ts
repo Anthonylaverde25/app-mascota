@@ -64,4 +64,29 @@ declare global {
         profile: ProfileDTO | null
         profile_complete: boolean
     }
+
+    interface AuthContextType {
+        // Estado del usuario
+        user: AuthUser | null
+        firebaseUser: User | null
+        token: string | null
+        isAuthenticated: boolean
+        loading: boolean
+        error: string | null
+        status:
+            | 'idle'
+            | 'loading'
+            | 'authenticated'
+            | 'unauthenticated'
+            | 'error'
+        profileComplete: boolean
+
+        // Acciones
+        login: (user: AuthUser, firebaseUser: User, token: string) => void
+        logout: () => void
+        updateProfile: (updates: Partial<AuthUser>) => void
+        clearError: () => void
+        refreshToken: (newToken: string) => void
+        checkProfileComplete: () => boolean
+    }
 }

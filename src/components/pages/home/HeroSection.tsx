@@ -18,8 +18,9 @@ import { useAuthStore } from '@/zustand/authStore'
 import useSyncAuth from '@/@features/auth/hook/useSyncAuth'
 
 export function HeroSection() {
-    const { data, isLoading, error } = useSyncAuth()
-    console.log('user desde el store', data)
+    // const { data, isLoading, error } = useSyncAuth()
+    // console.log('user desde el store', data?.authUser.name)
+    const { user } = useAuthStore()
 
     const router = useRouter()
     const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-main')
@@ -28,6 +29,9 @@ export function HeroSection() {
         router.push('/community')
     }
 
+    console.log('USUARIO SETENADO ', user)
+
+    // console.log('data del user', data)
     return (
         <section className="relative w-full h-[calc(100vh-80px)] flex items-center justify-center">
             {heroImage && (
@@ -43,11 +47,11 @@ export function HeroSection() {
             <div className="absolute inset-0 bg-black/50" />
             <div className="relative z-10 flex flex-col items-center text-center text-white px-4">
                 <div className="flex flex-col  items-center">
-                    {/* <div className="flex p-1.5">
+                    <div className="flex p-1.5">
                         <p className="font-bold ">{`¡Bienvenido de vuelta ${
                             user?.name ?? ''
                         }`}</p>
-                    </div> */}
+                    </div>
                     <h1 className="text-4xl md:text-6xl font-headline font-bold drop-shadow-md">
                         El cuidado que tu mascota merece
                     </h1>

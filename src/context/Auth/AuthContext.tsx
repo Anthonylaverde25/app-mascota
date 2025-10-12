@@ -5,40 +5,21 @@ import React, { createContext, useContext, ReactNode } from 'react'
 import { useAuth, useAuthActions, useAuthStore } from '@/zustand/authStore'
 import { useAuthSync } from '@/hooks/useAuthSync'
 import { User } from 'firebase/auth'
-
-interface AuthContextType {
-    // Estado del usuario
-    user: AuthUser | null
-    firebaseUser: User | null
-    token: string | null
-    isAuthenticated: boolean
-    loading: boolean
-    error: string | null
-    status: 'idle' | 'loading' | 'authenticated' | 'unauthenticated' | 'error'
-    profileComplete: boolean
-
-    // Acciones
-    login: (user: AuthUser, firebaseUser: User, token: string) => void
-    logout: () => void
-    updateProfile: (updates: Partial<AuthUser>) => void
-    clearError: () => void
-    refreshToken: (newToken: string) => void
-    checkProfileComplete: () => boolean
-}
+import useSyncAuth from '@/@features/auth/hook/useSyncAuth'
+import AuthGuard from '@/guard/AuthGuard'
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    // Usar el estado global de Zustand
-    const { user } = useAuthStore()
+    
 
     const authState = useAuth()
     const authActions = useAuthActions()
 
     // Sincronizar con Firebase Auth
-    useAuthSync()
+    // useAuthSync()
 
-    console.log('user auth desde el contexto', user)
+    // console.log('user auth desde el contexto', user)
     const contextValue: AuthContextType = {
         ...authState,
         ...authActions,
@@ -46,7 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return (
         <AuthContext.Provider value={contextValue}>
-            {children}
+            <AuthGuard authContext={contextValue}> {children}</AuthGuard>
         </AuthContext.Provider>
     )
 }

@@ -5,10 +5,9 @@ import {
 } from 'firebase/auth'
 import { authInterface } from './interface'
 import { mapUserFromApi } from '../auth.mapper'
-import { AxiosInstance } from 'axios'
+import type { AxiosInstance } from 'axios'
 
 export class AuthRepository implements authInterface {
-    /** Axios instance for API calls */
     constructor(private axiosInstance: AxiosInstance) {}
 
     async login(
