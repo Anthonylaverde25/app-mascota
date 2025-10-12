@@ -1,42 +1,42 @@
-import { inject, injectable } from 'inversify'
-import type { authInterface } from '../application/interface'
-import { toast } from '@/hooks/use-toast'
+import { injectable } from 'inversify'
+import type { AxiosInstance } from 'axios'
 import { Auth, UserCredential } from 'firebase/auth'
+import { AuthRepository } from '../application/repository'
 
 @injectable()
-
-interface CredentialRegister {
-    auth: Auth
-    email: string
-    password: string
-}
-
 export class AuthRepositoryUseCase {
-    constructor(
-        @inject(Symbol.for('authInterface'))
-        private readonly repository: authInterface
-    ) {}
+    private repository: AuthRepository
 
+    constructor(axiosInstance: AxiosInstance) {
+        this.repository = new AuthRepository(axiosInstance)
+    }
 
-    async login(credentials: CredentialLogin): Promise<{ session: UserCredential }> {
+    async login(
+        credentials: CredentialLogin
+    ): Promise<{ session: UserCredential }> {
         try {
-            const {session} = await this.repository.login(credentials)
-            return { session}
+            return await this.repository.login(credentials)
         } catch (error) {
-            console.log('error al hacer login desde el caso de uso')
+            console.log('Error al hacer login desde el caso de uso')
             throw error
         }
     }
 
-    async register(credential: CredentialRegister): Promise<{ session: UserCredential }> {
+    async register(
+        credential: CredentialRegister
+    ): Promise<{ session: UserCredential }> {
         try {
-            const {session} = await this.repository.register(
-                credential
-            )
-
-            return { session}
+            return await this.repository.register(credential)
         } catch (error) {
-            console.log('error al registrar desde el hook')
+            console.log('Error al registrar desde el caso de uso')
+            throw error
+        }
+    }
+
+    async currentUser(): Promise<{ authUser: AuthUser }> {
+        try {
+            return await this.repository.currentUser()
+        } catch (error) {
             throw error
         }
     }

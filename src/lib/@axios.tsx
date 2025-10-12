@@ -1,5 +1,3 @@
-'use client'
-
 import { useAuthContext } from '@/context/Auth/AuthContext'
 import axios, { AxiosInstance } from 'axios'
 import { useMemo } from 'react'

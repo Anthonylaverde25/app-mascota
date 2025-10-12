@@ -5,4 +5,5 @@ export interface authInterface {
     register(
         credentials: CredentialRegister
     ): Promise<{ session: UserCredential }>
+    currentUser(): Promise<{ authUser: AuthUser }>
 }
