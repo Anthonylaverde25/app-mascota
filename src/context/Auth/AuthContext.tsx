@@ -27,6 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         if (!auth) return
+        console.log('hola')
 
         const unsubscribe = onIdTokenChanged(auth, async (firebaseUser) => {
             setUser(firebaseUser)
