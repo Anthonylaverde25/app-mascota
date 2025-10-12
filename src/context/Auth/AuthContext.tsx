@@ -1,53 +1,48 @@
 // src/context/Auth/AuthContext.tsx
 'use client'
 
-import React, {
-    createContext,
-    useContext,
-    useEffect,
-    useState,
-    ReactNode,
-} from 'react'
-import { User, onIdTokenChanged } from 'firebase/auth'
-import { useFirebase } from '@/firebase/provider' // Hook que expone auth desde FirebaseClientProvider
+import React, { createContext, useContext, ReactNode } from 'react'
+import { useAuth, useAuthActions } from '@/zustand/authStore'
+import { useAuthSync } from '@/hooks/useAuthSync'
+import { User } from 'firebase/auth'
 
 interface AuthContextType {
-    user: User | null
+    // Estado del usuario
+    user: AuthUser | null
+    firebaseUser: User | null
     token: string | null
+    isAuthenticated: boolean
     loading: boolean
+    error: string | null
+    status: 'idle' | 'loading' | 'authenticated' | 'unauthenticated' | 'error'
+    profileComplete: boolean
+
+    // Acciones
+    login: (user: AuthUser, firebaseUser: User, token: string) => void
+    logout: () => void
+    updateProfile: (updates: Partial<AuthUser>) => void
+    clearError: () => void
+    refreshToken: (newToken: string) => void
+    checkProfileComplete: () => boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const { auth } = useFirebase() // Obtenemos el auth inicializado por FirebaseClientProvider
-    const [user, setUser] = useState<User | null>(null)
-    const [token, setToken] = useState<string | null>(null)
-    const [loading, setLoading] = useState(true)
+    // Usar el estado global de Zustand
+    const authState = useAuth()
+    const authActions = useAuthActions()
 
-    useEffect(() => {
-        if (!auth) return
-        console.log('hola')
+    // Sincronizar con Firebase Auth
+    useAuthSync()
 
-        const unsubscribe = onIdTokenChanged(auth, async (firebaseUser) => {
-            setUser(firebaseUser)
-
-            if (firebaseUser) {
-                const idToken = await firebaseUser.getIdToken()
-                console.log('token dsde el contsxto', idToken)
-                setToken(idToken)
-            } else {
-                setToken(null)
-            }
-
-            setLoading(false)
-        })
-
-        return () => unsubscribe()
-    }, [auth])
+    const contextValue: AuthContextType = {
+        ...authState,
+        ...authActions,
+    }
 
     return (
-        <AuthContext.Provider value={{ user, token, loading }}>
+        <AuthContext.Provider value={contextValue}>
             {children}
         </AuthContext.Provider>
     )
@@ -60,4 +55,17 @@ export function useAuthContext() {
         throw new Error('useAuthContext must be used within AuthProvider')
     }
     return context
+}
+
+// Hook de conveniencia que combina el contexto con el estado global
+export function useAuthWithContext() {
+    const context = useAuthContext()
+    const zustandState = useAuth()
+    const zustandActions = useAuthActions()
+
+    return {
+        ...context,
+        ...zustandState,
+        ...zustandActions,
+    }
 }

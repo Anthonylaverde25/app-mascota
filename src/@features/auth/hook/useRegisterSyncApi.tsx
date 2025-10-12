@@ -17,13 +17,20 @@ export function useRegisterSyncApi() {
             const { user } = session
 
             const idToken = await user.getIdToken()
+            const apiUrl =
+                process.env.NEXT_PUBLIC_API_BASE_URL ||
+                'http://localhost:8000/api'
+
             const { data, status } = await axios.post(
-                'http://localhost:8000/api/auth/register-sync',
+                `${apiUrl}/auth/register-sync`,
                 {
                     entityData: payload,
                 },
                 {
-                    headers: { Authorization: `Bearer ${idToken}` },
+                    headers: {
+                        Authorization: `Bearer ${idToken}`,
+                        'Content-Type': 'application/json',
+                    },
                 }
             )
 

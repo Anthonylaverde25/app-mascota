@@ -3,6 +3,8 @@ import { toast } from '@/hooks/use-toast'
 import { AuthRepositoryUseCase } from '../use-case/authUseCase'
 import { Auth, UserCredential } from 'firebase/auth'
 import { useRegisterSyncApi } from './useRegisterSyncApi'
+import { useAuthActions } from '@/zustand/authStore'
+import { mapUserFromApi } from '../auth.mapper'
 
 interface CredentialRegister {
     auth: Auth
@@ -17,48 +19,76 @@ interface CredentialRegister {
 export default function useRegister() {
     const authUseCase = container.get(AuthRepositoryUseCase)
     const syncMutation = useRegisterSyncApi()
+    const { login, setLoading, setError, clearError } = useAuthActions()
 
     const handleRegister = async (
         credential: CredentialRegister
     ): Promise<UserCredential> => {
-        // debugger
         try {
+            setLoading(true)
+            clearError()
+
             const payloadData: RegisterFieldsEntity = {
                 name: credential.name,
                 phone: credential.phone,
                 entityType: credential.entityType,
                 dni: credential.dni,
             }
+
             const { session } = await authUseCase.register(credential)
+
             if (session) {
                 const { operationType } = session
                 if (operationType === 'signIn') {
-                    await syncMutation.mutateAsync({
+                    // Sincronizar con la API para crear/actualizar el usuario
+                    const apiResponse = await syncMutation.mutateAsync({
                         session: session,
                         payload: payloadData,
                     })
-                    // const authToken = user.getIdToken() // queda como una promesa pendiente
-                    // console.log('token obtenido', authToken)
-                    // entonces, si iniciamos session al registrarnos y tenemos el objecto user,
-                    // debemos guardar ese objecto en la base de datos de nuestra api
+
+                    if (apiResponse) {
+                        // Mapear datos de la API
+                        const mappedUser = mapUserFromApi(apiResponse)
+
+                        // Obtener token de Firebase
+                        const token = await session.user.getIdToken()
+
+                        // Actualizar estado global
+                        login(mappedUser, session.user, token)
+
+                        toast({
+                            title: '¡Cuenta creada exitosamente!',
+                            description:
+                                'Tu cuenta ha sido creada y has iniciado sesión automáticamente.',
+                        })
+                    }
                 }
             }
 
-            console.log('respuesta desde firebase al registrar', session)
-
-            toast({
-                title: '¡Cuenta creada!',
-                description:
-                    'Tu cuenta ha sido creada exitosamente desde el hook. Serás redirigido.',
-            })
-
-            // Devuelvo directamente el UserCredential de Firebase
             return session
         } catch (error) {
-            console.error('error al registrar desde el hook', error)
+            console.error('Error al registrar usuario:', error)
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : 'Error al registrar usuario'
+            )
+
+            toast({
+                title: 'Error de registro',
+                description: 'No se pudo crear la cuenta. Inténtalo de nuevo.',
+                variant: 'destructive',
+            })
+
             throw error
+        } finally {
+            setLoading(false)
         }
     }
 
-    return { handleRegister }
+    return {
+        handleRegister,
+        isLoading: syncMutation.isPending,
+        error: syncMutation.error,
+    }
 }
