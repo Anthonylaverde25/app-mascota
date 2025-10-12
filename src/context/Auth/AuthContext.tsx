@@ -2,7 +2,7 @@
 'use client'
 
 import React, { createContext, useContext, ReactNode } from 'react'
-import { useAuth, useAuthActions } from '@/zustand/authStore'
+import { useAuth, useAuthActions, useAuthStore } from '@/zustand/authStore'
 import { useAuthSync } from '@/hooks/useAuthSync'
 import { User } from 'firebase/auth'
 
@@ -30,12 +30,15 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     // Usar el estado global de Zustand
+    const { user } = useAuthStore()
+
     const authState = useAuth()
     const authActions = useAuthActions()
 
     // Sincronizar con Firebase Auth
     useAuthSync()
 
+    console.log('user auth desde el contexto', user)
     const contextValue: AuthContextType = {
         ...authState,
         ...authActions,
