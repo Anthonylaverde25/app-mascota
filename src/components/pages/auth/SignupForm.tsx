@@ -107,6 +107,8 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
                     '/entity-types'
                 )
 
+                console.log('tipos desde el registrar', entityTypes)
+
                 setEntityTypes(entityTypes)
 
                 // Establecer el primer tipo como predeterminado

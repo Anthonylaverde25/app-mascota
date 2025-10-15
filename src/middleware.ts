@@ -1,13 +1,13 @@
 // app/middleware.ts
 import { NextResponse, NextRequest } from 'next/server'
 import { apiCheck } from './app/middleware/apiCheck'
+import { apiAuthUser } from './app/middleware/apiAuthUser'
+import { PUBLIC_PATHS } from './consts'
 
 export async function middleware(req: NextRequest) {
     const path = req.nextUrl.pathname
 
-    // En desarrollo, hacer el apiCheck opcional
-    if (path.startsWith('/login') || path.startsWith('/signup')) {
-        // Solo hacer el check si no estamos en desarrollo o si la API está configurada
+    if (PUBLIC_PATHS.some((p) => path.startsWith(p))) {
         const shouldCheckApi =
             process.env.NODE_ENV !== 'development' ||
             process.env.API_BASE_URL_PRIVATE ||
@@ -19,11 +19,26 @@ export async function middleware(req: NextRequest) {
         } else {
             console.warn('Development mode: Skipping API check for auth pages')
         }
+
+        // Para rutas públicas NO chequeamos token
+        return NextResponse.next()
+    }
+
+    // Solo rutas protegidas pasan por apiAuthUser
+    const authRes = await apiAuthUser(req)
+    if (authRes) {
+        // Si apiAuthUser retorna una redirección u otro NextResponse
+        return authRes
     }
 
     return NextResponse.next()
 }
 
 export const config = {
-    matcher: ['/:path*'],
+    matcher: [
+        '/dashboard/:path*',
+        '/profile/:path*',
+        '/settings/:path*',
+        '/api/:path*',
+    ],
 }

@@ -17,7 +17,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const authActions = useAuthActions()
 
     // Sincronizar con Firebase Auth
-    // useAuthSync()
+    useAuthSync()
 
     // console.log('user auth desde el contexto', user)
     const contextValue: AuthContextType = {
