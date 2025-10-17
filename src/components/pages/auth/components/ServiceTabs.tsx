@@ -1,3 +1,5 @@
+'use client'
+
 import useServices from '@/@features/service-types/hook/useServices'
 import {
     Dialog,
@@ -7,22 +9,31 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog'
 import { ServicesType } from '@/types/services'
-import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
+import { z } from 'zod'
+import { profileSchema } from '@/schemas/profileSchema' // 👈 ya lo tienes
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect } from 'react'
+
+// ✅ Inferimos automáticamente el tipo de los valores del formulario
+type ProfileFormValues = z.infer<typeof profileSchema>
 
 export default function ServiceTabs() {
-    const { setValue, getValues, watch, formState } = useFormContext()
-    const { data: services_types = [] } = useServices()
-    const [serviceData, setServiceData] = useState({})
+    const {
+        setValue,
+        getValues,
+        watch,
+        formState: { errors, isValid },
+        trigger,
+        register,
+    } = useFormContext<ProfileFormValues>() // 👈 Tipado fuerte del contexto
 
-    // watch devuelve el array de objetos seleccionados
+    const { data: services_types = [] } = useServices()
+
     const selectedServices = watch('service_types') || []
 
+    // ➕ Agregar un servicio seleccionado
     const handleDialogClose = (service: ServicesType) => {
-        console.log('valido:', formState.isValid)
-        console.log('erros:', formState.errors)
-        console.log('form state', formState)
-
         const currentServices = getValues('service_types') || []
         if (!currentServices.some((s: ServicesType) => s.id === service.id)) {
             setValue('service_types', [
@@ -30,8 +41,10 @@ export default function ServiceTabs() {
                 { id: service.id, code: service.code },
             ])
         }
+        trigger() // Revalida después de agregar
     }
 
+    // ➖ Eliminar un servicio seleccionado
     const handleRemoveService = (serviceId: number) => {
         setValue(
             'service_types',
@@ -39,22 +52,26 @@ export default function ServiceTabs() {
                 (s: ServicesType) => s.id !== serviceId
             )
         )
-
-        setServiceData((prev) => {
-            const copy = { ...prev }
-            delete copy[serviceId]
-            return copy
-        })
+        trigger() // Revalida después de eliminar
     }
+
+    useEffect(() => {
+        console.log('formulario valido?:', isValid)
+        console.log('errores del formulario:', errors)
+    }, [getValues()])
 
     return (
         <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
                 Servicios ofrecidos
             </label>
+
             <div className="flex flex-wrap gap-3 mt-2">
                 {services_types.map((service: ServicesType) => {
                     const isSelected = selectedServices.some(
+                        (s: any) => s.id === service.id
+                    )
+                    const serviceIndex = selectedServices.findIndex(
                         (s: any) => s.id === service.id
                     )
 
@@ -93,29 +110,45 @@ export default function ServiceTabs() {
                                 <DialogHeader>
                                     <DialogTitle>{service.name}</DialogTitle>
                                 </DialogHeader>
+
                                 <div className="space-y-4 mt-2">
+                                    {/* Si el servicio es veterinario, mostramos el campo */}
                                     {service.code === 'veterinarian' && (
-                                        <input
-                                            type="text"
-                                            placeholder="Nº de Matrícula Profesional"
-                                            value={
-                                                watch(
-                                                    `licenseNumbers.${service.id}`
-                                                ) || ''
-                                            }
-                                            onChange={(e) =>
-                                                setValue(
-                                                    `licenseNumbers.${service.id}`,
-                                                    e.target.value,
-                                                    {
-                                                        shouldValidate: true, // 👈 dispara la validación de Zod
-                                                        shouldDirty: true,
-                                                    }
-                                                )
-                                            }
-                                        />
+                                        <div>
+                                            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                                Número de matrícula
+                                            </label>
+                                            <input
+                                                type="text"
+                                                {...register(
+                                                    `service_types.${serviceIndex}.license_number` as const
+                                                )}
+                                                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+                                                placeholder="Ej: MV-12345"
+                                            />
+
+                                            {serviceIndex > -1 &&
+                                                errors.service_types?.[
+                                                    serviceIndex
+                                                ]?.license_number && (
+                                                    <p className="text-red-600 text-sm mt-1">
+                                                        {
+                                                            (
+                                                                errors
+                                                                    .service_types?.[
+                                                                    serviceIndex
+                                                                ]
+                                                                    ?.license_number as {
+                                                                    message?: string
+                                                                }
+                                                            )?.message
+                                                        }
+                                                    </p>
+                                                )}
+                                        </div>
                                     )}
                                 </div>
+
                                 <div className="mt-4 flex justify-end">
                                     <button
                                         type="button"
